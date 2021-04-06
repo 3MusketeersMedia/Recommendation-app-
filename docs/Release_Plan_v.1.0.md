@@ -1,24 +1,28 @@
----
-title: 'Recommendation App'
-disqus: hackmd
----
 
 Recommendation App
 ===
-:::info
 **Product name**: RecoMedia (placeholder)
+
 **Team name**: *Three three musketeers and three other dudes that may or may not be musketeers*
 **Release name:** RecoMedia 1
+
 **Release date:** 06-02-2021
-:::
-*Revision number: 1.0
-Revision date: 4/5/2021*
+
+*Revision number*: 1.0
+
+*Revision date*: 4/5/2021
 
 ## Table of Contents
 
-[TOC]
+- [High End Goals](#HighEndGoal)
+- [User stories](#userstory)
+    - [Sprint #1 (4/7/2021 -> 4/21/2021):](#sprint1)
+    - [Sprint #2 (4/21/2021 -> 5/5/2021):](#sprint2)
+    - [Sprint #3 (5/5/2021 -> 5/19/2021):](#sprint3)
+    - [Sprint #4 (5/19/2021 -> 6/2/2021):](#sprint4)
+- [Product Backlog](#backlog)
 
-## High End Goals 
+## High End Goals <a name="HighEndGoal"></a>
 
 - User friendly/catchy GUI to encourage interactivity around interesting movies
 - Get data from movies API and parse them related to personalized data
@@ -27,9 +31,9 @@ Revision date: 4/5/2021*
 - extra: Create incentive system for users to continue coming back
 
 
-User stories
+User stories<a name="userstory"></a>
 ---
-### Sprint #1 (4/7/2021 -> 4/21/2021):
+### Sprint #1 (4/7/2021 -> 4/21/2021):<a name="sprint1"></a>
 - frontend (3 pages)
     - Home (Nick)
         - As a user, I’d like to be able to have an organized home page that can link me to a list of movies that fit my style, but also that has information explaining the site and how to use it. This is because I may be unfamiliar with the site and its usage, and would like to have as easy an experience as possible while getting the maximum out of the utilities.
@@ -47,7 +51,7 @@ Send data
 Obtain data from IMDB
         - (3 pts) As a user, I would like to be able to obtain data from IMDB so that we have a list of all the movies available
 
-### Sprint #2 (4/21/2021 -> 5/5/2021): 
+### Sprint #2 (4/21/2021 -> 5/5/2021): <a name="sprint2"></a>
 - Frontend: 
     - List
         - As a user, I want to sort, filter, and search the list so that I can find a specific movie
@@ -62,7 +66,7 @@ Obtain data from IMDB
     -  Authentication/Security: 
         -  As a User, I would like to have my personal information secure so I am not targeted for malicious activities. 
 
-### Sprint #3 (5/5/2021 -> 5/19/2021): 
+### Sprint #3 (5/5/2021 -> 5/19/2021): <a name="sprint3"></a>
 - Frontend
     - List
         - As a user, I want to see a list of recommended movies based on my preferences, so that I can find new and interesting movies
@@ -76,7 +80,7 @@ Obtain data from IMDB
     - Moderation System: 
         - (2 pts) As a web-admin, I would like a simpler way to interact with the site so I can make sure the website is clean. 
 
-### Sprint #4  (5/19/2021 -> 6/2/2021):
+### Sprint #4  (5/19/2021 -> 6/2/2021):<a name="sprint4"></a>
 - Frontend
     - Individual Movie
         - As a user, I want to be able to leave comments on a movie, and respond to other users comments so that I can share my opinions and see other people’s opinions
@@ -84,7 +88,7 @@ Obtain data from IMDB
         - As a user, I want to share my movie list on social media so that I can show all my friends
 
 
-Product Backlog
+Product Backlog <a name="backlog"></a>
 ---
 1. Product Backlog: 
 2. User login or Guest 
@@ -96,20 +100,4 @@ Product Backlog
 8. Social media trends 
 9. dynamically update (IMDB api), 
 10. change recommendations based on previously watched.
-
-
-Project Timeline
----
-```mermaid
-gantt
-    title Sprints
-
-    section Sprints
-    Sprint 1           :a1, 2021-04-07, 2021-04-21
-    Sprint 2           :a2  , 2021-04-21, 2021-05-05
-    Sprint 1           :a3, 2021-05-05, 2021-05-19
-    Sprint 2           :after a3, 2021-06-02
-    section Misc
-```
-
 
