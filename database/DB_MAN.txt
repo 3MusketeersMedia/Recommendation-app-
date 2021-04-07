@@ -1,0 +1,126 @@
+Install postgres on a system
+
+--------------------------------------
+
+$: sudo apt install python2
+$: curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
+$: sudo python2 get-pip.py
+$: pip2 install psycopg2
+
+run with anything below python3 (python, python2.7, etc.)
+
+#-------------------------------------
+
+Example of how to use file in a sample python doc
+-------------------------------------
+
+import statements
+execfile("location/database.py")
+
+miscellaneous code
+
+connection = open_DBConnection()
+
+interact with data here
+
+close_DBConnection(connection)
+
+miscellaneous code
+
+-------------------------------------
+
+List of functions:
+	open_DBConnection() -> open connection to db
+	close_DBConnection(pair) -> close connection to db
+	set_data(pair, name, mediaType, ID) -> set entry or insert new entry into table
+	set_data_id(pair, ID) -> set id of existing data point
+	get_by_name(pair, name) -> get all entries of a given name
+	get_by_id(pair, ID) -> get entry by ID
+	get_by_mediaType(pair, mediaType) -> get entry by mediaType
+	delete_data(pair, ID) -> delete a data point
+	clear(pair) -> clear table
+
+Function Details:
+
+open_DBConnection():
+	Constraints:
+		none
+	Parameters:
+		none
+	Return Type:
+		pair-> a tuple with (connection, database) store this value for other functions when interacting with db
+
+close_DBConnection(pair):
+	Constraints:
+		database must be open first
+	Parameters:
+		pair->tuple from open_DBConnection()
+	Return Type:
+		none
+
+set_data(pair, name, mediaType, ID):
+	Constraints:
+		Cannot reset ID
+		ID MUST BE UNIQUE, everthing else can have duplicates
+	Parameters:
+		pair -> (connection, database) tuple from open_DBConnection()
+		name -> string
+		mediaType -> The following strings: 'movie', 'tv show', 'short film', 'anime', or 'manga'
+		ID -> integer
+	Return Type:
+		none
+
+set_data_id(pair, oldID, newID):
+	Constraints:
+		All ID's must be unique
+		If ID is the same as an existing ID, the other parameters will be updated
+	Paremeters:
+		pair -> tuple from open_DBConnection()
+		oldID -> int
+		newID -> int
+	Return Type:
+		none
+
+get_by_name(pair, name):
+	Constraints:
+		none
+	Paremeters:
+		pair -> tuple from open_DBConnection()
+		name -> string
+	Return Type:
+		list of tuples -> list of (name, mediaType, ID)
+
+get_by_id(pair, ID):
+	Constraints:
+		none
+	Paremeters:
+		pair -> tuple from open_DBConnection()
+		ID -> int
+	Return Type:
+		tuple -> (name, mediaType, ID)
+
+get_by_mediaType(pair, mediaType):
+	Constraints:
+		none
+	Paremeters:
+		pair -> tuple from open_DBConnection()
+		mediaType -> string
+	Return Type:
+		list of tuples -> list of (name, mediaType, ID)
+
+delete_data(pair, ID):
+	Constraints:
+		Must Exist
+	Paremeters:
+		pair -> tuple from open_DBConnection
+		ID -> int
+	Return Type:
+		none
+
+clear_data(pair):
+	Constraints:
+		none
+	Paremeters:
+		pair -> tuple from open_DBConnection
+	Return Type:
+		none
