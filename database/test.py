@@ -34,5 +34,8 @@ print(stuff)
 stuff = get_by_mediaType(connection, "movie")
 print(stuff)
 
+stuff = get_all(connection)
+print(stuff)
+
 clear_data(connection)
 close_DBConnection(connection)

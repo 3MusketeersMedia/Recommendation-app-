@@ -82,6 +82,11 @@ def get_by_id(pair, ID):
         return []
 
 
+def get_all(pair):
+    pair[1].execute("SELECT * FROM media;")
+    return pair[1].fetchall()
+
+
 def get_next(pair):
     return pair[1].fetchall()
 
