@@ -121,7 +121,8 @@ set_data_id(pair, oldID, newID):
 	Return Type:
 		none
 
-Get Commands: for each get command, it will return an empty list if no elements found
+
+Get Commands: for each get command, it will return an empty list if no elements found -------------------
 
 get_by_name(pair, name):
 	Constraints:
@@ -156,7 +157,10 @@ get_next(pair):
 	Parameters:
 		pair -> tuple from openDBConnection()
 	Return Type:
-		list of tuples -> depends on previous query
+		list of tuples -> next MAX_LIST_SIZE chunk of tuples (next chunk of a previous get query)
+
+End of Get Commands---------------------------------------------------------------------------------------
+
 
 delete_data(pair, ID):
 	Constraints:
