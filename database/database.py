@@ -8,7 +8,7 @@ conn.autocommit = True #autocommit or commit after transactions
 database = conn.cursor()
 
 if conn is not None:
-    database.execute("SELECT datname FROM pg_database;")
+    database.execute("SELECT datname FROM pg_database WHERE datname = '{}';".format("maindb"))
     list_db = database.fetchall()
     
     if ("maindb",) not in list_db:
@@ -47,7 +47,7 @@ def close_DBConnection(pair):
 
 def set_data(pair, name, mediaType, ID):
     #retrieve list of ID's
-    pair[1].execute("SELECT ID FROM media;")
+    pair[1].execute("SELECT ID FROM media WHERE ID = {};".format(ID))
     list_id = pair[1].fetchall()
     #check for ID
     if (ID,) in list_id:
@@ -59,25 +59,35 @@ def set_data(pair, name, mediaType, ID):
 
 
 def set_data_id(pair, oldID, newID):
-    pair[1].execute("SELECT ID FROM media;")
+    pair[1].execute("SELECT ID FROM media WHERE ID = {};".format(oldID))
     list_id = pair[1].fetchall()
     if (oldID,) in list_id:
         pair[1].execute("UPDATE media SET ID = '{}' WHERE ID = {};".format(newID, oldID))
 
 
 def get_by_name(pair, name):
-    pair[1].execute("SELECT name, mediaType, ID FROM media WHERE name = '{}'".format(name))
+    pair[1].execute("SELECT name, mediaType, ID FROM media WHERE name = '{}';".format(name))
     return pair[1].fetchall()
 
 
 def get_by_id(pair, ID):
-    pair[1].execute("SELECT name, mediaType, ID FROM media WHERE ID = {}".format(ID))
-    value = pair[1].fetchall()
-    return tuple((value[0][0], value[0][1], value[0][2]))
+    #check if ID exists
+    pair[1].execute("SELECT ID FROM media WHERE ID = {};".format(ID))
+    list_id = pair[1].fetchall()
+    if (ID,) in list_id:
+        pair[1].execute("SELECT name, mediaType, ID FROM media WHERE ID = {};".format(ID))
+        value = pair[1].fetchall()
+        return tuple((value[0][0], value[0][1], value[0][2]))
+    else:
+        return []
+
+
+def get_next(pair):
+    return pair[1].fetchall()
 
 
 def get_by_mediaType(pair, mediaType):
-    pair[1].execute("SELECT name, mediaType, ID FROM media WHERE mediaType = '{}'".format(mediaType))
+    pair[1].execute("SELECT name, mediaType, ID FROM media WHERE mediaType = '{}';".format(mediaType))
     return pair[1].fetchall() 
 
 
@@ -87,5 +97,10 @@ def delete_data(pair, ID):
 
 def clear_data(pair):
     pair[1].execute("DELETE FROM media;")
+
+
+def num_items(pair):
+    pair[1].execute("SELECT * FROM media;")
+    return pair[1].rowcount
 
 #-------------------Function Defintion End------------------------

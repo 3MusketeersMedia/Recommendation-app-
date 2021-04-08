@@ -15,7 +15,17 @@ set_data(connection, "b movie", "movie", 4)
 set_data(connection, "b show", "movie", 5)
 set_data(connection, "d show", "anime", 6)
 
+stuff = num_items(connection)
+print(stuff)
+
+delete_data(connection, 4)
+stuff = num_items(connection)
+print(stuff)
+
 stuff = get_by_name(connection, "v show")
+print(stuff)
+
+stuff = get_next(connection)
 print(stuff)
 
 stuff = get_by_id(connection, 6)

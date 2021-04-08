@@ -7,15 +7,16 @@ $: curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py
 $: sudo python2 get-pip.py
 $: pip2 install psycopg2
 
-run with anything below python3 (python, python2.7, etc.)
+run with python2 or above in this case
+install on whatever python version you want
 
-#-------------------------------------
+-------------------------------------
 
 Example of how to use file in a sample python doc
 -------------------------------------
 
 import statements
-execfile("location/database.py")
+exec(open("database.py").read())
 
 miscellaneous code
 
@@ -28,6 +29,43 @@ close_DBConnection(connection)
 miscellaneous code
 
 -------------------------------------
+Example of how to get data in max list size chunks,
+If the db has more entries than the max list size in python.
+
+import statements
+exec(open("database.py").read())
+
+miscellaneous code
+
+connection = open_DBConnection()
+
+
+#example 1: check if num items have been got
+num = num_items(connection)
+list_of_items = get_by_query(connection)
+num_items_got = sizeof(list_of_items)
+while(num_items_got < num):
+	operate on list of items
+	list_of_items = get_next(connection)
+	num_items_got += sizeof(list_of_items)
+
+
+#example 2: check if return is empty
+list_of items = get_by_query(connection)
+while(1):
+	operate on list of items
+	list_of_items = get_next(connection)
+	if list_of_items is empty:
+		break
+
+
+close_DBConnection(connection)
+
+miscellaneous code
+--------------------------------------
+
+
+
 
 List of functions:
 	open_DBConnection() -> open connection to db
@@ -37,8 +75,10 @@ List of functions:
 	get_by_name(pair, name) -> get all entries of a given name
 	get_by_id(pair, ID) -> get entry by ID
 	get_by_mediaType(pair, mediaType) -> get entry by mediaType
+	get_next(pair) -> get the next MAX_LIST_SIZE elements of previous get_by_something() query 
 	delete_data(pair, ID) -> delete a data point
 	clear(pair) -> clear table
+	num_items(pair) -> give num_items in table
 
 Function Details:
 
@@ -81,6 +121,8 @@ set_data_id(pair, oldID, newID):
 	Return Type:
 		none
 
+Get Commands: for each get command, it will return an empty list if no elements found
+
 get_by_name(pair, name):
 	Constraints:
 		none
@@ -108,6 +150,14 @@ get_by_mediaType(pair, mediaType):
 	Return Type:
 		list of tuples -> list of (name, mediaType, ID)
 
+get_next(pair):
+	Constraints:
+		none
+	Parameters:
+		pair -> tuple from openDBConnection()
+	Return Type:
+		list of tuples -> depends on previous query
+
 delete_data(pair, ID):
 	Constraints:
 		Must Exist
@@ -124,3 +174,12 @@ clear_data(pair):
 		pair -> tuple from open_DBConnection
 	Return Type:
 		none
+
+num_items(pair):
+        Constraints:
+                none
+        Paremeters:
+                pair -> tuple from open_DBConnection
+        Return Type:
+                int -> number of items in database
+
