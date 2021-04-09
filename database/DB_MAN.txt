@@ -75,8 +75,8 @@ List of functions:
 	get_by_name(pair, name) -> get all entries of a given name
 	get_by_id(pair, ID) -> get entry by ID
 	get_by_mediaType(pair, mediaType) -> get entry by mediaType
+	get_all(pair) -> get MAX_LIST_SIZE items in database
 	get_next(pair) -> get the next MAX_LIST_SIZE elements of previous get_by_something() query 
-	get_all(pair) -> get all items in database
 	delete_data(pair, ID) -> delete a data point
 	clear(pair) -> clear table
 	num_items(pair) -> give num_items in table
