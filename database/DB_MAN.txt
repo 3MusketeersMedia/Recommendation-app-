@@ -72,12 +72,15 @@ List of functions:
 	close_DBConnection(pair) -> close connection to db
 	set_data(pair, name, mediaType, ID) -> set entry or insert new entry into table
 	set_data_id(pair, ID) -> set id of existing data point
+	set_data_liked(pair, ID, liked) -> set boolean liked value of data with ID
 	get_by_name(pair, name) -> get all entries of a given name
 	get_by_id(pair, ID) -> get entry by ID
 	get_by_mediaType(pair, mediaType) -> get entry by mediaType
+	get_by_liked(pair) -> get all liked elements
 	get_next(pair) -> get the next MAX_LIST_SIZE elements of previous get_by_something() query 
 	get_all(pair) -> get all items in database
 	delete_data(pair, ID) -> delete a data point
+	delete_table(pair) -> delete table, need to redo exec(...) to reinitialize it
 	clear(pair) -> clear table
 	num_items(pair) -> give num_items in table
 
@@ -99,7 +102,7 @@ close_DBConnection(pair):
 	Return Type:
 		none
 
-set_data(pair, name, mediaType, ID):
+set_data(pair, name, mediaType, ID, liked=False):
 	Constraints:
 		Cannot reset ID
 		ID MUST BE UNIQUE, everthing else can have duplicates
@@ -108,19 +111,29 @@ set_data(pair, name, mediaType, ID):
 		name -> string
 		mediaType -> The following strings: 'movie', 'tv show', 'short film', 'anime', or 'manga'
 		ID -> integer
+		Liked -> Liked by a user, default value is False
 	Return Type:
 		none
 
 set_data_id(pair, oldID, newID):
 	Constraints:
 		All ID's must be unique
-		If ID is the same as an existing ID, the other parameters will be updated
 	Paremeters:
 		pair -> tuple from open_DBConnection()
 		oldID -> int
 		newID -> int
 	Return Type:
 		none
+
+set_data_liked(pair, ID, liked=True):
+        Constraints:
+                none
+        Parameters:
+                pair -> tuple from openDBConnection()
+		ID -> int
+		liked -> boolean
+        Return Type:
+                none
 
 
 Get Commands: for each get command, it will return an empty list if no elements found -------------------
@@ -152,6 +165,15 @@ get_by_mediaType(pair, mediaType):
 	Return Type:
 		list of tuples -> MAX_LIST_SIZE list of (name, mediaType, ID)
 
+get_by_liked(pair, liked=True):
+        Constraints:
+                none
+        Parameters:
+                pair -> tuple from openDBConnection()
+		liked -> boolean
+        Return Type:
+                list of tuples -> list of liked entries
+
 get_next(pair):
         Constraints:
                 none
@@ -179,6 +201,16 @@ delete_data(pair, ID):
 		ID -> int
 	Return Type:
 		none
+
+delete_table(pair):
+        Constraints:
+                Need to redo exec("database.py") from above after calling this
+		If a new patch doesn't hold, delete_table() and restart the
+		program (calling exec(...) at the top)
+        Parameters:
+                pair -> tuple from openDBConnection()
+        Return Type:
+                none
 
 clear_data(pair):
 	Constraints:
