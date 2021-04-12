@@ -1,7 +1,7 @@
 import http.client
 import json
 
-key = "4e316e53d3mshc6d4451580c6d3fp1f652cjsnad69d8580ff7"
+key = "9pHD4DgH4YmshcIbVmA4F5UemWkYp1u5tjzjsnBiu5fKltncGk"
 host = "imdb8.p.rapidapi.com"
 # can set up to return data that can be used by other function
 def search(name):
@@ -28,6 +28,7 @@ def search(name):
     # extract data
     # title_id is given in /title/tt3890160/, and tt3890160 is the id 
     title_id = parsed["results"][0]["id"]
+    # print(title_id)
     id = title_id.split("/") # grab just the id 
 
     # print(data.decode("utf-8"))
@@ -46,7 +47,6 @@ def search(name):
 #   "genre":{...}
 #   "certificate": ...
 # }
-
 def get_metadata(id, region):
     conn = http.client.HTTPSConnection("imdb8.p.rapidapi.com")
     headers = {
@@ -161,11 +161,13 @@ def get_moreLikeThis(id, currentCountry, purchaseCounty):
         ids.append(number[2])
     return ids
 
-id = search("baby driver")
-metadata = get_metadata(id, "US")
-urls_images = get_image_urls(id, "10")
-summary = get_overview(id, "US")
-recommended_ids = get_moreLikeThis(id, "US", "US")
+# id = search("baby driver")
+# metadata = get_metadata(id, "US")
+# urls_images = get_image_urls(id, "10")
+# summary = get_overview(id, "US")
+# recommended_ids = get_moreLikeThis(id, "US", "US")
 
-
-
+with open('test_file.json', 'r') as file:
+    info = file.read().rstrip('\n')
+parsed = json.loads(info)
+print(parsed["tt4154756"])
