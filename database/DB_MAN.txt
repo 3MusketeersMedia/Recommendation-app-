@@ -77,8 +77,8 @@ List of functions:
 	get_by_id(pair, ID) -> get entry by ID
 	get_by_mediaType(pair, mediaType) -> get entry by mediaType
 	get_by_liked(pair) -> get all liked elements
+	get_all(pair) -> get MAX_LIST_SIZE items in database
 	get_next(pair) -> get the next MAX_LIST_SIZE elements of previous get_by_something() query 
-	get_all(pair) -> get all items in database
 	delete_data(pair, ID) -> delete a data point
 	delete_table(pair) -> delete table, need to redo exec(...) to reinitialize it
 	clear(pair) -> clear table
