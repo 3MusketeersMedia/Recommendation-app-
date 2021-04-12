@@ -26,7 +26,7 @@ conn.autocommit = True
 database = conn.cursor()
 
 #make tables
-database.execute("CREATE TABLE IF NOT EXISTS media(name VARCHAR (50) NOT NULL, mediaType VARCHAR (50) NOT NULL, ID INT PRIMARY KEY, CHECK (mediaType = 'movie' OR mediaType = 'tv show' OR mediaType = 'short film' OR mediaType = 'anime' OR mediaType = 'manga'));")
+database.execute("CREATE TABLE IF NOT EXISTS media(name VARCHAR (50) NOT NULL, mediaType VARCHAR (50) NOT NULL, liked BOOLEAN NOT NULL, ID INT PRIMARY KEY, CHECK (mediaType = 'movie' OR mediaType = 'tv show' OR mediaType = 'short film' OR mediaType = 'anime' OR mediaType = 'manga'));")
 
 conn.close()
 
@@ -45,28 +45,29 @@ def close_DBConnection(pair):
     pair[0].close()
 
 
-def set_data(pair, name, mediaType, ID):
+def set_data(pair, name, mediaType, ID, liked=False):
     #retrieve list of ID's
     pair[1].execute("SELECT ID FROM media WHERE ID = {};".format(ID))
     list_id = pair[1].fetchall()
     #check for ID
     if (ID,) in list_id:
-        pair[1].execute("UPDATE media SET name = '{}', mediaType = '{}' WHERE ID = {};".format(name, mediaType, ID))
+        pair[1].execute("UPDATE media SET name = '{}', mediaType = '{}', liked = {} WHERE ID = {};".format(name, mediaType, liked, ID))
         #update if true
     else:
-        pair[1].execute("INSERT INTO media VALUES('{}', '{}', {});".format(name, mediaType, ID))
+        pair[1].execute("INSERT INTO media VALUES('{}', '{}', {}, {});".format(name, mediaType, liked, ID))
         #insert if false
 
 
+def set_data_liked(pair, ID, liked=True):
+    pair[1].execute("UPDATE media SET liked = {} WHERE ID = {};".format(liked, ID))
+
+
 def set_data_id(pair, oldID, newID):
-    pair[1].execute("SELECT ID FROM media WHERE ID = {};".format(oldID))
-    list_id = pair[1].fetchall()
-    if (oldID,) in list_id:
-        pair[1].execute("UPDATE media SET ID = '{}' WHERE ID = {};".format(newID, oldID))
+    pair[1].execute("UPDATE media SET ID = '{}' WHERE ID = {`};".format(newID, oldID))
 
 
 def get_by_name(pair, name):
-    pair[1].execute("SELECT name, mediaType, ID FROM media WHERE name = '{}';".format(name))
+    pair[1].execute("SELECT * FROM media WHERE name = '{}';".format(name))
     return pair[1].fetchall()
 
 
@@ -75,11 +76,16 @@ def get_by_id(pair, ID):
     pair[1].execute("SELECT ID FROM media WHERE ID = {};".format(ID))
     list_id = pair[1].fetchall()
     if (ID,) in list_id:
-        pair[1].execute("SELECT name, mediaType, ID FROM media WHERE ID = {};".format(ID))
+        pair[1].execute("SELECT * FROM media WHERE ID = {};".format(ID))
         value = pair[1].fetchall()
-        return tuple((value[0][0], value[0][1], value[0][2]))
+        return tuple((value[0][0], value[0][1], value[0][2], value[0][3]))
     else:
         return []
+
+
+def get_by_liked(pair, liked=True):
+    pair[1].execute("SELECT * FROM media WHERE liked = {}".format(liked))
+    return pair[1].fetchall()
 
 
 def get_all(pair):
@@ -92,12 +98,16 @@ def get_next(pair):
 
 
 def get_by_mediaType(pair, mediaType):
-    pair[1].execute("SELECT name, mediaType, ID FROM media WHERE mediaType = '{}';".format(mediaType))
+    pair[1].execute("SELECT * FROM media WHERE mediaType = '{}';".format(mediaType))
     return pair[1].fetchall() 
 
 
 def delete_data(pair, ID):
     pair[1].execute("DELETE FROM media WHERE ID = {};".format(ID))
+
+
+def delete_table(pair):
+    pair[1].execute("DROP TABLE media CASCADE;")
 
 
 def clear_data(pair):
