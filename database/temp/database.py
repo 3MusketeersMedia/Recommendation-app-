@@ -12,7 +12,7 @@ if conn is None:
     exit()
 
 #make tables
-database.execute("CREATE TABLE IF NOT EXISTS media(name VARCHAR (50) NOT NULL, mediaType VARCHAR (50) NOT NULL, ID VARCHAR (30) PRIMARY KEY, CHECK (mediaType = 'movie' OR mediaType = 'tv show' OR mediaType = 'short film' OR mediaType = 'anime' OR mediaType = 'manga'));")
+database.execute("CREATE TABLE IF NOT EXISTS media(name VARCHAR (50) NOT NULL, mediaType VARCHAR (50) NOT NULL, ID INT PRIMARY KEY, CHECK (mediaType = 'movie' OR mediaType = 'tv show' OR mediaType = 'short film' OR mediaType = 'anime' OR mediaType = 'manga'));")
 
 conn.close()
 
@@ -33,41 +33,40 @@ def close_DBConnection(pair):
 
 def set_data(pair, name, mediaType, ID):
     #retrieve list of ID's
-    pair[1].execute("SELECT ID FROM media WHERE ID = '{}';".format(ID))
+    pair[1].execute("SELECT ID FROM media WHERE ID = {};".format(ID))
     list_id = pair[1].fetchall()
     #check for ID
-
     if (ID,) in list_id:
-        pair[1].execute("UPDATE media SET name = '{}', mediaType = '{}' WHERE ID = '{}';".format(name, mediaType, ID))
+        pair[1].execute("UPDATE media SET name = '{}', mediaType = '{}' WHERE ID = {};".format(name, mediaType, ID))
         #update if true
     else:
-        pair[1].execute("INSERT INTO media VALUES('{}', '{}', '{}');".format(name, mediaType, ID))
+        pair[1].execute("INSERT INTO media VALUES('{}', '{}', {});".format(name, mediaType, ID))
         #insert if false
 
 
 def set_user_data(pair, table, watched, liked, ID):
     #retrieve list of ID's
-    pair[1].execute("SELECT ID FROM {} WHERE ID = '{}';".format(table, ID))
+    pair[1].execute("SELECT ID FROM {} WHERE ID = {};".format(table, ID))
     list_id = pair[1].fetchall()
     #check for ID
     if (ID,) in list_id:
-        pair[1].execute("UPDATE {} SET watched = {}, liked = {} WHERE ID = '{}';".format(table, watched, liked, ID))
+        pair[1].execute("UPDATE {} SET watched = {}, liked = {} WHERE ID = {};".format(table, watched, liked, ID))
         #update if true
     else:
-        pair[1].execute("INSERT INTO {} VALUES({}, {}, '{}');".format(table, watched, liked, ID))
+        pair[1].execute("INSERT INTO {} VALUES({}, {}, {});".format(table, watched, liked, ID))
         #insert if false
 
 
 def set_data_liked(pair, ID, user, liked=True):
-    pair[1].execute("UPDATE {} SET liked = {} WHERE ID = '{}';".format(user, liked, ID))
+    pair[1].execute("UPDATE {} SET liked = {} WHERE ID = {};".format(user, liked, ID))
 
 
 def set_data_watched(pair, ID, user, watched=True):
-    pair[1].execute("UPDATE {} SET watched = {} WHERE ID = '{}';".format(user, watched, ID))
+    pair[1].execute("UPDATE {} SET watched = {} WHERE ID = {};".format(user, watched, ID))
 
 
 def set_data_id(pair, oldID, newID, table="media"):
-    pair[1].execute("UPDATE {} SET ID = '{}' WHERE ID = '{}';".format(table, newID, oldID))
+    pair[1].execute("UPDATE {} SET ID = '{}' WHERE ID = {};".format(table, newID, oldID))
 
 
 def get_by_name(pair, name):
@@ -77,10 +76,10 @@ def get_by_name(pair, name):
 
 def get_by_id(pair, ID, table="media"):
     #check if ID exists
-    pair[1].execute("SELECT ID FROM {} WHERE ID = '{}';".format(table, ID))
+    pair[1].execute("SELECT ID FROM {} WHERE ID = {};".format(table, ID))
     list_id = pair[1].fetchall()
     if (ID,) in list_id:
-        pair[1].execute("SELECT * FROM {} WHERE ID = '{}';".format(table, ID))
+        pair[1].execute("SELECT * FROM {} WHERE ID = {};".format(table, ID))
         value = pair[1].fetchall()
         return tuple((value[0][0], value[0][1], value[0][2]))
     else:
@@ -112,7 +111,7 @@ def get_by_mediaType(pair, mediaType):
 
 
 def delete_data(pair, ID, table="media"):
-    pair[1].execute("DELETE FROM {} WHERE ID = '{}';".format(table, ID))
+    pair[1].execute("DELETE FROM {} WHERE ID = {};".format(table, ID))
 
 
 def delete_table(pair, table):
@@ -120,7 +119,7 @@ def delete_table(pair, table):
 
 
 def create_user_table(pair, user):
-    pair[1].execute("CREATE TABLE IF NOT EXISTS {}(watched BOOLEAN NOT NULL, liked BOOLEAN NOT NULL, ID VARCHAR(30) PRIMARY KEY);".format(user))
+    pair[1].execute("CREATE TABLE IF NOT EXISTS {}(watched BOOLEAN NOT NULL, liked BOOLEAN NOT NULL, ID INT PRIMARY KEY);".format(user))
 
 
 def clear_data(pair, table):
