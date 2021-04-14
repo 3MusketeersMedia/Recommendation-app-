@@ -19,16 +19,42 @@ def search_for_similar():
 
 def detailed_info(title, id):
     data = get_metadata(id, "US")
-    print(title)
-    print(id)
+    print("Title: ", title)
+    # print(id)
     print("Type: ", data[id]["title"]["titleType"])
     print("Running time (minutes): ", data[id]["title"]["runningTimeInMinutes"])
     print("Year: ", data[id]["title"]["year"])
+    print("Rated: ", data[id]["certificate"])
     print("Genres: ", end='')
-    # for i in data[id]["genres"]:
-    #     print(i, end='')
-    print("\n")
+    s = ""
+    summary = " "
+    for i in data[id]["genres"]:
+        s+= i + " "
+        # print(i, end=' ')
+    print("\nImage URL: ", data[id]["title"]["image"]["url"])
+    result = [title, data[id]["title"]["year"], s, data[id]["title"]["image"]["url"], data[id]["certificate"], data[id]["title"]["runningTimeInMinutes"], summary, data[id]["title"]["titleType"], id] 
+    return result
 
-movie_list = search_for_similar()
-for title, id in movie_list:
-    detailed_info(title, id)
+# loading test file
+with open('test_file.json', 'r') as file:
+    info = file.read().rstrip('\n')
+parsed = json.loads(info)
+res = detailed_info(parsed["tt4154756"]["title"]["title"], "tt4154756")
+# for i in res:
+#     print(i)
+
+# movie_list = search_for_similar()
+# for title, id in movie_list:
+#     detailed_info(title, id)
+
+
+exec(open("database/database.py").read())
+
+connection = open_DBConnection()
+
+# print(connection)
+# name, type, ID
+set_data(connection, res[0], "movie", res[8])
+# get_by_id(connection, "tt4154756", table="media")
+# delete_data(connection, "tt4154756", table="media")
+close_DBConnection(connection)
