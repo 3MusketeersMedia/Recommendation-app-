@@ -8,38 +8,29 @@ exec(open("database.py").read())
 #establish connection
 connection = open_DBConnection()
 
-set_data(connection, "v show", "tv show", 1, True)
-set_data(connection, "v show", "movie", 2)
-set_data(connection, "v show", "short film", 3, True)
-set_data(connection, "b movie", "movie", 4)
-set_data(connection, "b show", "movie", 5)
-set_data(connection, "d show", "anime", 6)
+set_data(connection, "v show", "tv show", 0)
+set_data(connection, "b show", "tv show", 1)
+set_data(connection, "p show", "tv show", 2)
+set_data(connection, "m movie", "movie", 3)
+set_data(connection, "x movie", "movie", 4)
+set_data(connection, "y movie", "movie", 5)
 
+print(get_by_mediaType(connection, "movie"))
 
-stuff = num_items(connection)
-print(stuff)
+create_user_table(connection, "jane_goodall")
 
-delete_data(connection, 4)
-stuff = num_items(connection)
-print(stuff)
+set_user_data(connection, "jane_goodall", False, False, 1)
+set_user_data(connection, "jane_goodall", True, False, 2)
+set_user_data(connection, "jane_goodall", False, True, 3)
+set_user_data(connection, "jane_goodall", True, True, 4)
+set_user_data(connection, "jane_goodall", False, False, 5)
 
-stuff = get_by_name(connection, "v show")
-print(stuff)
+print(get_by_id(connection, 1))
+print(get_by_id(connection, 1, "jane_goodall"))
 
-stuff = get_next(connection)
-print(stuff)
+print(num_items(connection, "jane_goodall"))
+print(num_items(connection))
 
-stuff = get_by_id(connection, 6)
-print(stuff)
-
-stuff = get_by_mediaType(connection, "movie")
-print(stuff)
-
-stuff = get_all(connection)
-print(stuff)
-
-set_data_liked(connection, 6)
-stuff = get_by_liked(connection)
-print(stuff)
+print(get_all(connection, "jane_goodall"))
 
 close_DBConnection(connection)
