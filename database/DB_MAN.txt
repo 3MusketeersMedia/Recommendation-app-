@@ -65,24 +65,49 @@ miscellaneous code
 --------------------------------------
 
 
+Outline of table structure:
+
+Default table is called 'media', this will contain all of the media
+that we would want to preload into our database
+
+MEDIA:
+entry -> name, mediaType, ID
+
+You can create tables, to track user liked and watched list:
+use -> create_user_table()
+
+'name of table':
+entry -> watched, liked, ID
+
+----------------------------------------
+
+
 
 
 List of functions:
 	open_DBConnection() -> open connection to db
 	close_DBConnection(pair) -> close connection to db
-	set_data(pair, name, mediaType, ID) -> set entry or insert new entry into table
-	set_data_id(pair, ID) -> set id of existing data point
-	set_data_liked(pair, ID, liked) -> set boolean liked value of data with ID
+	
+	set_data(pair, name, mediaType, ID) -> set entry or insert new entry into media table
+	set_user_data(pair, watched, liked, ID) -> set user table entry or insert new entry
+	set_data_id(pair, oldID, newID, table="media") -> set id of existing data point
+	set_data_liked(pair, ID, liked, user) -> set boolean liked value of data with ID
+	set_data_watched(pair, ID, watched, user) -> set boolean watched value of data with ID
+	
 	get_by_name(pair, name) -> get all entries of a given name
-	get_by_id(pair, ID) -> get entry by ID
+	get_by_id(pair, ID, table="media") -> get entry by ID
 	get_by_mediaType(pair, mediaType) -> get entry by mediaType
-	get_by_liked(pair) -> get all liked elements
+	get_by_liked(pair, table, liked=True) -> get all liked elements
+	get_by_watched(pair, table, watched=True) -> get all watched elements
 	get_next(pair) -> get the next MAX_LIST_SIZE elements of previous get_by_something() query 
-	get_all(pair) -> get all items in database
-	delete_data(pair, ID) -> delete a data point
-	delete_table(pair) -> delete table, need to redo exec(...) to reinitialize it
-	clear(pair) -> clear table
-	num_items(pair) -> give num_items in table
+	get_all(pair, table="media") -> get all items in table
+	
+	delete_data(pair, ID, table) -> delete a data point
+	delete_table(pair, table) -> delete table, need to redo exec(...) to reinitialize it
+	create_user_table(pair, table) -> create table	
+
+	clear_data(pair, table) -> clear table
+	num_items(pair, table="media") -> give num_items in table
 
 Function Details:
 
@@ -102,7 +127,7 @@ close_DBConnection(pair):
 	Return Type:
 		none
 
-set_data(pair, name, mediaType, ID, liked=False):
+set_data(pair, name, mediaType, ID):
 	Constraints:
 		Cannot reset ID
 		ID MUST BE UNIQUE, everthing else can have duplicates
@@ -111,30 +136,53 @@ set_data(pair, name, mediaType, ID, liked=False):
 		name -> string
 		mediaType -> The following strings: 'movie', 'tv show', 'short film', 'anime', or 'manga'
 		ID -> integer
-		Liked -> Liked by a user, default value is False
 	Return Type:
 		none
 
-set_data_id(pair, oldID, newID):
+set_user_data(pair, watched, liked, ID):
+        Constraints:
+                Cannot reset ID
+                ID MUST BE UNIQUE, everthing else can have duplicates
+        Parameters:
+                pair -> (connection, database) tuple from open_DBConnection()
+                watched -> boolean 
+                liked -> boolean
+                ID -> integer
+        Return Type:
+                none
+
+set_data_id(pair, oldID, newID, table="media"):
 	Constraints:
 		All ID's must be unique
 	Paremeters:
 		pair -> tuple from open_DBConnection()
 		oldID -> int
 		newID -> int
+		table -> string name of table
 	Return Type:
 		none
 
-set_data_liked(pair, ID, liked=True):
+set_data_liked(pair, ID, user, liked=True):
         Constraints:
                 none
         Parameters:
                 pair -> tuple from openDBConnection()
 		ID -> int
+		user-> string of user table to update
 		liked -> boolean
         Return Type:
                 none
 
+set_data_watched(pair, ID, user, watched=True):
+        Constraints:
+                none
+        Parameters:
+                pair -> tuple from openDBConnection()
+                ID -> int
+                user-> string of user table to update
+                watched -> boolean
+        Return Type:
+                none
 
 Get Commands: for each get command, it will return an empty list if no elements found -------------------
 
@@ -147,12 +195,13 @@ get_by_name(pair, name):
 	Return Type:
 		list of tuples -> MAX_LIST_SIZE list of (name, mediaType, ID)
 
-get_by_id(pair, ID):
+get_by_id(pair, ID, table="media"):
 	Constraints:
 		none
 	Paremeters:
 		pair -> tuple from open_DBConnection()
 		ID -> int
+		table -> string name of table
 	Return Type:
 		tuple -> (name, mediaType, ID)
 
@@ -165,12 +214,23 @@ get_by_mediaType(pair, mediaType):
 	Return Type:
 		list of tuples -> MAX_LIST_SIZE list of (name, mediaType, ID)
 
-get_by_liked(pair, liked=True):
+get_by_liked(pair, table, liked=True):
         Constraints:
                 none
         Parameters:
                 pair -> tuple from openDBConnection()
+		table -> string name of table
 		liked -> boolean
+        Return Type:
+                list of tuples -> list of liked entries
+
+get_by_watched(pair, table, watched=True):
+        Constraints:
+                none
+        Parameters:
+                pair -> tuple from openDBConnection()
+                table -> string name of table
+		watched -> boolean
         Return Type:
                 list of tuples -> list of liked entries
 
@@ -182,49 +242,64 @@ get_next(pair):
         Return Type:
                 list of tuples -> MAX_LIST_SIZE chunk of tuples that are in the db
 
-get_all(pair):
+get_all(pair, table="media"):
 	Constraints:
 		none
 	Parameters:
 		pair -> tuple from openDBConnection()
+		table -> string of table name
 	Return Type:
 		list of tuples -> next MAX_LIST_SIZE chunk of tuples (next chunk of a previous get query)
 
 End of Get Commands---------------------------------------------------------------------------------------
 
 
-delete_data(pair, ID):
+delete_data(pair, ID, table="media"):
 	Constraints:
 		Must Exist
 	Paremeters:
 		pair -> tuple from open_DBConnection
 		ID -> int
+		table-> string that is the name of the table
 	Return Type:
 		none
 
-delete_table(pair):
+delete_table(pair, table):
         Constraints:
-                Need to redo exec("database.py") from above after calling this
-		If a new patch doesn't hold, delete_table() and restart the
-		program (calling exec(...) at the top)
+		Don't delete 'media' table
+		If you do, re-execute exec(...)
         Parameters:
                 pair -> tuple from openDBConnection()
+		table -> string
         Return Type:
                 none
 
-clear_data(pair):
+create_user_table(pair, user):
+        Constraints:
+        	If table already exists, nothing will happen
+		even if table has new columns
+		User string cannot have spaces
+	Parameters:
+                pair -> tuple from openDBConnection()
+                user -> string that is name of the table
+        Return Type:
+                none
+
+clear_data(pair, table):
 	Constraints:
 		none
 	Paremeters:
 		pair -> tuple from open_DBConnection
+		table -> string name of table
 	Return Type:
 		none
 
-num_items(pair):
+num_items(pair, table="media"):
         Constraints:
                 none
         Paremeters:
                 pair -> tuple from open_DBConnection
+		table -> string name of table
         Return Type:
                 int -> number of items in database
 
