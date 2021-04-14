@@ -66,7 +66,7 @@ def set_data_watched(pair, ID, user, watched=True):
 
 
 def set_data_id(pair, oldID, newID, table="media"):
-    pair[1].execute("UPDATE {} SET ID = '{}' WHERE ID = {`};".format(table, newID, oldID))
+    pair[1].execute("UPDATE {} SET ID = '{}' WHERE ID = {};".format(table, newID, oldID))
 
 
 def get_by_name(pair, name):
@@ -87,12 +87,12 @@ def get_by_id(pair, ID, table="media"):
 
 
 def get_by_liked(pair, table, liked=True):
-    pair[1].execute("SELECT * FROM {} WHERE liked = {}".format(table, liked))
+    pair[1].execute("SELECT * FROM {} WHERE liked = {};".format(table, liked))
     return pair[1].fetchall()
 
 
 def get_by_watched(pair, table, watched=True):
-    pair[1].execute("SELECT * FROM {} WHERE watched = {}".format(table, watched))
+    pair[1].execute("SELECT * FROM {} WHERE watched = {};".format(table, watched))
     return pair[1].fetchall()
 
 
