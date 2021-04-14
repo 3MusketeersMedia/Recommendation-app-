@@ -135,7 +135,7 @@ set_data(pair, name, mediaType, ID):
 		pair -> (connection, database) tuple from open_DBConnection()
 		name -> string
 		mediaType -> The following strings: 'movie', 'tv show', 'short film', 'anime', or 'manga'
-		ID -> integer
+		ID -> string
 	Return Type:
 		none
 
@@ -147,7 +147,7 @@ set_user_data(pair, watched, liked, ID):
                 pair -> (connection, database) tuple from open_DBConnection()
                 watched -> boolean 
                 liked -> boolean
-                ID -> integer
+                ID -> string
         Return Type:
                 none
 
@@ -156,8 +156,8 @@ set_data_id(pair, oldID, newID, table="media"):
 		All ID's must be unique
 	Paremeters:
 		pair -> tuple from open_DBConnection()
-		oldID -> int
-		newID -> int
+		oldID -> string
+		newID -> string
 		table -> string name of table
 	Return Type:
 		none
@@ -167,7 +167,7 @@ set_data_liked(pair, ID, user, liked=True):
                 none
         Parameters:
                 pair -> tuple from openDBConnection()
-		ID -> int
+		ID -> string
 		user-> string of user table to update
 		liked -> boolean
         Return Type:
@@ -178,7 +178,7 @@ set_data_watched(pair, ID, user, watched=True):
                 none
         Parameters:
                 pair -> tuple from openDBConnection()
-                ID -> int
+                ID -> string
                 user-> string of user table to update
                 watched -> boolean
         Return Type:
@@ -200,7 +200,7 @@ get_by_id(pair, ID, table="media"):
 		none
 	Paremeters:
 		pair -> tuple from open_DBConnection()
-		ID -> int
+		ID -> string
 		table -> string name of table
 	Return Type:
 		tuple -> (name, mediaType, ID)
@@ -259,7 +259,7 @@ delete_data(pair, ID, table="media"):
 		Must Exist
 	Paremeters:
 		pair -> tuple from open_DBConnection
-		ID -> int
+		ID -> string
 		table-> string that is the name of the table
 	Return Type:
 		none
