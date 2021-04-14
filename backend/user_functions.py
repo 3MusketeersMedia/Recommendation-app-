@@ -55,6 +55,14 @@ connection = open_DBConnection()
 # print(connection)
 # name, type, ID
 set_data(connection, res[0], "movie", res[8])
-# get_by_id(connection, "tt4154756", table="media")
-# delete_data(connection, "tt4154756", table="media")
+list_of_items = get_by_id(connection, "tt4154756", table="media")
+for i in list_of_items:
+    print(i)
+delete_data(connection, "tt4154756", table="media")
+list_of_items = get_by_id(connection, "tt4154756", table="media")
+if list_of_items is not None:
+    for i in list_of_items:
+        print(i)
+else:
+    print("empty")
 close_DBConnection(connection)
