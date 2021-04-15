@@ -1,8 +1,9 @@
 import time
+import json
 
-#from datetime import datetime
 from flask import Flask
 from flask import redirect, url_for, request
+import database
 
 # TA email: yogolan@ucsc.edu
 
@@ -13,7 +14,21 @@ app = Flask(__name__)
 data = {
     "person1": {"name": "rick", "age": 16},
     "person2": {"name": "astley", "age": 65}
-}    
+}
+
+# items in list are tuples
+# keys of the dictionary will be the movie name
+# json.dumps() converts tuples to arrays
+# all the values in the array are converted to strings apparently - problem?
+def format_media(list1):
+    json1 = {}
+    for item in list1:
+        name = item[0]
+        js_item = json.dumps(item)
+        json1[name] = js_item
+    
+    #print(json1)
+    return json1
 
 # .\venv\Scripts\activate
 # gives the route to the function
@@ -26,8 +41,13 @@ def index():
 
 @app.route("/movies", methods=['GET'])
 def movies():
-    return data
+    # attributes currently: movie name, media type, id
+    db_amazon = database.open_DBConnection()
+    hello = database.get_all(db_amazon, "media")
+    dict1 = format_media(hello)
+    return dict1
 
+# need to know what to search for
 @app.route("/search")
 def search():
     return "search"
