@@ -1,12 +1,13 @@
 import {useState, useEffect} from 'react';
-import Movies from "./zoomed-Components/moviePic"
-import Header from "./zoomed-Components/header"
-import Summary from "./zoomed-Components/summary"
-import SimilarMovies from "./zoomed-Components/similarMovies"
-import Rating from "./zoomed-Components/review"
-import MyNav from './components/navbar'
-import {AppContext} from './AppContext';
+import Movies from "../components/moviePic"
+import Header from "../components/header"
+import Summary from "../components/summary"
+import SimilarMovies from "../components/similarMovies"
+import Rating from "../components/review"
+import MyNav from '../components/navbar'
+import {AppContext} from '../AppContext';
 import {Container, Row, Col} from 'react-bootstrap'
+import './zoomed-paged-grid.css';
 
 function ZoomedPage() {
   const database_address = "http://localhost:4000/movies";
@@ -59,23 +60,19 @@ function ZoomedPage() {
 
     return(
       <AppContext.Consumer>
-        {context => (
+        {context => <>
+          <MyNav />
           <Container fluid>
-            <Row className="titleNav"> 
-              <Col>
-                <MyNav />
-              </Col>
-            </Row>
-            <Row> 
+            <Row>
               <Col ><Movies movie={[context.movie]}/></Col>
               <Col md={5} lg={9}>
-                <Row className="MovieTitle"> 
+                <Row className="MovieTitle">
                   <Header movie={[context.movie]}/>
                 </Row>
                 <Row className="Ratings">
                   <Rating movie={[context.movie]} />
                 </Row>
-                <Row className="Summary"> 
+                <Row className="Summary">
                   <Summary movie={[context.movie]}/>
                 </Row>
               </Col>
@@ -83,11 +80,11 @@ function ZoomedPage() {
             <Row>
               <Col md= {3}></Col>
               <Col className="SimilarMovies">
-               <SimilarMovies />             
+               <SimilarMovies />
               </Col>
             </Row>
           </Container>
-        )}
+        </>}
       </AppContext.Consumer>
   );
 }

@@ -2,8 +2,8 @@ import React from 'react';
 import {BrowserRouter, Route, Redirect} from 'react-router-dom';
 import {AppContext} from './AppContext'
 import MovieList from './pages/MovieList';
-import ZoomedPage from './zoomedpage';
-import HomePage from './HomePage.js';
+import ZoomedPage from './pages/zoomedpage';
+import HomePage from './pages/HomePage.js';
 
 export default class App extends React.Component {
   constructor() {

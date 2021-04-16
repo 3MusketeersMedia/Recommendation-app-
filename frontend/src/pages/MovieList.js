@@ -1,6 +1,7 @@
 import React from 'react';
 import {Container, Row, Col, ListGroup, Image} from 'react-bootstrap';
 import {AppContext} from '../AppContext';
+import MyNav from '../components/navbar';
 
 export default class MovieList extends React.Component {
   static contextType = AppContext;
@@ -21,7 +22,8 @@ export default class MovieList extends React.Component {
     this.props.history.push('/movie');
   }
   render() {
-    return (
+    return <>
+      <MyNav/>
       <Container fluid className='p-3'>
         <ListGroup>
           {this.state.movies.map(movie => (
@@ -46,6 +48,6 @@ export default class MovieList extends React.Component {
           ))}
         </ListGroup>
       </Container>
-    );
+    </>;
   }
 }
