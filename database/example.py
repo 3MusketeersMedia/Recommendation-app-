@@ -8,16 +8,15 @@ exec(open("database.py").read())
 #establish connection
 connection = open_DBConnection()
 
-set_data(connection, "v show", "tv show", "0")
-set_data(connection, "b show", "tv show", "1")
-set_data(connection, "p show", "tv show", "2")
-set_data(connection, "m movie", "movie", "3")
-set_data(connection, "x movie", "movie", "4")
-set_data(connection, "y movie", "movie", "5")
+set_data(connection, "v show", "tv show", 1999, "urlinhere", "horror thriller", 10.17, 100.5, "0")
+set_data(connection, "b show", "tv show", 1999, "urlinhere", "horror thriller", 10.17, 100.5, "1")
+set_data(connection, "p show", "tv show", 1999, "urlinhere", "horror thriller", 10.17, 100.5, "2")
+set_data(connection, "m movie", "movie", 1999, "urlinhere", "horror thriller", 10.17, 100.5, "3")
+set_data(connection, "x movie", "movie", 1999, "urlinhere", "horror thriller", 10.17, 100.5, "4")
+set_data(connection, "y movie", "movie", 1999, "urlinhere", "horror thriller", 10.17, 100.5, "5")
 
 print(get_by_mediaType(connection, "movie"))
 
-delete_table(connection, "jane_goodall")
 create_user_table(connection, "jane_goodall")
 
 set_user_data(connection, "jane_goodall", False, False, "1")
