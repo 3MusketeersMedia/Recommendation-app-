@@ -3,6 +3,7 @@ import {BrowserRouter, Route, Redirect} from 'react-router-dom';
 import {AppContext} from './AppContext'
 import MovieList from './pages/MovieList';
 import ZoomedPage from './zoomedpage';
+import HomePage from './HomePage.js';
 
 export default class App extends React.Component {
   constructor() {
@@ -19,9 +20,7 @@ export default class App extends React.Component {
     return (
       <BrowserRouter>
         <AppContext.Provider value={context}>
-          <Route exact path='/'>
-            <Redirect to='/list'/>
-          </Route>
+          <Route exact path='/' component={HomePage}/>
           <Route exact path='/list' component={MovieList}/>
           <Route exact path='/movie' component={ZoomedPage}/>
         </AppContext.Provider>
