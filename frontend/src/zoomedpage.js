@@ -4,7 +4,9 @@ import Header from "./zoomed-Components/header"
 import Summary from "./zoomed-Components/summary"
 import SimilarMovies from "./zoomed-Components/similarMovies"
 import Rating from "./zoomed-Components/review"
+import MyNav from './components/navbar'
 import {AppContext} from './AppContext';
+import {Container, Row, Col} from 'react-bootstrap'
 
 function ZoomedPage() {
   const database_address = "http://localhost:4000/movies";
@@ -58,30 +60,58 @@ function ZoomedPage() {
     return(
       <AppContext.Consumer>
         {context => (
-          <div className="zoom-container">
-            <div className="titleNav">
-              .
-            </div>
-            <div className="MoviePic">
-              <Movies movie={[context.movie]}/>
-            </div>
-            <div className="SimilarMovies">
-              <SimilarMovies />
-            </div>
-            <div className="MovieTitle">
-              <Header movie={[context.movie]}/>
-            </div>
-            <div className="Ratings">
-              <Rating movie={[context.movie]} />
-            </div>
-            <div className="Summary">
-              <Summary movie={[context.movie]}/>
-            </div>
-
-          </div>
+          <Container fluid>
+            <Row className="titleNav"> 
+              <Col>
+                <MyNav />
+              </Col>
+            </Row>
+            <Row> 
+              <Col ><Movies movie={[context.movie]}/></Col>
+              <Col md={5} lg={9}>
+                <Row className="MovieTitle"> 
+                  <Header movie={[context.movie]}/>
+                </Row>
+                <Row className="Ratings">
+                  <Rating movie={[context.movie]} />
+                </Row>
+                <Row className="Summary"> 
+                  <Summary movie={[context.movie]}/>
+                </Row>
+              </Col>
+            </Row>
+            <Row>
+              <Col md= {3}></Col>
+              <Col className="SimilarMovies">
+               <SimilarMovies />             
+              </Col>
+            </Row>
+          </Container>
         )}
       </AppContext.Consumer>
   );
 }
 
 export default ZoomedPage;
+
+{/* <div className="zoom-container">
+<div className="titleNav">
+  .
+</div>
+<div className="MoviePic">
+  <Movies movie={[context.movie]}/>
+</div>
+<div className="SimilarMovies">
+  <SimilarMovies />
+</div>
+<div className="MovieTitle">
+  <Header movie={[context.movie]}/>
+</div>
+<div className="Ratings">
+  <Rating movie={[context.movie]} />
+</div>
+<div className="Summary">
+  <Summary movie={[context.movie]}/>
+</div>
+
+</div> */}

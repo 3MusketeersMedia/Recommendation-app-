@@ -11,7 +11,7 @@ export default class MovieList extends React.Component {
     };
   }
   async componentDidMount() {
-    const response = await fetch('http://localhost:3000/movies');
+    const response = await fetch('http://localhost:4000/movies');
     const movies = await response.json();
     console.log(movies);
     await this.setState({movies});
