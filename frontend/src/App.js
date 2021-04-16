@@ -9,13 +9,21 @@ export default class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      movie: null,
+      movie: {},
     };
+  }
+  async componentDidMount() {
+    const movie = JSON.parse(localStorage.getItem('movie'));
+    await this.setState({movie});
+  }
+  setMovie = async(movie) => {
+    localStorage.setItem('movie', JSON.stringify(movie));
+    await this.setState({movie});
   }
   render() {
     const context = {
       movie: this.state.movie,
-      setMovie: async (movie) => await this.setState({movie}),
+      setMovie: this.setMovie,
     };
     return (
       <BrowserRouter>
