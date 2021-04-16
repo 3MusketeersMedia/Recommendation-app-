@@ -1,12 +1,13 @@
 //import Header from "./components/header"
-import navbar from "./components/navbar";
+//import navbar from "./components/navbar";
 //import {Navbar, Nav, NavDropdown} from 'react-bootstrap'
+import MyNav from './components/navbar'
 
 function App() {
   return (
     <div>
       <div>
-        <navbar />
+        <MyNav />
       </div>
       
       <div>
