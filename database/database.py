@@ -12,9 +12,9 @@ if conn is None:
     exit()
 
 #make tables
-database.execute("CREATE TABLE IF NOT EXISTS media(name VARCHAR (50) NOT NULL, mediaType VARCHAR (50) NOT NULL, year INT, link VARCHAR(2083), genres VARCHAR(500), rating NUMERIC(10, 5), running_time NUMERIC(10, 5), ID VARCHAR (30) PRIMARY KEY, CHECK (mediaType = 'movie' OR mediaType = 'tv show' OR mediaType = 'short film' OR mediaType = 'anime' OR mediaType = 'manga'));")
+database.execute("CREATE TABLE IF NOT EXISTS media(name VARCHAR (50) NOT NULL, mediaType VARCHAR (50) NOT NULL, year INT, link VARCHAR(2083), genres VARCHAR(500), rating NUMERIC(10, 5), running_time NUMERIC(10, 5), ID VARCHAR (50) PRIMARY KEY, CHECK (mediaType = 'movie' OR mediaType = 'tv show' OR mediaType = 'short film' OR mediaType = 'anime' OR mediaType = 'manga'));")
 
-database.execute("CREATE TABLE IF NOT EXISTS users(username VARCHAR (50) NOT NULL, password_hash VARCHAR (50) NOT NULL, password_salt VARCHAR(50) NOT NULL, user_id VARCHAR(50) PRIMARY KEY);")
+database.execute("CREATE TABLE IF NOT EXISTS users(username VARCHAR (50) NOT NULL, password_hash VARCHAR (50) NOT NULL, password_salt VARCHAR(50) NOT NULL, ID VARCHAR(50) PRIMARY KEY);")
 
 conn.close()
 
@@ -31,6 +31,18 @@ def open_DBConnection():
 
 def close_DBConnection(pair):
     pair[0].close()
+
+
+def add_user(pair, username, password_hash, password_salt, user_id):
+    pair[1].execute("SELECT ID FROM users WHERE ID = '{}';".format(user_id))
+    list_id = pair[1].fetchall()
+
+    if (user_id,) in list_id:
+        pair[1].execute("UPDATE users SET username = '{}', password_hash = '{}', password_salt = '{}' WHERE ID = '{}';".format(username, password_hash, password_salt, user_id))
+        #update if true
+    else:
+        pair[1].execute("INSERT INTO users VALUES('{}', '{}', '{}', '{}');".format(username, password_hash, password_salt, user_id))
+        #insert if false
 
 
 def set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID):
@@ -84,7 +96,7 @@ def get_by_id(pair, ID, table="media"):
     if (ID,) in list_id:
         pair[1].execute("SELECT * FROM {} WHERE ID = '{}';".format(table, ID))
         value = pair[1].fetchall()
-        return tuple((value[0][0], value[0][1], value[0][2]))
+        return tuple(value[0])
     else:
         return None
 
