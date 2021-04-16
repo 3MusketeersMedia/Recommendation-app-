@@ -1,0 +1,14 @@
+.zoom-container {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+  }
+  
+  .titleNav { grid-area: 1 / 1 / 2 / 13; background-color: antiquewhite;}
+  .MoviePic { grid-area: 2 / 10 / 6 / 13; background-color: beige;}
+  .SimilarMovies { grid-area: 6 / 10 / 9 / 13; background-color: bisque;}
+  .MovieTitle { grid-area: 2 / 1 / 4 / 10; background-color: darkkhaki;}
+  .Ratings { grid-area: 4 / 1 / 9 / 3; background-color: darkgrey;}
+  .Summary { grid-area: 4 / 3 / 9 / 10; background-color: darksalmon;}
