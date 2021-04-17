@@ -2,20 +2,28 @@ import React from 'react';
 import {BrowserRouter, Route, Redirect} from 'react-router-dom';
 import {AppContext} from './AppContext'
 import MovieList from './pages/MovieList';
-import ZoomedPage from './zoomedpage';
-import HomePage from './HomePage.js';
+import ZoomedPage from './pages/zoomedpage';
+import HomePage from './pages/HomePage.js';
 
 export default class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      movie: null,
+      movie: {},
     };
+  }
+  async componentDidMount() {
+    const movie = JSON.parse(localStorage.getItem('movie'));
+    await this.setState({movie});
+  }
+  setMovie = async(movie) => {
+    localStorage.setItem('movie', JSON.stringify(movie));
+    await this.setState({movie});
   }
   render() {
     const context = {
       movie: this.state.movie,
-      setMovie: async (movie) => await this.setState({movie}),
+      setMovie: this.setMovie,
     };
     return (
       <BrowserRouter>
