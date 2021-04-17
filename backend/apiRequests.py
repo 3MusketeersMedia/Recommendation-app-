@@ -167,7 +167,7 @@ def get_moreLikeThis(id, currentCountry, purchaseCounty):
 # summary = get_overview(id, "US")
 # recommended_ids = get_moreLikeThis(id, "US", "US")
 
-with open('test_file.json', 'r') as file:
-    info = file.read().rstrip('\n')
-parsed = json.loads(info)
-print(parsed["tt4154756"])
+# with open('test_file.json', 'r') as file:
+#     info = file.read().rstrip('\n')
+# parsed = json.loads(info)
+# print(parsed["tt4154756"])

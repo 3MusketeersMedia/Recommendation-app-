@@ -1,25 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import {BrowserRouter, Route, Redirect} from 'react-router-dom';
+import {AppContext} from './AppContext'
+import MovieList from './pages/MovieList';
+import ZoomedPage from './pages/zoomedpage';
+import HomePage from './pages/HomePage.js';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export default class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      movie: {},
+    };
+  }
+  async componentDidMount() {
+    const movie = JSON.parse(localStorage.getItem('movie'));
+    await this.setState({movie});
+  }
+  setMovie = async(movie) => {
+    localStorage.setItem('movie', JSON.stringify(movie));
+    await this.setState({movie});
+  }
+  render() {
+    const context = {
+      movie: this.state.movie,
+      setMovie: this.setMovie,
+    };
+    return (
+      <BrowserRouter>
+        <AppContext.Provider value={context}>
+          <Route exact path='/' component={HomePage}/>
+          <Route exact path='/list' component={MovieList}/>
+          <Route exact path='/movie' component={ZoomedPage}/>
+        </AppContext.Provider>
+      </BrowserRouter>
+    );
+  }
 }
-
-export default App;
