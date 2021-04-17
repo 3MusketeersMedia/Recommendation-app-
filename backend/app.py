@@ -2,7 +2,8 @@ import time
 import json
 
 from flask import Flask
-from flask import redirect, url_for, request, CORS
+from flask import redirect, url_for, request, jsonify
+from flask_cors import CORS
 import database
 
 # TA email: yogolan@ucsc.edu
@@ -12,19 +13,27 @@ import database
 app = Flask(__name__)
 cors = CORS(app)
 
+def convert_tuple(tuple1):
+    item_js = {
+        "name": tuple1[0],
+        "type": tuple1[1],
+        "id": tuple1[2]
+    }
+
+    return item_js
+
 # items in list are tuples
 # json.dumps() converts tuples to arrays
 # all the values in the array are converted to strings
 # attributes currently: movie name, media type, id
 # structure: {"movie name": (json array of attributes)}
 def format_media(list1):
-    json1 = {}
+    json1 = []
     for item in list1:
-        name = item[0]
-        js_item = json.dumps(item)
-        json1[name] = js_item
+        item_js = convert_tuple(item)
+        json1.append(item_js)
     
-    return json1
+    return jsonify(json1)
 
 def format_user_info():
     pass
