@@ -1,0 +1,41 @@
+.zoom-container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: 0.5fr repeat(5, 1fr);
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+  }
+  
+  .titleNav { margin-bottom: 20px;}
+  .MoviePic { grid-area: 2 / 1 / 7 / 3; background-color: beige;}
+  .SimilarMovies { 
+    align-content:center;
+  }
+  .MovieTitle { 
+    margin-top: 40px;
+    margin-left: 20px;
+    margin-bottom: 20px;
+  }
+  .Ratings {
+    margin-top: 40px;
+    margin-left: 20px;
+    margin-bottom: 20px;
+  }
+  .Summary { 
+    margin-top: 40px;
+    margin-left: 20px;    
+    margin-bottom: 20px;
+    margin-right: 100px;
+  }
+
+  .MovieFrame{
+    min-height: fit-content;
+  }
+
+  .MovieFrame img:first-child  {
+    display: block;
+    align-content: flex-start;
+    max-width: 100%;
+    min-height: 40rem;
+  }
+    
