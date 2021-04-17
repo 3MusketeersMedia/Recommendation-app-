@@ -40,6 +40,7 @@ with open('test_file.json', 'r') as file:
     info = file.read().rstrip('\n')
 parsed = json.loads(info)
 res = detailed_info(parsed["tt4154756"]["title"]["title"], "tt4154756")
+
 # for i in res:
 #     print(i)
 
@@ -65,4 +66,3 @@ if list_of_items is not None:
         print(i)
 else:
     print("empty")
-close_DBConnection(connection)
