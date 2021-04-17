@@ -1,4 +1,3 @@
-
 class User:
     def __init__(self, u_name, p_hash, p_salt, u_profile):
         self.username = u_name

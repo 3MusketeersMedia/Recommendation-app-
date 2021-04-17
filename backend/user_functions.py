@@ -66,3 +66,4 @@ if list_of_items is not None:
         print(i)
 else:
     print("empty")
+close_DBConnection(connection)
