@@ -76,6 +76,9 @@ entry -> name, mediaType, ID
 You can create tables, to track user liked and watched list:
 use -> create_user_table()
 
+USERS: 
+entry -> username, password_hash, password_salt, user_id
+
 'name of table':
 entry -> watched, liked, ID
 
@@ -85,10 +88,10 @@ entry -> watched, liked, ID
 
 
 List of functions:
-	open_DBConnection() -> open connection to db
+	open_DBConnection(dict_cursor=False) -> open connection to db
 	close_DBConnection(pair) -> close connection to db
 	
-	set_data(pair, name, mediaType, ID) -> set entry or insert new entry into media table
+	set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID) -> set entry or insert new entry into media table
 	set_user_data(pair, watched, liked, ID) -> set user table entry or insert new entry
 	set_data_id(pair, oldID, newID, table="media") -> set id of existing data point
 	set_data_liked(pair, ID, liked, user) -> set boolean liked value of data with ID
@@ -111,13 +114,13 @@ List of functions:
 
 Function Details:
 
-open_DBConnection():
+open_DBConnection(dict_cursor=False):
 	Constraints:
 		none
 	Parameters:
-		none
+		dict_cursor -> boolean, if true queries will return of dictionary instead of an array
 	Return Type:
-		pair-> a tuple with (connection, database) store this value for other functions when interacting with db
+		pair-> a tuple with (connection, database, dict_cursor) store this value for other functions when interacting with db
 
 close_DBConnection(pair):
 	Constraints:
@@ -127,6 +130,19 @@ close_DBConnection(pair):
 	Return Type:
 		none
 
+add_user(pair, username, password_hash, password_salt, user_id):
+        Constraints:
+                Cannot reset user_id
+                user_id MUST BE UNIQUE, everthing else can have duplicates
+        Parameters:
+                pair -> (connection, database) tuple from open_DBConnection()
+        	username -> string
+		password_hash -> string
+		password_salt -> string
+		user_id -> string
+	Return Type:
+                none
+
 set_data(pair, name, mediaType, ID):
 	Constraints:
 		Cannot reset ID
@@ -135,6 +151,11 @@ set_data(pair, name, mediaType, ID):
 		pair -> (connection, database) tuple from open_DBConnection()
 		name -> string
 		mediaType -> The following strings: 'movie', 'tv show', 'short film', 'anime', or 'manga'
+		year -> int
+		link -> string
+		genres -> string of genres separated by a space: 'horror thriller action adventure'
+		rating -> decimal up to 5 decimal places
+		running_time -> decimal, in MINUTES, up to 5 decimal places
 		ID -> string
 	Return Type:
 		none
@@ -197,7 +218,10 @@ get_by_name(pair, name):
 
 get_by_id(pair, ID, table="media"):
 	Constraints:
-		none
+		Works with media table, users table, and
+		tables made with create_user_table.
+		If the table is media or a created table, it will look for movie ID's
+		If the table is users it will look for user ID
 	Paremeters:
 		pair -> tuple from open_DBConnection()
 		ID -> string
