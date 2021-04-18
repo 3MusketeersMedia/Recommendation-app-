@@ -37,6 +37,7 @@ print(get_by_id(connection, "1", "users"))
 print(num_items(connection, "jane_goodall"))
 print(num_items(connection))
 
+print(get_all(connection))
 print(get_all(connection, "jane_goodall"))
 
 close_DBConnection(connection)
