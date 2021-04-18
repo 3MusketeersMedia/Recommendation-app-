@@ -40,6 +40,7 @@ with open('test_file.json', 'r') as file:
     info = file.read().rstrip('\n')
 parsed = json.loads(info)
 res = detailed_info(parsed["tt4154756"]["title"]["title"], "tt4154756")
+
 # for i in res:
 #     print(i)
 
