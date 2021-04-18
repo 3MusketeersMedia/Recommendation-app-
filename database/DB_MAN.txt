@@ -88,7 +88,7 @@ entry -> watched, liked, ID
 
 
 List of functions:
-	open_DBConnection() -> open connection to db
+	open_DBConnection(dict_cursor=False) -> open connection to db
 	close_DBConnection(pair) -> close connection to db
 	
 	set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID) -> set entry or insert new entry into media table
@@ -114,13 +114,13 @@ List of functions:
 
 Function Details:
 
-open_DBConnection():
+open_DBConnection(dict_cursor=False):
 	Constraints:
 		none
 	Parameters:
-		none
+		dict_cursor -> boolean, if true queries will return of dictionary instead of an array
 	Return Type:
-		pair-> a tuple with (connection, database) store this value for other functions when interacting with db
+		pair-> a tuple with (connection, database, dict_cursor) store this value for other functions when interacting with db
 
 close_DBConnection(pair):
 	Constraints:

@@ -6,7 +6,7 @@ exec(open("database.py").read())
 #execfile("database.py")
 
 #establish connection
-connection = open_DBConnection()
+connection = open_DBConnection(True)
 
 
 set_data(connection, "v show", "tv show", 1999, "urlinhere", "horror thriller", 10.17, 100.5, "0")
@@ -30,7 +30,7 @@ add_user(connection, "namehere", "string", "string", "2")
 add_user(connection, "namehere", "string", "string", "3")
 print(get_all(connection, "users"))
 
-print(get_by_id(connection, "1"))
+print(get_by_id(connection, "7"))
 print(get_by_id(connection, "1", "jane_goodall"))
 print(get_by_id(connection, "1", "users"))
 
