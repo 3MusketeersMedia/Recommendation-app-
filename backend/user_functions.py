@@ -25,6 +25,7 @@ def detailed_info(title, id):
     print("Running time (minutes): ", data[id]["title"]["runningTimeInMinutes"])
     print("Year: ", data[id]["title"]["year"])
     print("Rated: ", data[id]["certificate"])
+    print("Rating: ", data[id]["ratings"]["rating"])
     print("Genres: ", end='')
     s = ""
     summary = " "
@@ -49,12 +50,13 @@ res = detailed_info(parsed["tt4154756"]["title"]["title"], "tt4154756")
 #     detailed_info(title, id)
 
 
-exec(open("database/database.py").read())
+exec(open("backend/database.py").read())
 
 connection = open_DBConnection()
 
 # print(connection)
 # name, type, ID
+print(res[8])
 set_data(connection, res[0], "movie", res[8])
 list_of_items = get_by_id(connection, "tt4154756", table="media")
 for i in list_of_items:
@@ -66,4 +68,5 @@ if list_of_items is not None:
         print(i)
 else:
     print("empty")
+
 close_DBConnection(connection)
