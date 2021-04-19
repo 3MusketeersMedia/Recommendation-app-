@@ -12,9 +12,9 @@ if conn is None:
     exit()
 
 #make tables
-database.execute("CREATE TABLE IF NOT EXISTS media(name VARCHAR (50) NOT NULL, mediaType VARCHAR (50) NOT NULL, year INT, link VARCHAR(2083), genres VARCHAR(500), rating NUMERIC(10, 5), running_time NUMERIC(10, 5), ID VARCHAR (50) PRIMARY KEY, CHECK (mediaType = 'movie' OR mediaType = 'tv show' OR mediaType = 'short film' OR mediaType = 'anime' OR mediaType = 'manga'));")
+database.execute("CREATE TABLE IF NOT EXISTS media(name VARCHAR NOT NULL, mediaType VARCHAR NOT NULL, year INT, link VARCHAR, genres VARCHAR, rating NUMERIC, running_time NUMERIC, ID VARCHAR, PRIMARY KEY(ID));")
 
-database.execute("CREATE TABLE IF NOT EXISTS users(username VARCHAR (50) NOT NULL, password_hash VARCHAR (50) NOT NULL, password_salt VARCHAR(50) NOT NULL, ID VARCHAR(50) PRIMARY KEY);")
+database.execute("CREATE TABLE IF NOT EXISTS users(username VARCHAR NOT NULL, password_hash VARCHAR NOT NULL, password_salt VARCHAR NOT NULL, ID VARCHAR, PRIMARY KEY(ID));")
 
 conn.close()
 
@@ -83,14 +83,14 @@ def set_user_data(pair, table, watched, liked, ID):
     list_id = pair[1].fetchall()
     #check for ID
     if pair[2] == False:
-        if len(list_id) > 0 and (ID,) in list_id:
+        if (ID,) in list_id:
             pair[1].execute("UPDATE {} SET watched = {}, liked = {} WHERE ID = '{}';".format(table, watched, liked, ID))
             #update if true
         else:
             pair[1].execute("INSERT INTO {} VALUES({}, {}, '{}');".format(table, watched, liked, ID))
             #insert if false
     else:
-        if ID == list_id[0]['id']:
+        if len(list_id) > 0 and ID == list_id[0]['id']:
             pair[1].execute("UPDATE {} SET watched = {}, liked = {} WHERE ID = '{}';".format(table, watched, liked, ID))
             #update if true
         else:
@@ -144,6 +144,11 @@ def get_by_watched(pair, table, watched=True):
     return pair[1].fetchall()
 
 
+def get_by_genre(pair, genre):
+    pair[1].execute("SELECT * FROM media WHERE POSITION('{}' in genres) > 0;".format(genre))
+    return pair[1].fetchall()
+
+
 def get_all(pair, table="media"):
     pair[1].execute("SELECT * FROM {};".format(table))
     return pair[1].fetchall()
@@ -158,6 +163,27 @@ def get_by_mediaType(pair, mediaType):
     return pair[1].fetchall() 
 
 
+def get_by_year(pair, start, end=-1):
+    if(end == -1):
+        end = start
+    pair[1].execute("SELECT * FROM media WHERE year >= {} AND year <= {};".format(start, end))
+    return pair[1].fetchall()
+
+
+def get_by_rating(pair, start, end=-1):
+    if(end == -1):
+        end = start
+    pair[1].execute("SELECT * FROM media WHERE rating >= {} AND rating <= {};".format(start, end))
+    return pair[1].fetchall()
+
+
+def get_by_running_time(pair, start, end=-1):
+    if(end == -1):
+        end = start
+    pair[1].execute("SELECT * FROM media WHERE running_time >= {} AND running_time <= {};".format(start, end))
+    return pair[1].fetchall()
+
+
 def delete_data(pair, ID, table="media"):
     pair[1].execute("DELETE FROM {} WHERE ID = '{}';".format(table, ID))
 
@@ -167,7 +193,7 @@ def delete_table(pair, table):
 
 
 def create_user_table(pair, user):
-    pair[1].execute("CREATE TABLE IF NOT EXISTS {}(watched BOOLEAN NOT NULL, liked BOOLEAN NOT NULL, ID VARCHAR(30) PRIMARY KEY);".format(user))
+    pair[1].execute("CREATE TABLE IF NOT EXISTS {}(watched BOOLEAN NOT NULL, liked BOOLEAN NOT NULL, ID VARCHAR, FOREIGN KEY (ID) REFERENCES media (ID));".format(user))
 
 
 def clear_data(pair, table):

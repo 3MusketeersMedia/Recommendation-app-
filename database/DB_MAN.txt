@@ -80,7 +80,7 @@ USERS:
 entry -> username, password_hash, password_salt, user_id
 
 'name of table':
-entry -> watched, liked, ID
+entry -> watched, liked, ID (foreign key in media)
 
 ----------------------------------------
 
@@ -102,6 +102,9 @@ List of functions:
 	get_by_mediaType(pair, mediaType) -> get entry by mediaType
 	get_by_liked(pair, table, liked=True) -> get all liked elements
 	get_by_watched(pair, table, watched=True) -> get all watched elements
+	get_by_year(pair, start, end=-1) -> get all movies from media table that are from years start to end. If end is not specified end = start.
+	get_by_rating(pair, start, end=-1) -> get all movies from media table that have a rating in range start to end. If end is not specified end = start
+	get_by_running_time(pair, start, end=-1) -> get all movies from media table that have a running time from start to end. If end is not specified end = start
 	get_next(pair) -> get the next MAX_LIST_SIZE elements of previous get_by_something() query 
 	get_all(pair, table="media") -> get all items in table
 	
@@ -257,6 +260,36 @@ get_by_watched(pair, table, watched=True):
 		watched -> boolean
         Return Type:
                 list of tuples -> list of liked entries
+
+get_by_year(pair, start, end=-1):
+        Constraints:
+                If end isnt specified start = end
+        Parameters:
+                pair -> tuple from openDBConnection()
+                start -> int
+		end -> int
+        Return Type:
+                list of tuples -> list of entries
+
+get_by_rating(pair, start, end=-1):
+        Constraints:
+                If end isnt specified start = end
+        Parameters:
+                pair -> tuple from openDBConnection()
+                start -> decimal
+                end -> decimal
+        Return Type:
+                list of tuples -> list of entries
+
+get_by_running_time(pair, start, end=-1):
+        Constraints:
+                If end isnt specified start = end
+        Parameters:
+                pair -> tuple from openDBConnection()
+                start -> decimal
+                end -> decimal
+        Return Type:
+                list of tuples -> list of entries
 
 get_next(pair):
         Constraints:
