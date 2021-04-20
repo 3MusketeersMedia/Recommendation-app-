@@ -77,24 +77,24 @@ def set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID
             #insert if false
 
 
-def set_user_data(pair, table, watched, liked, ID):
+def set_user_data(pair, table, watched, liked, ID, rating="NULL"):
     #retrieve list of ID's
     pair[1].execute("SELECT ID FROM {} WHERE ID = '{}';".format(table, ID))
     list_id = pair[1].fetchall()
     #check for ID
     if pair[2] == False:
         if (ID,) in list_id:
-            pair[1].execute("UPDATE {} SET watched = {}, liked = {} WHERE ID = '{}';".format(table, watched, liked, ID))
+            pair[1].execute("UPDATE {} SET watched = {}, liked = {}, rating = {} WHERE ID = '{}';".format(table, watched, liked, rating, ID))
             #update if true
         else:
-            pair[1].execute("INSERT INTO {} VALUES({}, {}, '{}');".format(table, watched, liked, ID))
+            pair[1].execute("INSERT INTO {} VALUES({}, {}, {}, '{}');".format(table, watched, liked, rating, ID))
             #insert if false
     else:
         if len(list_id) > 0 and ID == list_id[0]['id']:
-            pair[1].execute("UPDATE {} SET watched = {}, liked = {} WHERE ID = '{}';".format(table, watched, liked, ID))
+            pair[1].execute("UPDATE {} SET watched = {}, liked = {}, rating = {} WHERE ID = '{}';".format(table, watched, liked, rating, ID))
             #update if true
         else:
-            pair[1].execute("INSERT INTO {} VALUES({}, {}, '{}');".format(table, watched, liked, ID))
+            pair[1].execute("INSERT INTO {} VALUES({}, {}, {}, '{}');".format(table, watched, liked, rating, ID))
             #insert if false
 
 
@@ -193,7 +193,7 @@ def delete_table(pair, table):
 
 
 def create_user_table(pair, user):
-    pair[1].execute("CREATE TABLE IF NOT EXISTS {}(watched BOOLEAN NOT NULL, liked BOOLEAN NOT NULL, ID VARCHAR, FOREIGN KEY (ID) REFERENCES media (ID));".format(user))
+    pair[1].execute("CREATE TABLE IF NOT EXISTS {}(watched BOOLEAN NOT NULL, liked BOOLEAN NOT NULL, rating NUMERIC, ID VARCHAR, FOREIGN KEY (ID) REFERENCES media (ID));".format(user))
 
 
 def clear_data(pair, table):

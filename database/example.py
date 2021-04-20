@@ -22,7 +22,7 @@ print(get_by_running_time(connection, 100.6, 100.7))
 
 create_user_table(connection, "jane_goodall")
 
-set_user_data(connection, "jane_goodall", False, False, "1")
+set_user_data(connection, "jane_goodall", False, False, "1", 10.17)
 set_user_data(connection, "jane_goodall", True, False, "2")
 set_user_data(connection, "jane_goodall", False, True, "3")
 set_user_data(connection, "jane_goodall", True, True, "4")

@@ -92,7 +92,7 @@ List of functions:
 	close_DBConnection(pair) -> close connection to db
 	
 	set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID) -> set entry or insert new entry into media table
-	set_user_data(pair, watched, liked, ID) -> set user table entry or insert new entry
+	Oset_user_data(pair, watched, liked, ID, rating = "NULL") -> set user table entry or insert new entry
 	set_data_id(pair, oldID, newID, table="media") -> set id of existing data point
 	set_data_liked(pair, ID, liked, user) -> set boolean liked value of data with ID
 	set_data_watched(pair, ID, watched, user) -> set boolean watched value of data with ID
@@ -163,15 +163,17 @@ set_data(pair, name, mediaType, ID):
 	Return Type:
 		none
 
-set_user_data(pair, watched, liked, ID):
+set_user_data(pair, watched, liked, ID, rating="NULL"):
         Constraints:
                 Cannot reset ID
                 ID MUST BE UNIQUE, everthing else can have duplicates
+		IMPORTANT: RATING IS AN INTEGER NOT A STRING, DESPITE THE DEFAULT VALUE
         Parameters:
                 pair -> (connection, database) tuple from open_DBConnection()
                 watched -> boolean 
                 liked -> boolean
                 ID -> string
+		rating -> decimal 
         Return Type:
                 none
 
