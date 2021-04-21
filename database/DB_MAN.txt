@@ -70,7 +70,7 @@ Default table is called 'media', this will contain all of the media
 that we would want to preload into our database
 
 MEDIA:
-entry -> name, mediaType, ID
+entry -> name, mediaType, year, link, genres, rating, running_time, ID, summary
 
 You can create tables, to track user liked and watched list:
 use -> create_user_table()
@@ -79,7 +79,7 @@ USERS:
 entry -> username, password_hash, password_salt, user_id
 
 'name of table':
-entry -> watched, liked, rating, ID (foreign key in media)
+entry -> watched, liked, rating, review, ID (foreign key in media)
 
 ----------------------------------------
 
@@ -99,8 +99,8 @@ List of functions:
 	open_DBConnection(dict_cursor=False) -> open connection to db
 	close_DBConnection(pair) -> close connection to db
 	
-	set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID) -> set entry or insert new entry into media table
-	set_user_data(pair, watched, liked, ID, rating="NULL") -> set user table entry or insert new entry
+	set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID, summary="None") -> set entry or insert new entry into media table
+	set_user_data(pair, watched, liked, ID, rating="NULL", review=" ") -> set user table entry or insert new entry
 	set_data_id(pair, oldID, newID, table="media") -> set id of existing data point
 	set_data_liked(pair, ID, liked, user) -> set boolean liked value of data with ID
 	set_data_watched(pair, ID, watched, user) -> set boolean watched value of data with ID
@@ -154,7 +154,7 @@ add_user(pair, username, password_hash, password_salt, user_id):
 	Return Type:
                 none
 
-set_data(pair, name, mediaType, ID):
+set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID, summary="None"):
 	Constraints:
 		Cannot reset ID
 		ID MUST BE UNIQUE, everthing else can have duplicates
@@ -168,10 +168,11 @@ set_data(pair, name, mediaType, ID):
 		rating -> decimal up to 5 decimal places
 		running_time -> decimal, in MINUTES, up to 5 decimal places
 		ID -> string
+		summary -> string
 	Return Type:
 		none
 
-set_user_data(pair, watched, liked, ID, rating="NULL"):
+set_user_data(pair, watched, liked, ID, rating="NULL", review=" "):
         Constraints:
                 Cannot reset ID
                 ID MUST BE UNIQUE, everthing else can have duplicates
@@ -181,7 +182,8 @@ set_user_data(pair, watched, liked, ID, rating="NULL"):
                 watched -> boolean 
                 liked -> boolean
                 ID -> string
-		rating -> decimal 
+		rating -> decimal
+		review -> string
         Return Type:
                 none
 
