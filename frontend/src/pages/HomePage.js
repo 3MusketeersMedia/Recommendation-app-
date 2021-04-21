@@ -1,6 +1,5 @@
 //import Header from "./components/header"
 //import navbar from "./components/navbar";
-//import {Navbar, Nav, NavDropdown} from 'react-bootstrap'
 import { buildQueries } from '@testing-library/dom';
 import MyNav from '../components/navbar'
 import './homePage.css';
