@@ -7,7 +7,9 @@ exec(open("database.py").read())
 
 #establish connection
 connection = open_DBConnection(True)
-
+#delete_table(connection, "media")
+#delete_table(connection, "users")
+#delete_table(connection, "jane_goodall")
 set_data(connection, "v show", "tv show", 1998, "urlinhere", "horror thriller action", 10.21, 100.5, "0")
 set_data(connection, "b show", "tv show", 1999, "urlinhere", "horror thriller action", 10.19, 100.5, "1")
 set_data(connection, "p show", "tv show", 1999, "urlinhere", "horror thriller", 10.17, 100.6, "2")
