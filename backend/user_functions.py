@@ -52,18 +52,34 @@ def get_movie_id(title):
         ids.append((m, id))
     return ids
 
-# warning: some id do not have a rating so it will get skipped through try except:
+# warning: some id do not have a rating so it will have to be skipped with try except:
 def get_movie_rating(id):
     ia = IMDb()
     movie = ia.get_movie(id)
     return movie['rating']
-lst = get_movie_id('Matrix')
-for i, j in lst:
-    try:
-        rating = get_movie_rating(j)
-        print(i, rating)
-    except:
-        pass
+
+# lst = get_movie_id('Matrix')
+# for i, j in lst:
+#     try:
+#         rating = get_movie_rating(j)
+#         print(i, rating)
+#     except:
+#         pass
+
+def get_movie_info(id):
+    ia = IMDb()
+    m = ia.get_movie(id)
+    # use print(m.keys()) to see more options avaiable.
+    print(m['title'])
+    print(m['year'])
+    print(m['rating'])
+    directors = m['directors']
+    direcStr = ' '.join(map(str, directors))
+    print(f'directors: {direcStr}')
+    for genre in m['genres']:
+        print(genre)
+
+get_movie_info(1234567)
 # data base connection example
 
 # exec(open("backend/database.py").read())
