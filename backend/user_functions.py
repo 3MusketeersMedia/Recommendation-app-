@@ -79,7 +79,19 @@ def get_movie_info(id):
     for genre in m['genres']:
         print(genre)
 
-get_movie_info(1234567)
+# return movie ids searched by keyword
+def filter_by_keyword(keyword):
+    ia = IMDb()
+    movies = ia.get_keyword(keyword)
+    ids = []
+    for m in movies:
+        ids.append(m.getID())
+    return ids
+
+def filter_by_genre(id, genre):
+    pass
+
+# get_movie_info(1234567)
 # data base connection example
 
 # exec(open("backend/database.py").read())
