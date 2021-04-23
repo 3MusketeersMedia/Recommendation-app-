@@ -1,0 +1,8 @@
+.loginButtons {
+  display: flex;
+  justify-content: center;
+}
+
+.loginFormHolder {
+  margin: 50px;
+}
