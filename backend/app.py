@@ -2,7 +2,8 @@ import time
 import json
 
 from flask import Flask
-from flask import redirect, url_for, request, CORS
+from flask import request, jsonify, redirect, url_for
+from flask_cors import CORS
 import database
 
 # TA email: yogolan@ucsc.edu
@@ -12,19 +13,32 @@ import database
 app = Flask(__name__)
 cors = CORS(app)
 
+# attributes currently: movie name, media type, id
+def convert_tuple(tuple1):
+    item_js = {
+        "name": tuple1[0],
+        "type": tuple1[1],
+        "year": tuple1[2],
+        "url": tuple1[3],
+        "genre": tuple1[4],
+        "placehold1": str(tuple1[5]),
+        "placehold2": str(tuple1[6]),
+        "id": tuple1[7]
+    }
+
+    return item_js
+
 # items in list are tuples
 # json.dumps() converts tuples to arrays
 # all the values in the array are converted to strings
-# attributes currently: movie name, media type, id
 # structure: {"movie name": (json array of attributes)}
 def format_media(list1):
-    json1 = {}
+    json1 = []
     for item in list1:
-        name = item[0]
-        js_item = json.dumps(item)
-        json1[name] = js_item
+        item_js = convert_tuple(item)
+        json1.append(item_js)
     
-    return json1
+    return jsonify(json1)
 
 def format_user_info():
     pass
@@ -39,8 +53,12 @@ def index():
 
 @app.route("/movies", methods=['GET'])
 def movies():
-    db_amazon = database.open_DBConnection()
+    # it just returns a list when dict_cursor == true...
+    db_amazon = database.open_DBConnection(True)
+    # need to close db connection?
     all_media = database.get_all(db_amazon, "media")
+    database.close_DBConnection(db_amazon)
+    print(all_media)
     dict1 = format_media(all_media)
     return dict1
 
@@ -49,11 +67,26 @@ def movies():
 def search():
     return "search"
 
+# if user, enter; if not, try again
 @app.route("/login", methods=['POST'])
 def login():
     if request.method == 'POST':
-        pass
+        hello = request.get_json()
+        print(hello)
     return "login"
+
+# if user, redirect to login or user already exists
+@app.route("/signup", methods=['POST'])
+def signup():
+    if request.method == 'POST':
+        pass
+    return "signup"
+
+@app.route("/profile", methods=['GET', 'POST'])
+def profile():
+    if request.method == 'POST':
+        pass
+    return "profile"
 
 @app.route("/time")
 def time():
