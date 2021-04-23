@@ -1,16 +1,17 @@
 import React from 'react'
 import {Navbar, Nav, NavDropdown} from 'react-bootstrap'
+import {AppContext} from '../AppContext';
 
 const MyNav = () => {
-    return (
-      <div>
+    return <AppContext.Consumer>
+      {context => <div>
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
         <Navbar.Brand href="/">RecomMedia</Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
             <Nav.Link href="/list">Movie List</Nav.Link>
-            <Nav.Link href="#pricing">Login</Nav.Link>
+            <Nav.Link href="#" onClick={context.openLoginModal}>Login</Nav.Link>
             <NavDropdown title="Dropdown" id="collasible-nav-dropdown">
               <NavDropdown.Item href="#action/3.1">Item 1</NavDropdown.Item>
               <NavDropdown.Item href="#action/3.2">Item 2</NavDropdown.Item>
@@ -27,8 +28,8 @@ const MyNav = () => {
           </Nav>
           </Navbar.Collapse>
         </Navbar>
-      </div>
-    );
+      </div>}
+    </AppContext.Consumer>;
 }
 
 export default MyNav;
