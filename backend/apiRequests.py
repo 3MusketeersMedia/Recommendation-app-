@@ -161,13 +161,21 @@ def get_moreLikeThis(id, currentCountry, purchaseCounty):
         ids.append(number[2])
     return ids
 
+# Example codes below
+
 # id = search("baby driver")
 # metadata = get_metadata(id, "US")
 # urls_images = get_image_urls(id, "10")
 # summary = get_overview(id, "US")
 # recommended_ids = get_moreLikeThis(id, "US", "US")
 
+# code to open a json test file to use 
+
 # with open('test_file.json', 'r') as file:
 #     info = file.read().rstrip('\n')
 # parsed = json.loads(info)
+# print(json.dumps(parsed, indent=4, sort_keys=True))
 # print(parsed["tt4154756"])
+
+# to pretty print json file, use
+# print(json.dumps(parsed, indent=4, sort_keys=True))
