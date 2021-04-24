@@ -2,7 +2,7 @@ import time
 import json
 
 from flask import Flask
-from flask import request, jsonify, redirect, url_for
+from flask import request, jsonify, redirect, url_for, Response
 from flask_cors import CORS
 import database
 
@@ -13,17 +13,19 @@ import database
 app = Flask(__name__)
 cors = CORS(app)
 
+# number of attributes currently: 9
 # attributes currently: movie name, media type, id
 def convert_tuple(tuple1):
     item_js = {
         "name": tuple1[0],
-        "type": tuple1[1],
+        "mediaType": tuple1[1],
         "year": tuple1[2],
-        "url": tuple1[3],
-        "genre": tuple1[4],
-        "placehold1": str(tuple1[5]),
-        "placehold2": str(tuple1[6]),
-        "id": tuple1[7]
+        "link": tuple1[3],
+        "genres": tuple1[4],
+        "rating": str(tuple1[5]),
+        "running_time": str(tuple1[6]),
+        "summary": tuple1[7],
+        "id": tuple1[8]
     }
 
     return item_js
@@ -51,6 +53,7 @@ def index():
         pass
     return "West virgina Country Roads"
 
+# too many movies, need to split it off
 @app.route("/movies", methods=['GET'])
 def movies():
     # it just returns a list when dict_cursor == true...
@@ -58,7 +61,8 @@ def movies():
     # need to close db connection?
     all_media = database.get_all(db_amazon, "media")
     database.close_DBConnection(db_amazon)
-    print(all_media)
+    #for x in all_media:
+    #    print(x)
     dict1 = format_media(all_media)
     return dict1
 
@@ -68,12 +72,13 @@ def search():
     return "search"
 
 # if user, enter; if not, try again
-@app.route("/login", methods=['POST'])
+@app.route("/login", methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        hello = request.get_json()
-        print(hello)
-    return "login"
+    #if request.method == 'POST':
+    #    hello = request.get_json()
+    #    print(hello)
+    status_code = Response(status=201)
+    return status_code
 
 # if user, redirect to login or user already exists
 @app.route("/signup", methods=['POST'])
