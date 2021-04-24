@@ -1,8 +1,12 @@
 # utility functions for users to use
 from imdb import IMDb, IMDbError
+from database import*
 from apiRequests import *
+from process_dataset import*
 import random
-
+import csv
+import json
+import pandas as pd
 """
 This one uses RAPID API IMDb. Basic recommendation 
 """
@@ -69,16 +73,18 @@ def get_movie_rating(id):
 def get_movie_info(id):
     ia = IMDb()
     m = ia.get_movie(id)
+    print(m.keys())
     # use print(m.keys()) to see more options avaiable.
-    print(m['title'])
-    print(m['year'])
-    print(m['rating'])
-    directors = m['directors']
-    direcStr = ' '.join(map(str, directors))
-    print(f'directors: {direcStr}')
-    for genre in m['genres']:
-        print(genre)
+    # print(m['title'])
+    # print(m['year'])
+    # print(m['rating'])
+    # directors = m['directors']
+    # direcStr = ' '.join(map(str, directors))
+    # print(f'directors: {direcStr}')
+    # for genre in m['genres']:
+    #     print(genre)
 
+# get_movie_info(1234)
 # return movie ids searched by keyword
 def filter_by_keyword(keyword):
     ia = IMDb()
@@ -88,15 +94,58 @@ def filter_by_keyword(keyword):
         ids.append(m.getID())
     return ids
 
-def filter_by_genre(id, genre):
-    pass
+def filter_by_genre(genre):
+    movies = []
+    data = imdb_basic()
+    for row in data :
+        genres_row = row[8]
+        type_row = row[1]
+        isAdult_row = row[4]
+        title_row = row[3]
+        if (genre in genres_row and isAdult_row == '0') and (type_row != 'short' or type_row !='tvEpisode'  or type_row != 'video'):
+            if('Episode' not in title_row):
+                movies.append(title_row)
+    return movies
+
+# movies = filter_by_genre('Comedy')
+# for m in movies:
+#     print(m)
+
+def populate_database():
+    exec(open("backend/database.py").read())
+    connection = open_DBConnection()
+    clear_data(connection, 'media')
+    movies = []
+    data = imdb_basic()
+    # id, type, primary title, original title, isAdult, start, end, runtime, genre
+    for row in data :
+        name = row[2]
+        mediaType = row[1]
+        year = row[5]
+        link = 'None' # image link
+        genres = row[8].replace(',', '|')
+        rating = 0
+        running_time = row[7]
+        id = row[0][:2]
+        # print(name, mediaType, year, link, genres, rating, running_time, id)
+        movies.append((name, mediaType, year, link, genres, rating, running_time, id))
+    for m in movies:
+        print(m[7])
+        set_data(connection, m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7])
+    close_DBConnection(connection)
+    # return movies
+
+populate_database()
+
+
+
 
 # get_movie_info(1234567)
 # data base connection example
 
 # exec(open("backend/database.py").read())
 # connection = open_DBConnection()
-# # print(connection)
+# print(connection)
 # # name, type, ID
 # print(res[8])
 # set_data(connection, res[0], "movie", res[8])
