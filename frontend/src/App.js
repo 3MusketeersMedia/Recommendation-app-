@@ -4,6 +4,7 @@ import {AppContext} from './AppContext'
 import MovieList from './pages/MovieList';
 import ZoomedPage from './pages/zoomedpage';
 import HomePage from './pages/HomePage.js';
+import LoginPage from './pages/LoginPage.js';
 
 export default class App extends React.Component {
   constructor() {
@@ -31,6 +32,7 @@ export default class App extends React.Component {
           <Route exact path='/' component={HomePage}/>
           <Route exact path='/list' component={MovieList}/>
           <Route exact path='/movie' component={ZoomedPage}/>
+          <Route exact path='/login' component={LoginPage}/>
         </AppContext.Provider>
       </BrowserRouter>
     );
