@@ -1,5 +1,5 @@
 import React from 'react'
-import {Navbar, Nav, NavDropdown} from 'react-bootstrap'
+import {Navbar, Nav, NavDropdown, Form, FormControl, Button} from 'react-bootstrap'
 import {AppContext} from '../AppContext';
 
 const MyNav = () => {
@@ -21,10 +21,10 @@ const MyNav = () => {
             </NavDropdown>
           </Nav>
           <Nav>
-            <Nav.Link href="#details">Details</Nav.Link>
-            <Nav.Link eventKey={2} href="#OtherThing">
-              Other Thing
-            </Nav.Link>
+            <Form inline>
+      <FormControl type="text" placeholder="Search" className="mr-sm-2" />
+      <Button variant="outline-light">Search</Button>
+    </Form>
           </Nav>
           </Navbar.Collapse>
         </Navbar>
