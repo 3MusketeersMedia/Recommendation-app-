@@ -125,8 +125,11 @@ def populate_database():
         link = 'None' # image link
         genres = row[8].replace(',', '|')
         rating = 0
-        running_time = row[7]
-        id = row[0][:2]
+        if '\'N' in row[7]:
+            running_time = row[7]
+        else:
+            running_time = 0
+        id = row[0][2:]
         # print(name, mediaType, year, link, genres, rating, running_time, id)
         movies.append((name, mediaType, year, link, genres, rating, running_time, id))
     for m in movies:
