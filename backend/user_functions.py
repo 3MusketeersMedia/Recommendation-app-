@@ -2,11 +2,12 @@
 from imdb import IMDb, IMDbError
 from database import*
 from apiRequests import *
-from process_dataset import*
+from process_dataset import *
 import random
 import csv
 import json
 import pandas as pd
+from imageScraper import *
 """
 This one uses RAPID API IMDb. Basic recommendation 
 """
@@ -122,7 +123,8 @@ def populate_database():
         name = row[2]
         mediaType = row[1]
         year = row[5]
-        link = row[9] #imdb link
+        link = getImage(row[0])  # movie image
+        print(link)
         genres = row[8].replace(',', '|')
         rating = 0
         if '\'N' in row[7]:
