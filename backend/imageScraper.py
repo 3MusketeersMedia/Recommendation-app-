@@ -8,8 +8,9 @@ def getImage(id):
 
     soup = BeautifulSoup(page.content, 'html.parser')
     posterDiv = soup.find(class_='poster')
-    posterImg = posterDiv.find('img')
-    return posterImg['src']
+    if posterDiv:
+        posterImg = posterDiv.find('img')
+        return posterImg['src']
 
 # gets image for avengers: endgame
 # print(getImage('tt4154796'))
