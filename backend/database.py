@@ -99,7 +99,7 @@ def set_preference(pair, watched, liked, user_id, media_id, rating=0, review=" "
             #insert if false
 
 
-def set_data_liked(pair, user_id, media_id liked=True):
+def set_data_liked(pair, user_id, media_id, liked=True):
     pair[1].execute("UPDATE preferences SET liked = %s WHERE user_id = %s AND media_id = %s;", (liked, user_id, media_id))
 
 

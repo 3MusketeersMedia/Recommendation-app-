@@ -7,7 +7,7 @@ exec(open("database.py").read())
 
 #establish connection
 connection = open_DBConnection(True)
-
+print(get_all(connection))
 print(num_items(connection))
 #set_data(connection, "b show", "tv show", 1999, "urlinhere", "horror thriller action", 10.19, 100.5, "1")
 #set_data(connection, "p show", "tv show", 1999, "urlinhere", "horror thriller", 10.17, 100.6, "2")
