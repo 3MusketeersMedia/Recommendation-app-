@@ -111,6 +111,21 @@ def set_data_id(pair, oldID, newID, table="media"):
     pair[1].execute("UPDATE {} SET ID = %s WHERE ID = %s;".format(table), (newID, oldID))
 
 
+def get_user_preference(pair, user_id, media_id):
+    pair[1].execute("SELECT * FROM preferences WHERE user_id = %s AND media_id = %s;", (user_id, media_id))
+    return pair[1].fetchall()
+
+
+def get_user_liked(pair, user_id, liked=True):
+    pair[1].execute("SELECT * FROM preferences WHERE user_id = %s AND liked = %s;", (user_id, liked))
+    return pair[1].fetchall()
+
+
+def get_user_watched(pair, user_id, watched=True):
+    pair[1].execute("SELECT * FROM preferences WHERE user_id = %s AND watched = %s;", (user_id, watched))
+    return pair[1].fetchall()
+
+
 def get_by_name(pair, name):
     pair[1].execute("SELECT * FROM media WHERE name = %s;", (name,))
     return pair[1].fetchall()
@@ -186,6 +201,10 @@ def get_by_running_time(pair, start, end=-1):
 
 def delete_data(pair, ID, table="media"):
     pair[1].execute("DELETE FROM {} WHERE ID = %s;".format(table), (ID,))
+
+
+def delete_preference(pair, user_id, media_id):
+    pair[1].execute("DELETE FROM preferences WHERE user_id = %s AND media_id = %s;", (user_id, media_id))
 
 
 def delete_table(pair, table):

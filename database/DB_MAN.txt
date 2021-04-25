@@ -111,26 +111,35 @@ List of functions:
 	open_DBConnection(dict_cursor=False) -> open connection to db
 	close_DBConnection(pair) -> close connection to db
 	
+	WORKS WITH -> media and users tables:
 	set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID, summary="None") -> set entry or insert new entry into media table
 	set_data_id(pair, oldID, newID, table="media") -> set id of existing data point
+	add_user(pair, username, password_hash, password_salt, user_id) -> add to users table
+	get_by_id(pair, ID, table="media") -> get entry by ID
+	delete_data(pair, ID, table) -> delete a data point
+	
+	WORKS WITH -> preferences table:
 	set_data_liked(pair, user_id, media_id, liked=true) -> set boolean liked value of data with ID
 	set_data_watched(pair, user_id, media_id, watched=false) -> set boolean watched value of data with ID
 	set_preference(pair, watched, liked, user_id, media_id, rating="NULL", review=" "):	
+	get_user_preference(pair, user_id, media_id)
+	get_user_liked(pair, user_id, media_id, liked=True)
+	get_user_watched(pair, user_id, media_id, watched=True)
+	delete_preference(pair, user_id, media_id)	
 
+	WORKS WITH -> media table: 	
 	get_by_name(pair, name) -> get all entries of a given name
-	get_by_id(pair, ID, table="media") -> get entry by ID
 	get_by_mediaType(pair, mediaType) -> get entry by mediaType
 	get_by_liked(pair, liked=True) -> get all liked elements
 	get_by_watched(pair, watched=True) -> get all watched elements
 	get_by_year(pair, start, end=-1) -> get all movies from media table that are from years start to end. If end is not specified end = start.
 	get_by_rating(pair, start, end=-1) -> get all movies from media table that have a rating in range start to end. If end is not specified end = start
 	get_by_running_time(pair, start, end=-1) -> get all movies from media table that have a running time from start to end. If end is not specified end = start
+
+	WORKS WITH -> all tables:
 	get_next(pair) -> get the next MAX_LIST_SIZE elements of previous get_by_something() query 
 	get_all(pair, table="media") -> get all items in table
-	
-	delete_data(pair, ID, table) -> delete a data point
 	delete_table(pair, table) -> delete table, need to redo exec(...) to reinitialize it
-
 	clear_data(pair, table) -> clear table
 	num_items(pair, table="media") -> give num_items in table
 
@@ -232,6 +241,36 @@ set_data_watched(pair, user_id, media_id, watched=True):
 
 Get Commands: for each get command, it will return an empty list if no elements found -------------------
 
+get_user_preference(pair, user_id, media_id):
+        Constraints:
+                none
+        Paremeters:
+                pair -> tuple from open_DBConnection()
+                user_id -> string
+		media_id -> string
+        Return Type:
+                list of tuples -> MAX_LIST_SIZE list of tuples
+
+get_user_liked(pair, user_id, media_id, liked=True):
+        Constraints:
+                none
+        Paremeters:
+                pair -> tuple from open_DBConnection()
+                user_id -> string
+                media_id -> string
+        Return Type:
+                list of tuples -> MAX_LIST_SIZE list of tuples
+
+get_user_watched(pair, user_id, media_id, watched=True):
+        Constraints:
+                none
+        Paremeters:
+                pair -> tuple from open_DBConnection()
+                user_id -> string
+                media_id -> string
+        Return Type:
+                list of tuples -> MAX_LIST_SIZE list of tuples
+
 get_by_name(pair, name):
 	Constraints:
 		none
@@ -239,7 +278,7 @@ get_by_name(pair, name):
 		pair -> tuple from open_DBConnection()
 		name -> string
 	Return Type:
-		list of tuples -> MAX_LIST_SIZE list of (name, mediaType, ID)
+		list of tuples -> MAX_LIST_SIZE list of tuples
 
 get_by_id(pair, ID, table="media"):
 	Constraints:
@@ -340,6 +379,16 @@ delete_data(pair, ID, table="media"):
 		table-> string that is the name of the table
 	Return Type:
 		none
+
+delete_preference(pair, user_id, media_id):
+        Constraints:
+                none
+        Paremeters:
+                pair -> tuple from open_DBConnection()
+                user_id -> string
+                media_id -> string
+        Return Type:
+                list of tuples -> MAX_LIST_SIZE list of tuples
 
 delete_table(pair, table):
         Constraints:
