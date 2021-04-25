@@ -1,5 +1,6 @@
 import psycopg2
 import psycopg2.extras
+from model import *
 #----------Setup----------------------
 #verify connection
 #setup database

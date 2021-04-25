@@ -110,6 +110,7 @@ New Function -> set_preference
 List of functions:
 	open_DBConnection(dict_cursor=False) -> open connection to db
 	close_DBConnection(pair) -> close connection to db
+	get_user_recommendations(pair, user_id) -> get user_recommendations based on others ratings
 	
 	WORKS WITH -> media and users tables:
 	set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID, summary="None") -> set entry or insert new entry into media table
@@ -160,6 +161,15 @@ close_DBConnection(pair):
 		pair->tuple from open_DBConnection()
 	Return Type:
 		none
+
+get_user_recommendations(pair, user_id):
+        Constraints:
+                noe
+        Parameters:
+                pair->tuple from open_DBConnection()
+        	user_id-> string (user we want recomendations for)
+	Return Type:
+                list of media_id's from the media table
 
 add_user(pair, username, password_hash, password_salt, user_id):
         Constraints:
