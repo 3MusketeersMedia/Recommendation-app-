@@ -45,9 +45,10 @@ def imdb_basic():
         reader = csv.reader(f)
         next(reader) #skip first row i.e header of csv file
         for row in reader:
-            # id, type, primary title, original title, isAdult, start, end, runtime, genre
-            # print(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8])
-            data.append((row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]))
+            link = "https://www.imdb.com/title/" + row[0]
+            # id, type, primary title, original title, isAdult, start, end, runtime, genre, imdb link
+            # print(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], link)
+            data.append((row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], link))
     return data
             # create a json format
     #         data['movies'].append(
