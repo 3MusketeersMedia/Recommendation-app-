@@ -1,41 +1,46 @@
 import pandas as pd
 import numpy as np
 import random
-random.seed(0)
 
 def get_user_recommendations(pair, user_id):
-    conn[1].execute("SELECT user_id, media_id, rating FROM preferences;")
-    table = conn[1].fetchall()
+
+    pair[1].execute("SELECT user_id, media_id, rating FROM preferences;")
+    table = pair[1].fetchall()
 
     table = [(a, b, int(c)) for a,b,c in table] 
 
     #list of all ratings
     df = pd.DataFrame(table, columns=["user_id", "media_id", "rating"])
     allRatings = df.pivot_table(index=['user_id'], columns=['media_id'], values='rating')
-    print(allRatings.head())
+    
+    #evaluate all correlation combos -> as more users increase min_periods
+    corrMatrix = allRatings.corr(method='pearson', min_periods = 2)
+    
+    #get correlation for user
+    myRatings = allRatings.loc[user_id].dropna()
+    
+    simCandidates = pd.Series(dtype='object')
+    
+    for i in range(0, len(myRatings.index)):
+        #print ("Adding sims for " + myRatings.index[i] + "...")
+        # Retrieve similar movies to this one that I rated
+        sims = corrMatrix[myRatings.index[i]].dropna()
+        # Now scale its similarity by how well I rated this movie
+        sims = sims.map(lambda x: x * myRatings[i])
+        # Add the score to the list of similarity candidates
+        simCandidates = simCandidates.append(sims)
 
-    df = []
-    for i in table:
-        if i[0] == user_id:
-            #get recs by rating
-            ratings = allRatings[i[1]]
-            similarMovies = allRatings.corrwith(ratings)
-            similarMovies = similarMovies.dropna()
+    #sort values and drop movies already rated
+    simCandidates.sort_values(inplace = True, ascending = False)
+    filteredSims = simCandidates.drop(myRatings.index)
+    
+    #return list of ids
+    return(list(filteredSims.index.array))
 
-            similarMovies = pd.DataFrame(similarMovies.sort_values(ascending=False))
-            similarMovies = list(similarMovies.itertuples(index=True, name=None))
-            
-            if len(similarMovies) > 0:
-                df = df + similarMovies
-
-    #store, media_id and correlation score
-    #return list of media_id
-    df = sorted(df, key = lambda x: x[1], reverse=True)
-    print(df)
-    return [i[0] for i in df]
-
+"""
 #load file
 exec(open("../database/database.py").read())
+random.seed(0)
 
 conn = open_DBConnection()
 
@@ -57,11 +62,12 @@ for i in ids:
         set_preference(conn, True, True, i, list_movies[x][8], rating=random.randint(0, 10))
     z+=1
 
+
 #get movie_id, user_id and rating and name
 print(get_user_recommendations(conn, "0"))
-
 
 clear_data(conn, "preferences")
 clear_data(conn, "users")
 
 close_DBConnection(conn)
+"""
