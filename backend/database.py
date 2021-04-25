@@ -16,6 +16,8 @@ database.execute("CREATE TABLE IF NOT EXISTS media(name VARCHAR NOT NULL, mediaT
 
 database.execute("CREATE TABLE IF NOT EXISTS users(username VARCHAR NOT NULL, password_hash VARCHAR NOT NULL, password_salt VARCHAR NOT NULL, ID VARCHAR, PRIMARY KEY(ID));")
 
+database.execute("CREATE TABLE IF NOT EXISTS preferences(watched BOOLEAN NOT NULL, liked BOOLEAN NOT NULL, rating NUMERIC, review VARCHAR, user_id VARCHAR, media_id VARCHAR, FOREIGN KEY (user_id) REFERENCES users (ID), FOREIGN KEY (media_id) REFERENCES media (ID));")
+
 conn.close()
 
 #-------------Setup End----------------
@@ -77,34 +79,32 @@ def set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID
             #insert if false
 
 
-def set_user_data(pair, table, watched, liked, ID, rating="NULL", review=" "):
-    #retrieve list of ID's
-    pair[1].execute("SELECT ID FROM {} WHERE ID = %s;".format(table), (ID,))
+def set_preference(pair, watched, liked, user_id, media_id, rating=0, review=" "):
+    pair[1].execute("SELECT user_id, media_id FROM preferences WHERE user_id = %s AND media_id = %s;", (user_id, media_id))
     list_id = pair[1].fetchall()
-    #check for ID
+
     if pair[2] == False:
-        if (ID,) in list_id:
-            pair[1].execute("UPDATE {} SET watched = %s, liked = %s, rating = %s, review = %s WHERE ID = %s;".format(table), (watched, liked, rating, review, ID))
+        if (user_id, media_id) in list_id:
+            pair[1].execute("UPDATE preferences SET watched = %s, liked = %s, rating = %s, review = %s WHERE user_id = %s AND media_id = %s;", (watched, liked, rating, review, user_id, media_id))
             #update if true
         else:
-            pair[1].execute("INSERT INTO {} VALUES(%s, %s, %s, %s, %s);".format(table), (watched, liked, rating, review, ID))
+            pair[1].execute("INSERT INTO preferences VALUES(%s, %s, %s, %s, %s, %s);", (watched, liked, rating, review, user_id, media_id))
             #insert if false
     else:
-        if len(list_id) > 0 and ID == list_id[0]['id']:
-            pair[1].execute("UPDATE {} SET watched = %s, liked = %s, rating = %s, review = %s WHERE ID = %s;".format(table), (watched, liked, rating, review, ID))
+        if len(list_id) > 0 and user_id == list_id[0]['user_id'] and media_id == list_id[0]['media_id']:
+            pair[1].execute("UPDATE preferences SET watched = %s, liked = %s, rating = %s, review = %s WHERE user_id = %s AND media_id = %s;", (watched, liked, rating, review, user_id, media_id))
             #update if true
         else:
-            pair[1].execute("INSERT INTO {} VALUES(%s, %s, %s, %s, %s);".format(table), (watched, liked, rating, review, ID))
+            pair[1].execute("INSERT INTO preferences VALUES(%s, %s, %s, %s, %s, %s);", (watched, liked, rating, review, user_id, media_id))
             #insert if false
 
 
+def set_data_liked(pair, user_id, media_id liked=True):
+    pair[1].execute("UPDATE preferences SET liked = %s WHERE user_id = %s AND media_id = %s;", (liked, user_id, media_id))
 
-def set_data_liked(pair, ID, user, liked=True):
-    pair[1].execute("UPDATE {} SET liked = %s WHERE ID = %s;".format(user), (liked, ID))
 
-
-def set_data_watched(pair, ID, user, watched=True):
-    pair[1].execute("UPDATE {} SET watched = %s WHERE ID = %s;".format(user), (watched, ID))
+def set_data_watched(pair, user_id, media_id, watched=True):
+    pair[1].execute("UPDATE preferences SET watched = %s WHERE user_id = %s AND media_id = %s;", (watched, user_id, media_id))
 
 
 def set_data_id(pair, oldID, newID, table="media"):
@@ -134,13 +134,13 @@ def get_by_id(pair, ID, table="media"):
             return None
 
 
-def get_by_liked(pair, table, liked=True):
-    pair[1].execute("SELECT * FROM {} WHERE liked = %s;".format(table), (liked,))
+def get_by_liked(pair, liked=True):
+    pair[1].execute("SELECT * FROM preferences WHERE liked = %s;", (liked,))
     return pair[1].fetchall()
 
 
-def get_by_watched(pair, table, watched=True):
-    pair[1].execute("SELECT * FROM {} WHERE watched = %s;".format(table), (watched,))
+def get_by_watched(pair, watched=True):
+    pair[1].execute("SELECT * FROM preferences WHERE watched = %s;", (watched,))
     return pair[1].fetchall()
 
 
@@ -190,10 +190,6 @@ def delete_data(pair, ID, table="media"):
 
 def delete_table(pair, table):
     pair[1].execute("DROP TABLE {} CASCADE;".format(table))
-
-
-def create_user_table(pair, user):
-    pair[1].execute("CREATE TABLE IF NOT EXISTS {}(watched BOOLEAN NOT NULL, liked BOOLEAN NOT NULL, rating NUMERIC, review VARCHAR, ID VARCHAR, FOREIGN KEY (ID) REFERENCES media (ID));".format(user))
 
 
 def clear_data(pair, table):
