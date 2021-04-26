@@ -69,6 +69,11 @@ def check_user_exists(pair, username):
         return False
 
 
+def get_user_id(pair, username):
+    pair[1].execute("SELECT user_id FROM users WHERE username = %s", (username))
+    return pair[1].fetchone()
+
+
 def set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID, summary="None"):
     #retrieve list of ID's
     pair[1].execute("SELECT ID FROM media WHERE ID = %s;", (ID,))

@@ -113,9 +113,11 @@ List of functions:
 	set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID, summary="None") -> set entry or insert new entry into media table
 	set_data_id(pair, oldID, newID, table="media") -> set id of existing data point
 	add_user(pair, username, password_hash, password_salt) -> add to users table
+	check_user_exists(pair, username) -> returns true if exists and false if not
 	get_by_id(pair, ID, table="media") -> get entry by ID
 	delete_data(pair, ID, table) -> delete a data point
-	
+	get_user_id(pair, username) -> get user_id for corresponding username
+
 	WORKS WITH -> preferences table:
 	set_data_liked(pair, user_id, media_id, liked=true) -> set boolean liked value of data with ID
 	set_data_watched(pair, user_id, media_id, watched=false) -> set boolean watched value of data with ID
@@ -161,11 +163,29 @@ close_DBConnection(pair):
 
 get_user_recommendations(pair, user_id):
         Constraints:
-                noe
+                none
         Parameters:
                 pair->tuple from open_DBConnection()
         	user_id-> string (user we want recomendations for)
 	Return Type:
+                list of media_id's from the media table
+
+check_user_exists(pair, username):
+        Constraints:
+                none
+        Parameters:
+                pair->tuple from open_DBConnection()
+                username-> string
+        Return Type:
+                list of media_id's from the media table
+
+get_user_id(pair, username):
+        Constraints:
+                none
+        Parameters:
+                pair->tuple from open_DBConnection()
+                username-> string
+        Return Type:
                 list of media_id's from the media table
 
 add_user(pair, username, password_hash, password_salt, user_id):
