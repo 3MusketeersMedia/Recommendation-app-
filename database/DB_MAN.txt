@@ -72,9 +72,6 @@ that we would want to preload into our database
 MEDIA:
 entry -> name, mediaType, year, link, genres, rating, running_time, ID, summary
 
-You can create tables, to track user liked and watched list:
-use -> create_user_table()
-
 USERS: 
 entry -> username, password_hash, password_salt, user_id
 
@@ -100,9 +97,9 @@ Updates:
 Took out create user table, all preferences (watched, liked, rating, etc) will be stored
 In a single table called Preferences
 
-Set_data/get_by_watched and liked have changed parameters
+Set_data/get_by_watched and liked have changed
 
-New Function -> set_preference
+New Function -> set_preference, get_user_preference, get_user_liked, get_user_watched, delete_preference
 
 
 ----------------------------------------
