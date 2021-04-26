@@ -40,7 +40,7 @@ def close_DBConnection(pair):
 
 
 def add_user(pair, username, password_hash, password_salt):
-    pair[1].execute("SELECT ID FROM users WHERE username = %s;", (username,))
+    pair[1].execute("SELECT username FROM users WHERE username = %s;", (username,))
     list_id = pair[1].fetchall()
     user_id = str(hash(username))
 
@@ -58,6 +58,15 @@ def add_user(pair, username, password_hash, password_salt):
         else:
             pair[1].execute("INSERT INTO users VALUES(%s, %s, %s, %s);", (username, password_hash, password_salt, user_id))
             #insert if false
+
+
+def check_user_exists(pair, username):
+    pair[1].execute("SELECT username FROM users WHERE username = %s", (username,))
+    list_id = pair[1].fetchall()
+    if (username,) is list_id:
+        return True
+    else:
+        return False
 
 
 def set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID, summary="None"):
