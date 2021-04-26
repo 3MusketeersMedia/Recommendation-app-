@@ -15,7 +15,7 @@ if conn is None:
 #make tables
 database.execute("CREATE TABLE IF NOT EXISTS media(name VARCHAR NOT NULL, mediaType VARCHAR NOT NULL, year INT, link VARCHAR, genres VARCHAR, rating NUMERIC, running_time NUMERIC, summary VARCHAR, ID VARCHAR, PRIMARY KEY(ID));")
 
-database.execute("CREATE TABLE IF NOT EXISTS users(username VARCHAR NOT NULL, password_hash VARCHAR NOT NULL, password_salt VARCHAR NOT NULL, ID VARCHAR, PRIMARY KEY(ID));")
+database.execute("CREATE TABLE IF NOT EXISTS users(username VARCHAR NOT NULL UNIQUE, password_hash VARCHAR NOT NULL, password_salt VARCHAR NOT NULL, ID VARCHAR, PRIMARY KEY(ID));")
 
 database.execute("CREATE TABLE IF NOT EXISTS preferences(watched BOOLEAN NOT NULL, liked BOOLEAN NOT NULL, rating NUMERIC, review VARCHAR, user_id VARCHAR, media_id VARCHAR, FOREIGN KEY (user_id) REFERENCES users (ID), FOREIGN KEY (media_id) REFERENCES media (ID));")
 
@@ -39,19 +39,20 @@ def close_DBConnection(pair):
     pair[0].close()
 
 
-def add_user(pair, username, password_hash, password_salt, user_id):
-    pair[1].execute("SELECT ID FROM users WHERE ID = %s;", (user_id,))
+def add_user(pair, username, password_hash, password_salt):
+    pair[1].execute("SELECT ID FROM users WHERE username = %s;", (username,))
     list_id = pair[1].fetchall()
+    user_id = str(hash(username))
 
     if pair[2] == False:
-        if (user_id,) in list_id:
+        if (username,) in list_id:
             pair[1].execute("UPDATE users SET username = %s, password_hash = %s, password_salt = %s WHERE ID = %s;", (username, password_hash, password_salt, user_id))
             #update if true
         else:
             pair[1].execute("INSERT INTO users VALUES(%s, %s, %s, %s);", (username, password_hash, password_salt, user_id))
             #insert if false
     else:
-        if len(list_id) > 0 and user_id == list_id[0]['id']:
+        if len(list_id) > 0 and username == list_id[0]['username']:
             pair[1].execute("UPDATE users SET username = %s, password_hash = %s, password_salt = %s WHERE ID = %s;", (username, password_hash, password_salt, user_id))
             #update if true
         else:
