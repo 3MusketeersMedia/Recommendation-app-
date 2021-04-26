@@ -8,10 +8,13 @@ import database
 
 # TA email: yogolan@ucsc.edu
 # .\venv\Scripts\activate
+# use flask-jwt-extended if you are
 
 # instance of flask web app
 app = Flask(__name__)
 cors = CORS(app)
+
+#login_manager = LoginManager()
 
 # number of attributes currently: 9
 # attributes currently: movie name, media type, id
@@ -61,37 +64,32 @@ def movies():
     # need to close db connection?
     all_media = database.get_all(db_amazon, "media")
     database.close_DBConnection(db_amazon)
-    #for x in all_media:
-    #    print(x)
     dict1 = format_media(all_media)
     return dict1
 
-# need to know what to search for
-@app.route("/search")
-def search():
-    return "search"
+# add: search, profile
 
 # if user, enter; if not, try again
+# ask for query method
+# if token, return token. If session, return message "login success"
 @app.route("/login", methods=['GET', 'POST'])
 def login():
-    #if request.method == 'POST':
-    #    hello = request.get_json()
-    #    print(hello)
+    if request.method == 'POST':
+        #hello = request.get_json()
+        user = request.json.get("username")
+        pass1 = request.json.get("password")
+        print("hello test")
+        print(user)
+        print(pass1)
+        return user
     status_code = Response(status=201)
     return status_code
 
-# if user, redirect to login or user already exists
+# if user, user already exists
 @app.route("/signup", methods=['POST'])
 def signup():
-    if request.method == 'POST':
-        pass
+    username = request.form.get("username")
     return "signup"
-
-@app.route("/profile", methods=['GET', 'POST'])
-def profile():
-    if request.method == 'POST':
-        pass
-    return "profile"
 
 @app.route("/time")
 def time():
