@@ -3,6 +3,8 @@ import json
 
 from flask import Flask
 from flask import request, jsonify, redirect, url_for, Response
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 import database
 
@@ -10,11 +12,13 @@ import database
 # .\venv\Scripts\activate
 # use flask-jwt-extended if you are
 
+# Should I maintain a permanent connection to the database or open/close as needed?
+
 # instance of flask web app
 app = Flask(__name__)
 cors = CORS(app)
-
-#login_manager = LoginManager()
+app.config["JWT_SECRET_KEY"] = "super-key"
+jwt = JWTManager(app)
 
 # number of attributes currently: 9
 # attributes currently: movie name, media type, id
@@ -59,7 +63,6 @@ def index():
 # too many movies, need to split it off
 @app.route("/movies", methods=['GET'])
 def movies():
-    # it just returns a list when dict_cursor == true...
     db_amazon = database.open_DBConnection(True)
     # need to close db connection?
     all_media = database.get_all(db_amazon, "media")
@@ -74,26 +77,45 @@ def movies():
 # if token, return token. If session, return message "login success"
 @app.route("/login", methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        #hello = request.get_json()
-        user = request.json.get("username")
-        pass1 = request.json.get("password")
-        print("hello test")
-        print(user)
-        print(pass1)
-        return user
-    status_code = Response(status=201)
-    return status_code
+    if request.method == "POST":
+        username = request.json.get("username", None)
+        password = request.json.get("password", None)
+        print(username)
+        print(password)
+
+        # query database
+        db = database.open_DBConnection(True)
+        user = database.check_user_exists(db, username)
+
+        if not user:
+            print("bad msg")
+            return jsonify({"msg": "Invalid username or password"})
+        
+        access_token = create_access_token(identity=username)
+        return jsonify({"token": access_token, "username": username})
+    
+    return "hello"
+
+# protects a route with jwt_required
+@app.route("/protected", methods=["GET"])
+@jwt_required()
+def protected():
+    current_user = get_jwt_identity()
+    return jsonify(logged=current_user), 201
 
 # if user, user already exists
-@app.route("/signup", methods=['POST'])
+@app.route("/signup", methods=['GET', 'POST'])
 def signup():
-    username = request.form.get("username")
+    if request.method == "POST":
+        username = request.form.get("username")
+        email = request.form.get("password")
+        # existing user check
     return "signup"
 
-@app.route("/time")
+@app.route("/protected/time")
 def time():
-    return {"time": time.time()}
+    return "hello"
+    #return {"time": time.time()}
 
 if __name__ == "__main__":
     app.run(debug=True)
