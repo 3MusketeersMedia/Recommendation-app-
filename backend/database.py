@@ -180,6 +180,11 @@ def get_by_genre(pair, genre):
     return pair[1].fetchall()
 
 
+def get_many(pair, limit, table="media"):
+    pair[1].execute("SELECT * FROM {};".format(table))
+    return pair[1].fetchmany(limit)
+
+
 def get_all(pair, table="media"):
     pair[1].execute("SELECT * FROM {};".format(table))
     return pair[1].fetchall()

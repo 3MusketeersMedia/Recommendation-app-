@@ -139,6 +139,7 @@ List of functions:
 	WORKS WITH -> all tables:
 	get_next(pair) -> get the next MAX_LIST_SIZE elements of previous get_by_something() query 
 	get_all(pair, table="media") -> get all items in table
+	get_many(pair, limit, table="media") -> get limit items in table
 	delete_table(pair, table) -> delete table, need to redo exec(...) to reinitialize it
 	clear_data(pair, table) -> clear table
 	num_items(pair, table="media") -> give num_items in table
@@ -384,6 +385,16 @@ get_next(pair):
                 pair -> tuple from openDBConnection()
         Return Type:
                 list of tuples -> MAX_LIST_SIZE chunk of tuples that are in the db
+
+get_many(pair, limit, table="media"):
+        Constraints:
+                none
+        Parameters:
+                pair -> tuple from openDBConnection()
+                table -> string of table name
+		limit -> number of rows
+        Return Type:
+                list of tuples -> next limit size chunk of tuples (next chunk of a previous get query)
 
 get_all(pair, table="media"):
 	Constraints:
