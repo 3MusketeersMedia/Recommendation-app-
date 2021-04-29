@@ -4,7 +4,7 @@ from model import *
 #----------Setup----------------------
 #verify connection
 #setup database
-conn = psycopg2.connect(host="mediadb.c3txk3dmci6e.us-west-1.rds.amazonaws.com", port="5432", user='postgres', password='postgres')
+conn = psycopg2.connect(host="mediadb.c3txk3dmci6e.us-west-1.rds.amazonaws.com", port="5432", user='postgres', password='postgres', dbname='db')
 conn.autocommit = True #autocommit or commit after transactions
 database = conn.cursor()
 
@@ -26,7 +26,7 @@ conn.close()
 
 #-----------Function Definitions------------
 def open_DBConnection(dict_cursor=False):
-    connection = psycopg2.connect(host="mediadb.c3txk3dmci6e.us-west-1.rds.amazonaws.com", port="5432", user='postgres', password='postgres')
+    connection = psycopg2.connect(host="mediadb.c3txk3dmci6e.us-west-1.rds.amazonaws.com", port="5432", user='postgres', password='postgres', dbname='db')
     connection.autocommit = True
     if dict_cursor == True:
         db = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
