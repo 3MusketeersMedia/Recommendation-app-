@@ -72,14 +72,11 @@ that we would want to preload into our database
 MEDIA:
 entry -> name, mediaType, year, link, genres, rating, running_time, ID, summary
 
-You can create tables, to track user liked and watched list:
-use -> create_user_table()
-
 USERS: 
 entry -> username, password_hash, password_salt, user_id
 
-'name of table':
-entry -> watched, liked, rating, review, ID (foreign key in media)
+Preferences:
+entry -> watched, liked, rating, review, user_id (foreign key in users), media_id (foreign key in media)
 
 ----------------------------------------
 
@@ -95,31 +92,55 @@ be inserted.
 
 ----------------------------------------
 
+Updates:
+
+Took out create user table, all preferences (watched, liked, rating, etc) will be stored
+In a single table called Preferences
+
+Set_data/get_by_watched and liked have changed
+
+New Function -> set_preference, get_user_preference, get_user_liked, get_user_watched, delete_preference
+
+
+----------------------------------------
+
 List of functions:
 	open_DBConnection(dict_cursor=False) -> open connection to db
 	close_DBConnection(pair) -> close connection to db
+	get_user_recommendations(pair, user_id) -> get user_recommendations based on others ratings
 	
+	WORKS WITH -> media and/or users tables:
 	set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID, summary="None") -> set entry or insert new entry into media table
-	set_user_data(pair, watched, liked, ID, rating="NULL", review=" ") -> set user table entry or insert new entry
 	set_data_id(pair, oldID, newID, table="media") -> set id of existing data point
-	set_data_liked(pair, ID, liked, user) -> set boolean liked value of data with ID
-	set_data_watched(pair, ID, watched, user) -> set boolean watched value of data with ID
-	
-	get_by_name(pair, name) -> get all entries of a given name
+	add_user(pair, username, password_hash, password_salt) -> add to users table
+	check_user_exists(pair, username) -> returns true if exists and false if not
 	get_by_id(pair, ID, table="media") -> get entry by ID
+	delete_data(pair, ID, table) -> delete a data point
+	get_user_id(pair, username) -> get user_id for corresponding username
+
+	WORKS WITH -> preferences table:
+	set_data_liked(pair, user_id, media_id, liked=true) -> set boolean liked value of data with ID
+	set_data_watched(pair, user_id, media_id, watched=false) -> set boolean watched value of data with ID
+	set_preference(pair, watched, liked, user_id, media_id, rating="NULL", review=" "):	
+	get_user_preference(pair, user_id, media_id)
+	get_user_liked(pair, user_id, media_id, liked=True)
+	get_user_watched(pair, user_id, media_id, watched=True)
+	delete_preference(pair, user_id, media_id)	
+
+	WORKS WITH -> media table: 	
+	get_by_name(pair, name) -> get all entries of a given name
 	get_by_mediaType(pair, mediaType) -> get entry by mediaType
-	get_by_liked(pair, table, liked=True) -> get all liked elements
-	get_by_watched(pair, table, watched=True) -> get all watched elements
+	get_by_liked(pair, liked=True) -> get all liked elements
+	get_by_watched(pair, watched=True) -> get all watched elements
 	get_by_year(pair, start, end=-1) -> get all movies from media table that are from years start to end. If end is not specified end = start.
 	get_by_rating(pair, start, end=-1) -> get all movies from media table that have a rating in range start to end. If end is not specified end = start
 	get_by_running_time(pair, start, end=-1) -> get all movies from media table that have a running time from start to end. If end is not specified end = start
+
+	WORKS WITH -> all tables:
 	get_next(pair) -> get the next MAX_LIST_SIZE elements of previous get_by_something() query 
 	get_all(pair, table="media") -> get all items in table
-	
-	delete_data(pair, ID, table) -> delete a data point
+	get_many(pair, limit, table="media") -> get limit items in table
 	delete_table(pair, table) -> delete table, need to redo exec(...) to reinitialize it
-	create_user_table(pair, table) -> create table	
-
 	clear_data(pair, table) -> clear table
 	num_items(pair, table="media") -> give num_items in table
 
@@ -140,6 +161,33 @@ close_DBConnection(pair):
 		pair->tuple from open_DBConnection()
 	Return Type:
 		none
+
+get_user_recommendations(pair, user_id):
+        Constraints:
+                none
+        Parameters:
+                pair->tuple from open_DBConnection()
+        	user_id-> string (user we want recomendations for)
+	Return Type:
+                list of media_id's from the media table
+
+check_user_exists(pair, username):
+        Constraints:
+                none
+        Parameters:
+                pair->tuple from open_DBConnection()
+                username-> string
+        Return Type:
+                list of media_id's from the media table
+
+get_user_id(pair, username):
+        Constraints:
+                none
+        Parameters:
+                pair->tuple from open_DBConnection()
+                username-> string
+        Return Type:
+                list of media_id's from the media table
 
 add_user(pair, username, password_hash, password_salt, user_id):
         Constraints:
@@ -172,16 +220,15 @@ set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID, su
 	Return Type:
 		none
 
-set_user_data(pair, watched, liked, ID, rating="NULL", review=" "):
+set_preference(pair, watched, liked, user_id, media_id, rating="NULL", review=" "):
         Constraints:
-                Cannot reset ID
-                ID MUST BE UNIQUE, everthing else can have duplicates
-		IMPORTANT: RATING IS AN INTEGER NOT A STRING, DESPITE THE DEFAULT VALUE
+		user_id must be in users and media_id must be in media
         Parameters:
                 pair -> (connection, database) tuple from open_DBConnection()
                 watched -> boolean 
                 liked -> boolean
-                ID -> string
+                user_id -> string
+		media_id ->string
 		rating -> decimal
 		review -> string
         Return Type:
@@ -198,29 +245,59 @@ set_data_id(pair, oldID, newID, table="media"):
 	Return Type:
 		none
 
-set_data_liked(pair, ID, user, liked=True):
+set_data_liked(pair, user_id, media_id, liked=True):
         Constraints:
                 none
         Parameters:
                 pair -> tuple from openDBConnection()
-		ID -> string
-		user-> string of user table to update
+		user_id -> string
+		media_id -> string
 		liked -> boolean
         Return Type:
                 none
 
-set_data_watched(pair, ID, user, watched=True):
+set_data_watched(pair, user_id, media_id, watched=True):
         Constraints:
                 none
         Parameters:
                 pair -> tuple from openDBConnection()
-                ID -> string
-                user-> string of user table to update
-                watched -> boolean
+                user_id -> string
+		media_id -> string
+		watched -> boolean
         Return Type:
                 none
 
 Get Commands: for each get command, it will return an empty list if no elements found -------------------
+
+get_user_preference(pair, user_id, media_id):
+        Constraints:
+                none
+        Paremeters:
+                pair -> tuple from open_DBConnection()
+                user_id -> string
+		media_id -> string
+        Return Type:
+                list of tuples -> MAX_LIST_SIZE list of tuples
+
+get_user_liked(pair, user_id, media_id, liked=True):
+        Constraints:
+                none
+        Paremeters:
+                pair -> tuple from open_DBConnection()
+                user_id -> string
+                media_id -> string
+        Return Type:
+                list of tuples -> MAX_LIST_SIZE list of tuples
+
+get_user_watched(pair, user_id, media_id, watched=True):
+        Constraints:
+                none
+        Paremeters:
+                pair -> tuple from open_DBConnection()
+                user_id -> string
+                media_id -> string
+        Return Type:
+                list of tuples -> MAX_LIST_SIZE list of tuples
 
 get_by_name(pair, name):
 	Constraints:
@@ -229,7 +306,7 @@ get_by_name(pair, name):
 		pair -> tuple from open_DBConnection()
 		name -> string
 	Return Type:
-		list of tuples -> MAX_LIST_SIZE list of (name, mediaType, ID)
+		list of tuples -> MAX_LIST_SIZE list of tuples
 
 get_by_id(pair, ID, table="media"):
 	Constraints:
@@ -253,22 +330,20 @@ get_by_mediaType(pair, mediaType):
 	Return Type:
 		list of tuples -> MAX_LIST_SIZE list of (name, mediaType, ID)
 
-get_by_liked(pair, table, liked=True):
+get_by_liked(pair, liked=True):
         Constraints:
                 none
         Parameters:
                 pair -> tuple from openDBConnection()
-		table -> string name of table
 		liked -> boolean
         Return Type:
                 list of tuples -> list of liked entries
 
-get_by_watched(pair, table, watched=True):
+get_by_watched(pair, watched=True):
         Constraints:
                 none
         Parameters:
                 pair -> tuple from openDBConnection()
-                table -> string name of table
 		watched -> boolean
         Return Type:
                 list of tuples -> list of liked entries
@@ -311,6 +386,16 @@ get_next(pair):
         Return Type:
                 list of tuples -> MAX_LIST_SIZE chunk of tuples that are in the db
 
+get_many(pair, limit, table="media"):
+        Constraints:
+                none
+        Parameters:
+                pair -> tuple from openDBConnection()
+                table -> string of table name
+		limit -> number of rows
+        Return Type:
+                list of tuples -> next limit size chunk of tuples (next chunk of a previous get query)
+
 get_all(pair, table="media"):
 	Constraints:
 		none
@@ -333,6 +418,16 @@ delete_data(pair, ID, table="media"):
 	Return Type:
 		none
 
+delete_preference(pair, user_id, media_id):
+        Constraints:
+                none
+        Paremeters:
+                pair -> tuple from open_DBConnection()
+                user_id -> string
+                media_id -> string
+        Return Type:
+                list of tuples -> MAX_LIST_SIZE list of tuples
+
 delete_table(pair, table):
         Constraints:
 		Don't delete 'media' table
@@ -340,17 +435,6 @@ delete_table(pair, table):
         Parameters:
                 pair -> tuple from openDBConnection()
 		table -> string
-        Return Type:
-                none
-
-create_user_table(pair, user):
-        Constraints:
-        	If table already exists, nothing will happen
-		even if table has new columns
-		User string cannot have spaces
-	Parameters:
-                pair -> tuple from openDBConnection()
-                user -> string that is name of the table
         Return Type:
                 none
 
