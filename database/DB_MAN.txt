@@ -122,7 +122,8 @@ List of functions:
 	set_data_liked(pair, user_id, media_id, liked=true) -> set boolean liked value of data with ID
 	set_data_watched(pair, user_id, media_id, watched=false) -> set boolean watched value of data with ID
 	set_preference(pair, watched, liked, user_id, media_id, rating="NULL", review=" "):	
-	get_user_preference(pair, user_id, media_id)
+	get_user_preference(pair, user_id, media_id) -> get single preference
+	get_user_preferences(pair, user_id, media_id) -> get all preferences
 	get_user_liked(pair, user_id, media_id, liked=True)
 	get_user_watched(pair, user_id, media_id, watched=True)
 	delete_preference(pair, user_id, media_id)	
@@ -276,6 +277,16 @@ get_user_preference(pair, user_id, media_id):
                 pair -> tuple from open_DBConnection()
                 user_id -> string
 		media_id -> string
+        Return Type:
+                list of tuples -> MAX_LIST_SIZE list of tuples
+
+get_user_preferences(pair, user_id, media_id):
+        Constraints:
+                none
+        Paremeters:
+                pair -> tuple from open_DBConnection()
+                user_id -> string
+                media_id -> string
         Return Type:
                 list of tuples -> MAX_LIST_SIZE list of tuples
 
