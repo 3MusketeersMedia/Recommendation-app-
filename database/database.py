@@ -127,7 +127,7 @@ def set_data_id(pair, oldID, newID, table="media"):
     pair[1].execute("UPDATE {} SET ID = %s WHERE ID = %s;".format(table), (newID, oldID))
 
 
-def get_user_preference(pair, user_id):
+def get_user_preferences(pair, user_id):
     pair[1].execute("SELECT * FROM preferences WHERE user_id = %s;", (user_id,))
     return pair[1].fetchall()
 
