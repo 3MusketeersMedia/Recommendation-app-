@@ -12,7 +12,7 @@ const similarMovies = (props) => {
             <div className='row'>
                 <div className='d-flex justify-content-start m-3'>
                 {props.movies.map((movie, index) => <div>
-                    <MoviePic movie={movie}/>
+                    <MoviePic movie={movie} />
                 </div>)} 
       </div></div></div>
       </>
