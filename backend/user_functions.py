@@ -236,4 +236,3 @@ close_DBConnection(connection)
 
 # bottom = ia.get_bottom100_movies()
 
-
