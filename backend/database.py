@@ -63,7 +63,7 @@ def add_user(pair, username, password_hash, password_salt):
 def check_user_exists(pair, username):
     pair[1].execute("SELECT username FROM users WHERE username = %s", (username,))
     list_id = pair[1].fetchall()
-    if (username,) in list_id:
+    if username == list_id[0][0]:
         return True
     else:
         return False
@@ -71,6 +71,11 @@ def check_user_exists(pair, username):
 
 def get_user_id(pair, username):
     pair[1].execute("SELECT ID FROM users WHERE username = %s", (username,))
+    return pair[1].fetchone()
+
+
+def get_user_hash(pair, username):
+    pair[1].execute("SELECT password_hash FROM users WHERE username = %s", (username,))
     return pair[1].fetchone()
 
 

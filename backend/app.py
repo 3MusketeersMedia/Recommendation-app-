@@ -1,12 +1,13 @@
-import time
 import json
+from datetime import timedelta
 
 from flask import Flask
 from flask import request, jsonify, redirect, url_for, Response
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 import database
+import bcrypt
 
 # TA email: yogolan@ucsc.edu
 # .\venv\Scripts\activate
@@ -17,8 +18,13 @@ import database
 # instance of flask web app
 app = Flask(__name__)
 cors = CORS(app)
+# change secret key and implement refresh tokens
 app.config["JWT_SECRET_KEY"] = "super-key"
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=1)
 jwt = JWTManager(app)
+
+db = database.open_DBConnection(True)
 
 # number of attributes currently: 9
 # attributes currently: movie name, media type, id
@@ -58,43 +64,56 @@ def index():
     if request.method == 'POST':
         # could check the json to determine which function to implement
         pass
+
     return "West virgina Country Roads"
 
 # too many movies, need to split it off
 @app.route("/movies", methods=['GET'])
 def movies():
-    db_amazon = database.open_DBConnection(True)
-    # need to close db connection?
-    all_media = database.get_all(db_amazon, "media")
-    database.close_DBConnection(db_amazon)
+    all_media = database.get_all(db, "media")
     dict1 = format_media(all_media)
     return dict1
+
+@app.route("/review", methods=['GET'])
+@jwt_required()
+def review():
+    pass
+
+# frontend sends jwt, I look up user
+@app.route("/profile")
+@jwt_required()
+def profile():
+    pass
 
 # add: search, profile
 
 # if user, enter; if not, try again
 # ask for query method
 # if token, return token. If session, return message "login success"
-@app.route("/login", methods=['GET', 'POST'])
+@app.route("/login", methods=['POST'])
 def login():
-    if request.method == "POST":
-        username = request.json.get("username", None)
-        password = request.json.get("password", None)
-        print(username)
-        print(password)
+    username = request.json.get("username", None)
+    password = request.json.get("password", None)
 
-        # query database
-        db = database.open_DBConnection(True)
-        user = database.check_user_exists(db, username)
+    # query database
+    # need to pull hash and salt from db, then hash the password passed in
+    # encode utf-8?
+    # get entire row or individually?
+    user = database.check_user_exists(db, username)
+    if not user:
+        return jsonify({"msg": "Invalid username or password"})
 
-        if not user:
-            print("bad msg")
-            return jsonify({"msg": "Invalid username or password"})
-        
-        access_token = create_access_token(identity=username)
-        return jsonify({"token": access_token, "username": username})
+
+    hashed = database.get_user_hash(db, username)
+    #print(hashed[0].encode("utf-8"))
+    if not bcrypt.checkpw(password.encode("utf-8"), hashed[0].encode("utf-8")):
+        #print("bad password")
+        return jsonify({"msg": "Invalid username or password"})
     
-    return "hello"
+    # if bcrypt.hashpw(password, stored_hash) == stored hash
+        
+    access_token = create_access_token(identity=username)
+    return jsonify({"token": access_token, "username": username})
 
 # protects a route with jwt_required
 @app.route("/protected", methods=["GET"])
@@ -107,15 +126,27 @@ def protected():
 @app.route("/signup", methods=['GET', 'POST'])
 def signup():
     if request.method == "POST":
-        username = request.form.get("username")
-        email = request.form.get("password")
+        username = request.json.get("username")
+        password = request.json.get("password")
         # existing user check
-    return "signup"
+        # check if password length long?
+        if database.check_user_exists(db, username):
+            return jsonify({"msg": "Invalid username or password"})
+        
+        # salt stored as part of hash, do not need to store in database
+        salt = bcrypt.gensalt()
+        hashed = bcrypt.hashpw(password.encode("utf-8"), salt)
 
-@app.route("/protected/time")
-def time():
-    return "hello"
-    #return {"time": time.time()}
+        #print("hash value is: ")
+        #print(hashed.decode("utf-8"))
+
+        database.add_user(db, username, hashed.decode("utf-8"), salt)
+
+        # send token
+        access_token = create_access_token(identity=username)
+        return jsonify({"token": access_token, "username": username})
+
+    return "signup"
 
 if __name__ == "__main__":
     app.run(debug=True)

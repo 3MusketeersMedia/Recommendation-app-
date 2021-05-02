@@ -1,0 +1,9 @@
+Modifications:
+- check_user_exists(pair, username)
+    - Modified how the function compares the username sent and
+    the username in the database
+
+Additions:
+- get_user_hash(pair, username)
+    - Uses username to find the corresponding password hash and
+    returns it in the form of a list
