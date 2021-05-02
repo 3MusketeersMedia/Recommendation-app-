@@ -73,7 +73,7 @@ MEDIA:
 entry -> name, mediaType, year, link, genres, rating, running_time, ID, summary
 
 USERS: 
-entry -> username, password_hash, password_salt, user_id
+entry -> username, password_hash, user_id
 
 Preferences:
 entry -> watched, liked, rating, review, user_id (foreign key in users), media_id (foreign key in media)
@@ -112,7 +112,7 @@ List of functions:
 	WORKS WITH -> media and/or users tables:
 	set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID, summary="None") -> set entry or insert new entry into media table
 	set_data_id(pair, oldID, newID, table="media") -> set id of existing data point
-	add_user(pair, username, password_hash, password_salt) -> add to users table
+	add_user(pair, username, password_hash) -> add to users table
 	check_user_exists(pair, username) -> returns true if exists and false if not
 	get_by_id(pair, ID, table="media") -> get entry by ID
 	delete_data(pair, ID, table) -> delete a data point
