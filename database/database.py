@@ -4,7 +4,7 @@ from model import *
 #----------Setup----------------------
 #verify connection
 #setup database
-conn = psycopg2.connect(host="mediadb.c3txk3dmci6e.us-west-1.rds.amazonaws.com", port="5432", user='postgres', password='postgres')
+conn = psycopg2.connect(host="mediadb.c3txk3dmci6e.us-west-1.rds.amazonaws.com", port="5432", user='postgres', password='postgres', dbname='db')
 conn.autocommit = True #autocommit or commit after transactions
 database = conn.cursor()
 
@@ -26,7 +26,7 @@ conn.close()
 
 #-----------Function Definitions------------
 def open_DBConnection(dict_cursor=False):
-    connection = psycopg2.connect(host="mediadb.c3txk3dmci6e.us-west-1.rds.amazonaws.com", port="5432", user='postgres', password='postgres')
+    connection = psycopg2.connect(host="mediadb.c3txk3dmci6e.us-west-1.rds.amazonaws.com", port="5432", user='postgres', password='postgres', dbname='db')
     connection.autocommit = True
     if dict_cursor == True:
         db = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
@@ -178,6 +178,11 @@ def get_by_watched(pair, watched=True):
 def get_by_genre(pair, genre):
     pair[1].execute("SELECT * FROM media WHERE POSITION(%s in genres) > 0;", (genre,))
     return pair[1].fetchall()
+
+
+def get_many(pair, limit, table="media"):
+    pair[1].execute("SELECT * FROM {};".format(table))
+    return pair[1].fetchmany(limit)
 
 
 def get_all(pair, table="media"):

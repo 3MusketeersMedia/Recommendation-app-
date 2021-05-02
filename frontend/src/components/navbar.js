@@ -11,7 +11,7 @@ const MyNav = () => {
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
             <Nav.Link href="/list">Movie List</Nav.Link>
-            <Nav.Link href="#" onClick={context.openLoginModal}>Login</Nav.Link>
+            <Nav.Link href="/login">Login</Nav.Link>
             <NavDropdown title="Dropdown" id="collasible-nav-dropdown">
               <NavDropdown.Item href="#action/3.1">Item 1</NavDropdown.Item>
               <NavDropdown.Item href="#action/3.2">Item 2</NavDropdown.Item>

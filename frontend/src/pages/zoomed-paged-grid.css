@@ -29,13 +29,49 @@
   }
 
   .MovieFrame{
-    min-height: fit-content;
+    position: relative; 
+    transition: transform 0.2s;
+    max-width: 325px;
+    max-height: 525px;
+  }
+
+  .MovieFrame:hover{
+    cursor: pointer;
+    transform: scale(1.1);
+  }
+
+  .MovieFrame:hover .overlay{
+    opacity: 1;
+  }
+
+  .overlay {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.5);
+    transition: 0.5s ease; 
+    width: 100%;
+    opacity:  0; 
+    top: 0 ;
+    z-index: 3;
+    font-size: 20px;
+    padding: 20px;
+    text-align: center; 
   }
 
   .MovieFrame img:first-child  {
     display: block;
     align-content: flex-start;
-    max-width: 100%;
-    min-height: 40rem;
+    min-width: 100%;
   }
-    
+  
+  .NavBar{
+    margin-bottom: 20px;
+  }
+  #content-wrap {
+    padding-bottom: 10rem;    /* Footer height */
+  }
+
+  .Media-app > .row {
+    margin-right: 50px;
+    overflow-x: auto;
+    flex-wrap: nowrap
+  }
