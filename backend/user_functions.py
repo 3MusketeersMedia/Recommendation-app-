@@ -143,7 +143,6 @@ def filter_by_genre(genre):
 def populate_database():
     exec(open("backend/database.py").read())
     connection = open_DBConnection()
-    clear_data(connection, 'media')
     movies = []
     data = imdb_basic()
     # id, type, primary title, original title, isAdult, start, end, runtime, genre
@@ -161,6 +160,7 @@ def populate_database():
         id = row[0][2:]
         if "N" in running_time:
             running_time = 0
+        # print(id)
         set_data(connection, name, mediaType, year, link, genres, rating, running_time, id)
         # print(name, mediaType, year, link, genres, rating, running_time, id)
     #     movies.append((name, mediaType, year, link, genres, rating, running_time, id))
