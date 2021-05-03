@@ -63,7 +63,6 @@ def add_user(pair, username, password_hash):
 def check_user_exists(pair, username):
     pair[1].execute("SELECT username FROM users WHERE username = %s", (username,))
     list_id = pair[1].fetchall()
-    print(list_id, username)
     if list_id and username == list_id[0][0]:
         return True
     else:
