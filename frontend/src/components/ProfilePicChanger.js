@@ -7,7 +7,7 @@ const ProfilePicChanger = (props) => {
     const [visible, setVisible] = useState(false);
     return (
       <>
-      <div classname="d-flex align-items-center justify-content-center">
+      <div className="d-flex align-items-center justify-content-center">
         <Button type="primary" onClick={() => setVisible(true)}>
             Change Photo
         </Button>

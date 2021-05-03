@@ -45,7 +45,7 @@ const ContextWrapper = ({children}) => {
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
         state.actions.syncToken(); 
-    }, []);
+    });
 
     // The initial value for the context is not null anymore, but the current state of this component,
     // the context will now have a getStore, getActions and setStore functions available, because they were declared
@@ -78,7 +78,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             /** */
             syncToken: async () => {
                 const token = await sessionStorage.getItem("token");
-                if(token && token != "" && token != undefined) 
+                if(token && token !== "" && token !== undefined) 
                     setStore({token: token});
             }, 
 

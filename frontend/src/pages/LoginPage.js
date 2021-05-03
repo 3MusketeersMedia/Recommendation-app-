@@ -1,7 +1,6 @@
 import React from 'react';
 import {Container, Jumbotron, Form, Button} from 'react-bootstrap';
 import {AppContext} from '../AppContext'; 
-import { withRouter } from 'react-router-dom';
 import './LoginPage.css';
 
 export default class LoginPage extends React.Component {
@@ -14,7 +13,6 @@ export default class LoginPage extends React.Component {
     this.username = React.createRef();
     this.password = React.createRef();
     this.confirm = React.createRef();
-    this.history = this.props
   }
   toggleNewUser = () => {
     this.setState({newUser: !this.state.newUser});
@@ -44,7 +42,7 @@ export default class LoginPage extends React.Component {
     
     let token = this.context.store.token;
     // Redirects to homepage after token is set.
-    if(token && token != "" && token != undefined)
+    if(token && token !== "" && token !== undefined)
       this.props.history.push("/");
 
     return (
