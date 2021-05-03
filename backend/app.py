@@ -77,12 +77,20 @@ def movies():
 # standard search by name function
 @app.route("/search", methods=["GET"])
 def search():
-    return format_media(database.get_by_name(db, request.json.get("moviename", None)))
+    to_return = format_media(database.get_by_name(db, request.json.get("searchContents", None)))
+    return to_return
 
 # advanced search
-#@app.route("/advSearch", methods=["GET"])
-#def advSearch():
-
+@app.route("/advSearch", methods=["GET"])
+def advSearch():
+    genre = request.json.get("genre", None)
+    minYear = request.json.get("minYear", None)
+    maxYear = request.json.get("maxYear", None)
+    minRate = request.json.get("minRate", None)
+    maxRate = request.json.get("maxRate", None)
+    media = database.advanced_search(db, genre.strip(), minYear.strip(), maxYear.strip(), minRat.strip(), maxRate.strip())
+    to_return = format_media(media)
+    return to_return
 
 @app.route("/review", methods=['GET'])
 @jwt_required()
