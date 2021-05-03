@@ -49,7 +49,7 @@ def advanced_search(pair, genre, minYear, maxYear, minRate, maxRate):
     if maxRate == "":
         if minRate == "":
             minRate = 0
-            maxRate = 5
+            maxRate = 11
         else:
             maxRate = minRate
     # Since genre can't be generalized like the params, above, must have two possible queries

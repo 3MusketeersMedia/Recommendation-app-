@@ -77,6 +77,7 @@ def movies():
 # standard search by name function
 @app.route("/search", methods=["POST"])
 def search():
+    #to_return = format_media(database.get_all(db,"media"))
     to_return = format_media(database.get_by_name(db, request.json.get("searchContents", None)))
     return to_return
 
@@ -88,7 +89,8 @@ def advSearch():
     maxYear = request.json.get("maxYear", None)
     minRate = request.json.get("minRate", None)
     maxRate = request.json.get("maxRate", None)
-    media = database.advanced_search(db, genre.strip(), minYear.strip(), maxYear.strip(), minRat.strip(), maxRate.strip())
+    #media = database.advanced_search(db, genre, minYear, maxYear, minRate, maxRate)
+    media = database.get_by_genre(db, genre)
     to_return = format_media(media)
     return to_return
 

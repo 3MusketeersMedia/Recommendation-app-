@@ -55,6 +55,8 @@ const MyNav = () => {
       console.log(response);
       const data = await response.json();
       console.log(data);
+
+      // Need to put the data into the list page
     }
 
     // Performs advanced search
@@ -70,6 +72,8 @@ const MyNav = () => {
       console.log(response);
       const data = await response.json();
       console.log(data);
+
+      // Need to put the data into the list page
     }
     return <AppContext.Consumer>
       {context => <div>
