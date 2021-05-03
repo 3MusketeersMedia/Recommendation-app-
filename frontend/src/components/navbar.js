@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import {Navbar, Nav, NavDropdown, Form, FormControl, Button} from 'react-bootstrap'
 import {AppContext} from '../AppContext';
+import './navbar.css';
 
 const MyNav = () => {
     const [searchContents, changeSC] = useState(null);
