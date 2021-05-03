@@ -13,17 +13,16 @@ import bcrypt
 # .\venv\Scripts\activate
 # use flask-jwt-extended if you are
 
-# Should I maintain a permanent connection to the database or open/close as needed?
-
 # instance of flask web app
 app = Flask(__name__)
 cors = CORS(app)
 # change secret key and implement refresh tokens
 app.config["JWT_SECRET_KEY"] = "super-key"
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=1)
-app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=1)
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(hours=1)
 jwt = JWTManager(app)
 
+# connection to database constantly maintained
 db = database.open_DBConnection(True)
 
 # number of attributes currently: 9
@@ -54,9 +53,6 @@ def format_media(list1):
         json1.append(item_js)
     
     return jsonify(json1)
-
-def format_user_info():
-    pass
 
 # gives the route to the function
 @app.route("/", methods=['POST', 'GET'])
@@ -98,20 +94,19 @@ def login():
     # query database
     # need to pull hash and salt from db, then hash the password passed in
     # encode utf-8?
-    # get entire row or individually?
+    # get entire row or just attribute?
     user = database.check_user_exists(db, username)
     if not user:
         return jsonify({"msg": "Invalid username or password"})
 
-
+    # validate password
     hashed = database.get_user_hash(db, username)
-    #print(hashed[0].encode("utf-8"))
     if not bcrypt.checkpw(password.encode("utf-8"), hashed[0].encode("utf-8")):
-        #print("bad password")
         return jsonify({"msg": "Invalid username or password"})
     
     # if bcrypt.hashpw(password, stored_hash) == stored hash
-        
+
+    # return token    
     access_token = create_access_token(identity=username)
     return jsonify({"token": access_token, "username": username})
 

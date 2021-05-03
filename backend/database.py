@@ -15,7 +15,7 @@ if conn is None:
 #make tables
 database.execute("CREATE TABLE IF NOT EXISTS media(name VARCHAR NOT NULL, mediaType VARCHAR NOT NULL, year INT, link VARCHAR, genres VARCHAR, rating NUMERIC, running_time NUMERIC, summary VARCHAR, ID VARCHAR, PRIMARY KEY(ID));")
 
-database.execute("CREATE TABLE IF NOT EXISTS users(username VARCHAR NOT NULL UNIQUE, ID VARCHAR, PRIMARY KEY(ID));")
+database.execute("CREATE TABLE IF NOT EXISTS users(username VARCHAR NOT NULL UNIQUE, password_hash VARCHAR NOT NULL, ID VARCHAR, PRIMARY KEY(ID));")
 
 database.execute("CREATE TABLE IF NOT EXISTS preferences(watched BOOLEAN NOT NULL, liked BOOLEAN NOT NULL, rating NUMERIC, review VARCHAR, user_id VARCHAR, media_id VARCHAR, FOREIGN KEY (user_id) REFERENCES users (ID), FOREIGN KEY (media_id) REFERENCES media (ID));")
 
@@ -49,11 +49,11 @@ def add_user(pair, username, password_hash):
             pair[1].execute("UPDATE users SET username = %s, password_hash = %s WHERE ID = %s;", (username, password_hash, user_id))
             #update if true
         else:
-            pair[1].execute("INSERT INTO users VALUES(%s, %s, %s, %s);", (username, password_hash, user_id))
+            pair[1].execute("INSERT INTO users VALUES(%s, %s, %s);", (username, password_hash, user_id))
             #insert if false
     else:
         if len(list_id) > 0 and username == list_id[0]['username']:
-            pair[1].execute("UPDATE users SET username = %s, password_hash = %s  WHERE ID = %s;", (username, password_hash, user_id))
+            pair[1].execute("UPDATE users SET username = %s, password_hash = %s WHERE ID = %s;", (username, password_hash, user_id))
             #update if true
         else:
             pair[1].execute("INSERT INTO users VALUES(%s, %s, %s);", (username, password_hash, user_id))
@@ -63,7 +63,10 @@ def add_user(pair, username, password_hash):
 def check_user_exists(pair, username):
     pair[1].execute("SELECT username FROM users WHERE username = %s", (username,))
     list_id = pair[1].fetchall()
-    if list_id and username == list_id[0][0]:
+    if not list_id:
+        return False
+     
+    if username == list_id[0][0]:
         return True
     else:
         return False
@@ -130,6 +133,11 @@ def set_data_watched(pair, user_id, media_id, watched=True):
 
 def set_data_id(pair, oldID, newID, table="media"):
     pair[1].execute("UPDATE {} SET ID = %s WHERE ID = %s;".format(table), (newID, oldID))
+
+
+def get_user_preferences(pair, user_id):
+    pair[1].execute("SELECT * FROM preferences WHERE user_id = %s;", (user_id,))
+    return pair[1].fetchall()
 
 
 def get_user_preference(pair, user_id, media_id):
