@@ -27,7 +27,7 @@ const ContextWrapper = ({children}) => {
          **/
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        // state.actions.syncMovies(); 
+        state.actions.syncToken(); 
     }, []);
 
     // The initial value for the context is not null anymore, but the current state of this component,
@@ -49,10 +49,85 @@ const getState = ({ getStore, getActions, setStore }) => {
 			token: null,
 		},
 		actions: {
+            syncToken: async () => {
+                const token = await sessionStorage.getItem("token");
+                if(token && token != "" && token != undefined) 
+                    setStore({token: token});
+            }, 
+
+            login: async (username, password) => {
+                console.log(username,  password)
+                const args = ({
+                    method: "POST", 
+                    headers: {
+                        "Content-Type": "application/json"
+                    }, 
+                    body: JSON.stringify({username, password}),
+                });
+                const response = await fetch('http://localhost:5000/login',args);
+                const data = await response.json(); 
+                try{
+                    console.log(args) 
+                    const response = await fetch('http://localhost:5000/login',args);
+                    const data = await response.json(); 
+                    console.log(data);
+                    
+                    if(response.status !== 200){
+                        console.log("Invalid"); 
+                        return false; 
+                    } 
+                    
+                    sessionStorage.setItem("token", data.token);
+                    setStore({token: data.token})
+                    return true;
+                }
+                catch(error){
+                    console.log("Invalid");
+                }
+            }, 
+
+
+            logout: async () => {
+                const token = sessionStorage.remove("token");
+                setStore({token: null});
+            }, 
+
+
+            /**Signup takes a new set of user/pass and returns token 
+             * ---> May need to change for some sort of email validation check.
+             *      to prevent botting.  
+            */
+            signup: async (username, password) => {
+                const args = ({
+                    method: "POST", 
+                    headers: {
+                        "Content-Type": "application/json"
+                    }, 
+                    body: JSON.stringify({username, password}),
+                });
+                try{
+                    const response = await fetch('http://localhost:5000/signup', {args})
+                    const data = await response.json(); 
+                    console.log(data);
+                    
+                    if(response.status !== 200){
+                        console.log("Invalid"); 
+                        return false; 
+                    } 
+                    
+                    sessionStorage.setItem("token", data.token);
+                    return true;
+                }
+                catch(error){
+                    console.log(error);
+                }
+            }, 
+
             setMovie: async(movie) => {
                 localStorage.setItem('movie', JSON.stringify(movie));
                 await setStore({movie: movie});
             },
+
             syncMovies: async() =>{
                 const movie = JSON.parse(localStorage.getItem('movie'));
                 await setStore({movie: movie});

@@ -1,8 +1,11 @@
 import React from 'react';
 import {Container, Jumbotron, Form, Button} from 'react-bootstrap';
+import {AppContext} from '../AppContext'; 
+import { withRouter } from 'react-router-dom';
 import './LoginPage.css';
 
 export default class LoginPage extends React.Component {
+  static contextType = AppContext; 
   constructor() {
     super();
     this.state = {
@@ -11,6 +14,7 @@ export default class LoginPage extends React.Component {
     this.username = React.createRef();
     this.password = React.createRef();
     this.confirm = React.createRef();
+    this.history = this.props
   }
   toggleNewUser = () => {
     this.setState({newUser: !this.state.newUser});
@@ -29,31 +33,20 @@ export default class LoginPage extends React.Component {
         console.log('passwords must match');
         return;
       }
-      const response = await fetch('http://localhost:5000/signup', {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({username, password}),
-      });
       console.log(`create user (${username}, ${password})`);
-      const data = await response.json();
-      console.log(data);
+      this.context.actions.signup(username, password); 
     } else {
       console.log(`login user (${username}, ${password})`);
-      const response = await fetch('http://localhost:5000/login', {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({username, password}),
-      });
-      console.log(response);
-      const data = await response.json();
-      console.log(data);
+      this.context.actions.login(username, password); 
     }
   }
   render() {
+    
+    let token = this.context.store.token;
+    // Redirects to homepage after token is set.
+    if(token && token != "" && token != undefined)
+      this.props.history.push("/");
+
     return (
       <Container>
         <Jumbotron className='loginFormHolder'>
