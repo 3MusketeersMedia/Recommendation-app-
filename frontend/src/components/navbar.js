@@ -46,7 +46,7 @@ const MyNav = () => {
     async function normalSearch()
     {
       const response = await fetch('http://localhost:5000/search', {
-        method: 'GET',
+        method: 'POST',
         headers: {
           'content-type': 'application/json',
         },
@@ -61,7 +61,7 @@ const MyNav = () => {
     async function advancedSearch()
     {
       const response = await fetch('http://localhost:5000/advSearch', {
-        method: 'GET',
+        method: 'POST',
         headers: {
           'content-type': 'application/json',
         },

@@ -75,13 +75,13 @@ def movies():
     return dict1
 
 # standard search by name function
-@app.route("/search", methods=["GET"])
+@app.route("/search", methods=["POST"])
 def search():
     to_return = format_media(database.get_by_name(db, request.json.get("searchContents", None)))
     return to_return
 
 # advanced search
-@app.route("/advSearch", methods=["GET"])
+@app.route("/advSearch", methods=["POST"])
 def advSearch():
     genre = request.json.get("genre", None)
     minYear = request.json.get("minYear", None)

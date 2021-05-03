@@ -1,17 +1,6 @@
-import json
-from datetime import timedelta
-
-from flask import Flask
-from flask import request, jsonify, redirect, url_for, Response
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
-from flask_jwt_extended import JWTManager
-from flask_cors import CORS
-import database
-import bcrypt
-
-import psycopg2
-import psycopg2.extras
-from model import *
+# I currently have these functions actually in 
+# app.py and database.py respectively, but
+# here is basically a reference to what I added (for the time being)
 
 # items in list are tuples
 # json.dumps() converts tuples to arrays
@@ -26,13 +15,13 @@ def format_media(list1):
     return jsonify(json1)
 
 # standard search by name function
-@app.route("/search", methods=["GET"])
+@app.route("/search", methods=["POST"])
 def search():
     to_return = format_media(database.get_by_name(db, request.json.get("searchContents", None)))
     return to_return
 
 # advanced search
-@app.route("/advSearch", methods=["GET"])
+@app.route("/advSearch", methods=["POST"])
 def advSearch():
     genre = request.json.get("genre", None)
     minYear = request.json.get("minYear", None)
