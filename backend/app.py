@@ -150,7 +150,7 @@ def signup():
         #print("hash value is: ")
         #print(hashed.decode("utf-8"))
 
-        database.add_user(db, username, hashed.decode("utf-8"), salt)
+        database.add_user(db, username, hashed.decode("utf-8"))
 
         # send token
         access_token = create_access_token(identity=username)
