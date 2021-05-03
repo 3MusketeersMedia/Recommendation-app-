@@ -466,4 +466,3 @@ num_items(pair, table="media"):
 		table -> string name of table
         Return Type:
                 int -> number of items in database
-

@@ -48,7 +48,8 @@ def imdb_basic():
             link = "https://www.imdb.com/title/" + row[0]
             # id, type, primary title, original title, isAdult, start, end, runtime, genre, imdb link
             # print(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], link)
-            data.append((row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], link))
+            if row[5] >= '1970' and row[1] == 'movie':
+                data.append((row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], link))
     return data
             # create a json format
     #         data['movies'].append(

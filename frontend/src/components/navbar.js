@@ -16,8 +16,8 @@ const MyNav = () => {
           <Nav>
             <NavDropdown title="Advanced Search" id="collasible-nav-dropdown">
               <div>
-                <div>Genre:<input></input></div>
-                <div>Year:<input></input></div>
+                <div>Genre:<input type = "text" /></div>
+                <div>Year:<input type = "text"/></div>
               </div>
               <NavDropdown.Divider />
               <Button variant = "outline-dark">Search</Button>
