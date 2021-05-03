@@ -18,7 +18,7 @@ export default class MovieList extends React.Component {
     await this.setState({movies});
   }
   selectMovie(movie) {
-    this.context.setMovie(movie);
+    this.context.actions.setMovie(movie);
     this.props.history.push('/movie');
   }
   render() {

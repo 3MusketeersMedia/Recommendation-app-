@@ -8,6 +8,7 @@ const moviePic = ({movie}) => {
     let favorites = [];
     if(list)
         favorites = JSON.parse(list);
+    console.log(movie)
     return (
         <div className='MovieFrame d-flex justify-content-start m-3'>            
             <img src={movie.picture} alt={movie.title + " picture"}></img>

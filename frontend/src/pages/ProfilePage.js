@@ -17,7 +17,7 @@ export default class ProfilePage extends React.Component {
             isMainProf: true,
             favorites: favoriteList
         };
-    }
+    }   
 
 
     saveToLocalStorage = (item) =>{ 
