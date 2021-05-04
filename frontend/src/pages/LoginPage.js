@@ -1,8 +1,10 @@
 import React from 'react';
 import {Container, Jumbotron, Form, Button} from 'react-bootstrap';
+import {AppContext} from '../AppContext'; 
 import './LoginPage.css';
 
 export default class LoginPage extends React.Component {
+  static contextType = AppContext; 
   constructor() {
     super();
     this.state = {
@@ -11,11 +13,13 @@ export default class LoginPage extends React.Component {
     this.username = React.createRef();
     this.password = React.createRef();
     this.confirm = React.createRef();
+    
   }
+
   toggleNewUser = () => {
     this.setState({newUser: !this.state.newUser});
   }
-  submitForm = async(e) => {
+  submitForm = (e) => {
     e.preventDefault();
     const username = this.username.current.value;
     const password = this.password.current.value;
@@ -30,25 +34,25 @@ export default class LoginPage extends React.Component {
         return;
       }
       console.log(`create user (${username}, ${password})`);
+      this.context.actions.signup(username, password); 
     } else {
       console.log(`login user (${username}, ${password})`);
-      const response = await fetch('http://localhost:5000/login', {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({username, password}),
-      });
-      console.log(response);
-      const data = await response.json();
-      console.log(data);
+      this.context.actions.login(username, password)
+        .then(() => {
+            let token = this.context.store.token;
+              // Redirects to homepage after token is set.
+            if(token && token !== "" && token !== undefined){
+              this.props.history.push("/");
+          }
+        })
     }
+
   }
   render() {
     return (
       <Container>
         <Jumbotron className='loginFormHolder'>
-          <Form onSubmit={this.submitForm}>
+          <Form onSubmit={(e) => this.submitForm(e)}>
             <Form.Group>
               <Form.Label>username</Form.Label>
               <Form.Control placeholder='username' ref={this.username}/>
@@ -65,7 +69,7 @@ export default class LoginPage extends React.Component {
             ) : ''}
             <div className='loginButtons'>
               <Button type='submit'>Submit</Button>
-              <Button onClick={this.toggleNewUser} type='button'>
+              <Button onClick={() => this.toggleNewUser} type='button'>
                 {this.state.newUser ? 'Existing user? Log in' : 'New user? Sign up'}
               </Button>
             </div>

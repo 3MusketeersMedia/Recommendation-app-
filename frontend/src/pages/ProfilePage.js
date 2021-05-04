@@ -1,6 +1,5 @@
 import React from 'react'; 
 import { Container, Row, Col } from 'react-bootstrap';
-import {UserPreferenceContext} from '../UserPreferenceContext';
 import MyNav from '../components/navbar';
 import Footer from '../components/Footer'
 import ProfilePic from '../components/ProfilePicture'
@@ -12,12 +11,11 @@ export default class ProfilePage extends React.Component {
     constructor() { 
         super();
         const favoriteList = JSON.parse(localStorage.getItem('react-movie-app-favorites'));
-        console.log (favoriteList)
         this.state = {
             isMainProf: true,
             favorites: favoriteList
         };
-    }
+    }   
 
 
     saveToLocalStorage = (item) =>{ 
@@ -25,8 +23,7 @@ export default class ProfilePage extends React.Component {
     }
 
     addFavoriteMovie = (movie) =>{ 
-        console.log("Hello");
-        const newFavouriteList =  {... this.state.favorites, movie}; 
+        const newFavouriteList =  {...this.state.favorites, movie}; 
         this.setState({favorites: newFavouriteList}); 
         this.saveToLocalStorage(newFavouriteList);
     }
@@ -35,16 +32,16 @@ export default class ProfilePage extends React.Component {
         let page;
         
         if(this.state.isMainProf){
-            page = (
-                /* Profile background */
+            /* Profile background */
+            page = (  
                 <Row> 
-                    /* Media lists */
+                    {/* Media lists  */}
                     <Col></Col>
-                    /* Liked Components */
+                    {/* Liked Components */}
                     <Col>
                         <MovieList movies={this.state.favorites} />
                     </Col>
-                    /* News Feeds */
+                    {/* News Feeds */}
                     <Col></Col>
                 </Row>);
         } else { 
@@ -57,7 +54,7 @@ export default class ProfilePage extends React.Component {
                 <ProfilePic picture={ExamplePic}/>
                 <ProfilePicChanger/>
             </div>
-            <Container fluid="md" classname='p-3'> 
+            <Container fluid="md" className='p-3'> 
                 {page}
             </Container>
             <Footer/>
