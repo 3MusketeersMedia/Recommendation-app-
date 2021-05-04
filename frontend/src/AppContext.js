@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 
 export const AppContext = React.createContext();
 
@@ -24,7 +25,7 @@ export const AppContext = React.createContext();
 */
 const ContextWrapper = ({children}) => {
     const [state, setState] = useState(
-        getState({
+        GetState({
             getStore: () => state.store,
             getActions: () => state.actions,
             setStore: updatedStore =>
@@ -44,8 +45,8 @@ const ContextWrapper = ({children}) => {
          **/
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-        state.actions.syncToken(); 
-    });
+            state.actions.syncToken(); 
+    },[state.store.token]);
 
     // The initial value for the context is not null anymore, but the current state of this component,
     // the context will now have a getStore, getActions and setStore functions available, because they were declared
@@ -68,7 +69,8 @@ export default ContextWrapper;
  * 
  * @returns States that will be used to create a context in ContextWrapper (see above) 
 */
-const getState = ({ getStore, getActions, setStore }) => {
+const GetState = ({ getStore, getActions, setStore }) => {
+    let history = useHistory();
 	return {
 		store: {
 			movie: null, 
@@ -121,6 +123,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             logout: async () => {
                 const token = sessionStorage.removeItem("token");
                 setStore({token: null});
+                history.push("/");
             }, 
 
 

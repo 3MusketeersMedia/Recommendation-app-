@@ -12,10 +12,10 @@ const MyNav = () => {
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
             <Nav.Link href="/list">Movie List</Nav.Link>
-            {context.store.token && context.store.token !== "" && context.store.token !== undefined ? 
-              <Nav.Link onClick={() => context.actions.logout()}>Signout</Nav.Link> : 
-              <Nav.Link href="/login">Login</Nav.Link>
-            }
+            <Nav.Link href="#details">Details</Nav.Link>
+            <Nav.Link eventKey={2} href="#OtherThing">
+              Other Thing
+            </Nav.Link>
             <NavDropdown title="Dropdown" id="collasible-nav-dropdown">
               <NavDropdown.Item href="#action/3.1">Item 1</NavDropdown.Item>
               <NavDropdown.Item href="#action/3.2">Item 2</NavDropdown.Item>
@@ -25,10 +25,12 @@ const MyNav = () => {
             </NavDropdown>
           </Nav>
           <Nav>
-            <Nav.Link href="#details">Details</Nav.Link>
-            <Nav.Link eventKey={2} href="#OtherThing">
-              Other Thing
-            </Nav.Link>
+            {context.store.token && context.store.token !== "" && context.store.token !== undefined ? 
+              <> <Nav.Link onClick={() => context.actions.logout()}>Signout</Nav.Link> 
+              <Nav.Link href="/user/profile"> Profile </Nav.Link></>: 
+              <><Nav.Link href="/login">Login</Nav.Link>
+              <Nav.Link href="/login"> Profile </Nav.Link> </>
+            }
           </Nav>
           </Navbar.Collapse>
         </Navbar>
