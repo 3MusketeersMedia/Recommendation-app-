@@ -3,7 +3,8 @@ import {Navbar, Nav, NavDropdown} from 'react-bootstrap'
 import {AppContext} from '../AppContext';
 
 const MyNav = () => {
-    return <AppContext.Consumer>
+    return (
+    <AppContext.Consumer>
       {context => <div>
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
         <Navbar.Brand href="/">RecomMedia</Navbar.Brand>
@@ -11,7 +12,10 @@ const MyNav = () => {
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
             <Nav.Link href="/list">Movie List</Nav.Link>
-            <Nav.Link href="/login">Login</Nav.Link>
+            {context.store.token && context.store.token !== "" && context.store.token !== undefined ? 
+              <Nav.Link onClick={() => context.actions.logout()}>Signout</Nav.Link> : 
+              <Nav.Link href="/login">Login</Nav.Link>
+            }
             <NavDropdown title="Dropdown" id="collasible-nav-dropdown">
               <NavDropdown.Item href="#action/3.1">Item 1</NavDropdown.Item>
               <NavDropdown.Item href="#action/3.2">Item 2</NavDropdown.Item>
@@ -29,7 +33,7 @@ const MyNav = () => {
           </Navbar.Collapse>
         </Navbar>
       </div>}
-    </AppContext.Consumer>;
+    </AppContext.Consumer>);
 }
 
 export default MyNav;

@@ -16,10 +16,10 @@ export const AppContext = React.createContext();
  *              -> To access variables use this this.context.store.<varType>
  *              -> To access action use this this.context.action.<actionType>
  * 
- *   -> Hooks: Use import {state, actions} from Appcontext 
+ *   -> Hooks: Use import Appcontext from Appcontext; ... const {state, actions} = useContext(AppContext);  
  *              -> To access variables or actions, simply append the type you want. (i.e. action.setMovies(), store.token)
  * 
- * It's preferred to use this Context when setting global variables and fetching from back up. Data shared here will be available to any 
+ * It's preferred to use this Context when setting global variables and fetching from back end. Data shared here will be available to any 
  * Components inside App.js
 */
 const ContextWrapper = ({children}) => {
@@ -119,7 +119,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
             /** Simply removes token from sessionStorage*/
             logout: async () => {
-                const token = sessionStorage.remove("token");
+                const token = sessionStorage.removeItem("token");
                 setStore({token: null});
             }, 
 
