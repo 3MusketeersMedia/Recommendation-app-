@@ -1,0 +1,11 @@
+.searchTab {
+    display: flex;
+  }
+
+.fullSizeInput {
+    width: 150px;
+}
+
+.halfSizeInput {
+    width: 75px;
+}

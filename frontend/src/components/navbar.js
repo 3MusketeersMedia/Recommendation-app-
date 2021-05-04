@@ -1,10 +1,81 @@
-import React from 'react'
-import {Navbar, Nav, NavDropdown} from 'react-bootstrap'
+import React, { useState } from 'react'
+import {Navbar, Nav, NavDropdown, Form, FormControl, Button} from 'react-bootstrap'
 import {AppContext} from '../AppContext';
+import './navbar.css';
 
 const MyNav = () => {
-    return (
-    <AppContext.Consumer>
+    const [searchContents, changeSC] = useState(null);
+    const [genre, changeGenre] = useState(null);
+    const [minYear, changeMinYear] = useState(null);
+    const [maxYear, changeMaxYear] = useState(null);
+    const [minRate, changeMinRate] = useState(null);
+    const [maxRate, changeMaxRate] = useState(null);
+    
+    function getSearchConts(val)
+    {
+      changeSC(val.target.value);
+      console.warn(val.target.value);
+    }
+    function getGenre(val)
+    {
+      changeGenre(val.target.value);
+      console.warn(val.target.value);
+    }
+    function getMinYear(val)
+    {
+      changeMinYear(val.target.value);
+      console.warn(val.target.value);
+    }
+    function getMaxYear(val)
+    {
+      changeMaxYear(val.target.value);
+      console.warn(val.target.value);
+    }
+    function getMinRate(val)
+    {
+      changeMinRate(val.target.value);
+      console.warn(val.target.value);
+    }
+    function getMaxRate(val)
+    {
+      changeMaxRate(val.target.value);
+      console.warn(val.target.value);
+    }
+
+    // Performs normal, not advanced search (by name)
+    async function normalSearch()
+    {
+      const response = await fetch('http://localhost:5000/search', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({searchContents}),
+      });
+      console.log(response);
+      const data = await response.json();
+      console.log(data);
+
+      // Need to put the data into the list page
+    }
+
+    // Performs advanced search
+    async function advancedSearch()
+    {
+      const response = await fetch('http://localhost:5000/advSearch', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({genre, minYear, maxYear, minRate, maxRate}),
+      });
+      console.log(response);
+      const data = await response.json();
+      console.log(data);
+
+      // Need to put the data into the list page
+    }
+    return <AppContext.Consumer>
       {context => <div>
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
         <Navbar.Brand href="/">RecomMedia</Navbar.Brand>
@@ -12,30 +83,43 @@ const MyNav = () => {
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
             <Nav.Link href="/list">Movie List</Nav.Link>
-            <Nav.Link href="#details">Details</Nav.Link>
-            <Nav.Link eventKey={2} href="#OtherThing">
-              Other Thing
-            </Nav.Link>
-            <NavDropdown title="Dropdown" id="collasible-nav-dropdown">
-              <NavDropdown.Item href="#action/3.1">Item 1</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.2">Item 2</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.3">Item 3</NavDropdown.Item>
+          </Nav> 
+          <Nav>
+            <Nav.Link href="/login">Login</Nav.Link>
+            <NavDropdown title="Advanced Search" id="collasible-nav-dropdown">
+              <div>
+                <div>Genre:
+                  <div className = "searchTab">
+                    <input className = "fullSizeInput" onChange = {getGenre}/>
+                  </div>
+                </div>
+                <div>Year (From, To):
+                  <div className = "searchTab"> 
+                    <input className = "halfSizeInput" onChange = {getMinYear}/>
+                    <input className = "halfSizeInput" onChange = {getMaxYear}/>
+                  </div>
+                </div>
+                <div>Rating (From, To):
+                  <div className = "searchTab"> 
+                    <input className = "halfSizeInput" onChange = {getMinRate}/>
+                    <input className = "halfSizeInput" onChange = {getMaxYear}/>
+                  </div>
+                </div>
+              </div>
               <NavDropdown.Divider />
-              <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
+              <Button variant = "outline-dark" onClick = {advancedSearch}>Search</Button>
             </NavDropdown>
           </Nav>
           <Nav>
-            {context.store.token && context.store.token !== "" && context.store.token !== undefined ? 
-              <> <Nav.Link onClick={() => context.actions.logout()}>Signout</Nav.Link> 
-              <Nav.Link href="/user/profile"> Profile </Nav.Link></>: 
-              <><Nav.Link href="/login">Login</Nav.Link>
-              <Nav.Link href="/login"> Profile </Nav.Link> </>
-            }
+            <Form inline>
+              <FormControl type="text" placeholder="Search by title" className="mr-sm-2" onChange = {getSearchConts}/>
+              <Button variant="outline-light" onClick = {normalSearch}>Search</Button>
+            </Form>
           </Nav>
           </Navbar.Collapse>
         </Navbar>
       </div>}
-    </AppContext.Consumer>);
+    </AppContext.Consumer>;
 }
 
 export default MyNav;

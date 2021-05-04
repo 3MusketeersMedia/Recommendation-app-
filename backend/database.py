@@ -1,6 +1,8 @@
 import psycopg2
 import psycopg2.extras
 from model import *
+from searchDB import advanced_search
+
 #----------Setup----------------------
 #verify connection
 #setup database
