@@ -1,10 +1,10 @@
 import React from 'react';
 import {Container, Jumbotron, Form, Button} from 'react-bootstrap';
-import {AppContext} from '../AppContext'; 
+import {AppContext} from '../AppContext';
 import './LoginPage.css';
 
 export default class LoginPage extends React.Component {
-  static contextType = AppContext; 
+  static contextType = AppContext;
   constructor() {
     super();
     this.state = {
@@ -13,7 +13,7 @@ export default class LoginPage extends React.Component {
     this.username = React.createRef();
     this.password = React.createRef();
     this.confirm = React.createRef();
-    
+
   }
 
   toggleNewUser = () => {
@@ -34,7 +34,7 @@ export default class LoginPage extends React.Component {
         return;
       }
       console.log(`create user (${username}, ${password})`);
-      this.context.actions.signup(username, password); 
+      this.context.actions.signup(username, password);
     } else {
       console.log(`login user (${username}, ${password})`);
       this.context.actions.login(username, password)

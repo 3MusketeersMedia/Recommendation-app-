@@ -1,4 +1,5 @@
 import json
+import simplejson
 from datetime import timedelta
 
 from flask import Flask
@@ -51,7 +52,7 @@ def format_media(list1):
     for item in list1:
         item_js = convert_tuple(item)
         json1.append(item_js)
-    
+
     return jsonify(json1)
 
 # gives the route to the function
@@ -69,6 +70,21 @@ def movies():
     all_media = database.get_all(db, "media")
     dict1 = format_media(all_media)
     return dict1
+
+
+@app.route("/pages", methods=['GET'])
+def pages():
+    limit = request.args.get('limit', 100)
+    offset = request.args.get('offset', 0)
+    pair = database.open_DBConnection(True)
+    pair[1].execute('SELECT * FROM media LIMIT %s OFFSET %s', [limit, offset])
+    media = pair[1].fetchall()
+    return jsonify(json.loads(simplejson.dumps(media)))
+
+@app.route('/movieCount')
+def movieCount():
+    pair = database.open_DBConnection()
+    return jsonify(database.num_items(pair, 'media'))
 
 @app.route("/review", methods=['GET'])
 @jwt_required()
@@ -103,10 +119,10 @@ def login():
     hashed = database.get_user_hash(db, username)
     if not bcrypt.checkpw(password.encode("utf-8"), hashed[0].encode("utf-8")):
         return jsonify({"msg": "Invalid username or password"})
-    
+
     # if bcrypt.hashpw(password, stored_hash) == stored hash
 
-    # return token    
+    # return token
     access_token = create_access_token(identity=username)
     return jsonify({"token": access_token, "username": username})
 
@@ -127,7 +143,7 @@ def signup():
         # check if password length long?
         if database.check_user_exists(db, username):
             return jsonify({"msg": "Invalid username or password"})
-        
+
         # salt stored as part of hash, do not need to store in database
         salt = bcrypt.gensalt()
         hashed = bcrypt.hashpw(password.encode("utf-8"), salt)
