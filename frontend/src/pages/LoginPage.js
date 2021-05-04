@@ -30,6 +30,16 @@ export default class LoginPage extends React.Component {
         return;
       }
       console.log(`create user (${username}, ${password})`);
+      const response = await fetch('http://localhost:5000/signup', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({username, password}),
+      });
+      console.log(response);
+      const data = await response.json();
+      console.log(data);
     } else {
       console.log(`login user (${username}, ${password})`);
       const response = await fetch('http://localhost:5000/login', {
