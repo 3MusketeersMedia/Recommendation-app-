@@ -17,6 +17,7 @@ export default class LoginPage extends React.Component {
   }
 
   toggleNewUser = () => {
+    console.log('toggle new user');
     this.setState({newUser: !this.state.newUser});
   }
   submitForm = (e) => {
@@ -34,7 +35,14 @@ export default class LoginPage extends React.Component {
         return;
       }
       console.log(`create user (${username}, ${password})`);
-      this.context.actions.signup(username, password);
+      this.context.actions.signup(username, password)
+        .then(() => {
+            let token = this.context.store.token;
+              // Redirects to homepage after token is set.
+            if(token && token !== "" && token !== undefined){
+              this.props.history.push("/");
+          }
+        });
     } else {
       console.log(`login user (${username}, ${password})`);
       this.context.actions.login(username, password)
@@ -69,7 +77,7 @@ export default class LoginPage extends React.Component {
             ) : ''}
             <div className='loginButtons'>
               <Button type='submit'>Submit</Button>
-              <Button onClick={() => this.toggleNewUser} type='button'>
+              <Button onClick={this.toggleNewUser} type='button'>
                 {this.state.newUser ? 'Existing user? Log in' : 'New user? Sign up'}
               </Button>
             </div>
