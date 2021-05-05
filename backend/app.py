@@ -24,7 +24,7 @@ app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(hours=1)
 jwt = JWTManager(app)
 
 # connection to database constantly maintained
-db = database.open_DBConnection(True)
+db = database.open_DBConnection()
 
 # number of attributes currently: 9
 # attributes currently: movie name, media type, id
