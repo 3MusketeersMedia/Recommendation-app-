@@ -85,7 +85,12 @@ const MyNav = () => {
             <Nav.Link href="/list">Movie List</Nav.Link>
           </Nav> 
           <Nav>
-            <Nav.Link href="/login">Login</Nav.Link>
+            {context.store.token && context.store.token !== "" && context.store.token !== undefined ? 
+              <> <Nav.Link onClick={() => context.actions.logout()}>Signout</Nav.Link> 
+              <Nav.Link href="/user/profile"> Profile </Nav.Link></>: 
+              <><Nav.Link href="/login">Login</Nav.Link>
+              <Nav.Link href="/login"> Profile </Nav.Link> </>
+            }
             <NavDropdown title="Advanced Search" id="collasible-nav-dropdown">
               <div>
                 <div>Genre:
