@@ -6,6 +6,8 @@
 ### Sprint Plans: 
 - [Sprint 1](https://docs.google.com/document/d/1NFoUc8JaAsW9FuV71JW0dg2OfTY6oioDVDM-gCEokTs/edit?usp=sharing) 
 - [Sprint 2](https://docs.google.com/document/d/1Y4jSwTy-w1BWtMDH9M8iQ6owd0S0uxHxijrEJRC3wb8/edit?usp=sharing) 
+- [Sprint 3](https://docs.google.com/document/d/1-5rCi5R2rh51815-WkxXNbkSn1HiKTWdHWdRFiqBa3Y/edit?usp=sharing)
 
 ### Sprint Reports: 
 - [Sprint 1](https://docs.google.com/document/d/1-dHE85Jfrowxj_OZch3zqLpYKuyyQXbGgKXweOzV__Y/edit?usp=sharing)
+- [Sprint 2](https://docs.google.com/document/d/1ghCdNP_py62Z5R_oZhiUTfmDE7f60AnXDMPXgr4Hh3Y/edit?usp=sharing)

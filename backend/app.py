@@ -1,4 +1,5 @@
 import json
+import simplejson
 from datetime import timedelta
 
 from flask import Flask
@@ -53,7 +54,7 @@ def format_media(list1):
     for item in list1:
         item_js = convert_tuple(item)
         json1.append(item_js)
-    
+
     return jsonify(json1)
 
 
@@ -72,6 +73,43 @@ def movies():
     all_media = database.get_all(db, "media")
     dict1 = format_media(all_media)
     return dict1
+
+# standard search by name function
+@app.route("/search", methods=["POST"])
+def search():
+    #to_return = format_media(database.get_all(db,"media"))
+    to_return = format_media(database.get_by_name(db, request.json.get("searchContents", None)))
+    return to_return
+
+
+# advanced search
+@app.route("/advSearch", methods=["POST"])
+def advSearch():
+    genre = request.json.get("genre", None)
+    minYear = request.json.get("minYear", None)
+    maxYear = request.json.get("maxYear", None)
+    minRate = request.json.get("minRate", None)
+    maxRate = request.json.get("maxRate", None)
+    #media = database.advanced_search(db, genre, minYear, maxYear, minRate, maxRate)
+    media = database.get_by_genre(db, genre)
+    to_return = format_media(media)
+    return to_return
+
+
+@app.route("/pages", methods=['GET'])
+def pages():
+    limit = request.args.get('limit', 100)
+    offset = request.args.get('offset', 0)
+    pair = database.open_DBConnection(True)
+    pair[1].execute('SELECT * FROM media LIMIT %s OFFSET %s', [limit, offset])
+    media = pair[1].fetchall()
+    return jsonify(json.loads(simplejson.dumps(media)))
+
+
+@app.route('/movieCount')
+def movieCount():
+    pair = database.open_DBConnection()
+    return jsonify(database.num_items(pair, 'media'))
 
 
 @app.route("/review", methods=['GET'])
@@ -132,7 +170,7 @@ def login():
     hashed = database.get_user_hash(db, username)
     if not bcrypt.checkpw(password.encode("utf-8"), hashed[0].encode("utf-8")):
         return jsonify({"msg": "Invalid username or password"})
-    
+
     # if bcrypt.hashpw(password, stored_hash) == stored hash
     user_id = database.get_user_id(db, username)
 
@@ -151,7 +189,7 @@ def signup():
         # check if password length long?
         if database.check_user_exists(db, username):
             return jsonify({"msg": "Invalid username or password"})
-        
+
         # salt stored as part of hash, do not need to store in database
         salt = bcrypt.gensalt()
         hashed = bcrypt.hashpw(password.encode("utf-8"), salt)

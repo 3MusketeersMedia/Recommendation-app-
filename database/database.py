@@ -1,6 +1,8 @@
 import psycopg2
 import psycopg2.extras
 from model import *
+from searchDB import advanced_search
+
 #----------Setup----------------------
 #verify connection
 #setup database
@@ -29,7 +31,7 @@ def open_DBConnection(dict_cursor=False):
     connection = psycopg2.connect(host="mediadb.c3txk3dmci6e.us-west-1.rds.amazonaws.com", port="5432", user='postgres', password='postgres', dbname='db')
     connection.autocommit = True
     if dict_cursor == True:
-        db = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        db = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     else:
         db = connection.cursor()
     return (connection, db, dict_cursor)
@@ -201,7 +203,7 @@ def get_next(pair):
 
 def get_by_mediaType(pair, mediaType):
     pair[1].execute("SELECT * FROM media WHERE mediaType = %s;", (mediaType,))
-    return pair[1].fetchall() 
+    return pair[1].fetchall()
 
 
 def get_by_year(pair, start, end=-1):
