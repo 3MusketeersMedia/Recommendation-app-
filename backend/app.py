@@ -11,7 +11,8 @@ import bcrypt
 
 # TA email: yogolan@ucsc.edu
 # .\venv\Scripts\activate
-# use flask-jwt-extended if you are
+# JWT token: user id, access token
+# maybe token dates i.e. timestamp
 
 # instance of flask web app
 app = Flask(__name__)
@@ -23,10 +24,11 @@ app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(hours=1)
 jwt = JWTManager(app)
 
 # connection to database constantly maintained
-db = database.open_DBConnection(True)
+db = database.open_DBConnection()
 
-# number of attributes currently: 9
-# attributes currently: movie name, media type, id
+# number of attributes: 9
+# user based collaborative filtering or item based collaborative filtering
+# get what they watched and rated and get probability of what they watched and returned, highest one
 def convert_tuple(tuple1):
     item_js = {
         "name": tuple1[0],
@@ -42,10 +44,10 @@ def convert_tuple(tuple1):
 
     return item_js
 
+
 # items in list are tuples
 # json.dumps() converts tuples to arrays
 # all the values in the array are converted to strings
-# structure: {"movie name": (json array of attributes)}
 def format_media(list1):
     json1 = []
     for item in list1:
@@ -54,7 +56,7 @@ def format_media(list1):
     
     return jsonify(json1)
 
-# gives the route to the function
+
 @app.route("/", methods=['POST', 'GET'])
 def index():
     if request.method == 'POST':
@@ -63,6 +65,7 @@ def index():
 
     return "West virgina Country Roads"
 
+
 # too many movies, need to split it off
 @app.route("/movies", methods=['GET'])
 def movies():
@@ -70,18 +73,44 @@ def movies():
     dict1 = format_media(all_media)
     return dict1
 
+
 @app.route("/review", methods=['GET'])
 @jwt_required()
 def review():
     pass
 
+
 # frontend sends jwt, I look up user
 @app.route("/profile")
 @jwt_required()
 def profile():
-    pass
+    identity = get_jwt_identity()
+    print(identity)
 
-# add: search, profile
+    # new function, I do not want to grab the password hash
+    attributes = database.get_by_id(db, identity[0], "users")
+    print(attributes)
+    return jsonify({"username": attributes[0]}), 200
+
+
+@app.route("/favorite", methods=["POST", "GET"])
+@jwt_required()
+def favorite():
+    if request.method == "POST":
+
+    identity = get_jwt_identity()
+    print(identity)
+
+    return "hello"
+
+
+# protects a route with jwt_required
+@app.route("/protected", methods=["GET"])
+@jwt_required()
+def protected():
+    current_user = get_jwt_identity()
+    return jsonify(logged=current_user), 200
+
 
 # if user, enter; if not, try again
 # ask for query method
@@ -105,17 +134,12 @@ def login():
         return jsonify({"msg": "Invalid username or password"})
     
     # if bcrypt.hashpw(password, stored_hash) == stored hash
+    user_id = database.get_user_id(db, username)
 
     # return token    
-    access_token = create_access_token(identity=username)
-    return jsonify({"token": access_token, "username": username})
+    access_token = create_access_token(identity=user_id)
+    return jsonify({"token": access_token, "id": user_id, "username": username})
 
-# protects a route with jwt_required
-@app.route("/protected", methods=["GET"])
-@jwt_required()
-def protected():
-    current_user = get_jwt_identity()
-    return jsonify(logged=current_user), 201
 
 # if user, user already exists
 @app.route("/signup", methods=['GET', 'POST'])
@@ -136,12 +160,14 @@ def signup():
         #print(hashed.decode("utf-8"))
 
         database.add_user(db, username, hashed.decode("utf-8"))
+        user_id = database.get_user_id(db, username)
 
         # send token
-        access_token = create_access_token(identity=username)
-        return jsonify({"token": access_token, "username": username})
+        access_token = create_access_token(identity=user_id)
+        return jsonify({"token": access_token, "id": user_id, "username": username})
 
     return "signup"
+
 
 if __name__ == "__main__":
     app.run(debug=True)
