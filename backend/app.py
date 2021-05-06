@@ -97,7 +97,7 @@ def profile():
 @jwt_required()
 def favorite():
     if request.method == "POST":
-
+        pass
     identity = get_jwt_identity()
     print(identity)
 
