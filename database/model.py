@@ -68,14 +68,14 @@ def search_media_table(pair, query):
     #add exact match as first result if it exists
     if len(exact) > 0:
         end = exact + end
-    return end
+    return [key for key, value in collections.Counter(end).most_common()]
 
 
 def advanced_search_media_table(pair, query, mediaType, genre, yearStart, ratingMin, yearEnd=-1, ratingMax=-1):
     
     if yearEnd == -1:
         yearEnd = yearStart
-    if ratingMax = -1:
+    if ratingMax == -1:
         ratingMax = ratingMin
 
     #filter
@@ -101,8 +101,8 @@ def advanced_search_media_table(pair, query, mediaType, genre, yearStart, rating
 
     #add exact match as first result if it exists
     if len(exact) > 0:
-        end = exact + end
-    return end
+        end = exact + end 
+    return [key for key, value in collections.Counter(end).most_common()]
 
 
 def get_user_recommendations(pair, user_id):
