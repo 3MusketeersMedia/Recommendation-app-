@@ -7,7 +7,7 @@ exec(open("database.py").read())
 
 #establish connection
 connection = open_DBConnection()
-#get_user_recommendations(connection, get_user_id("media"))
+#print(advanced_search_media_table(connection, 'El Tango del Viudo y Su Espejo Deformante', 'movie', 'Drama', 1800, 0, 2050, 10))
 print(num_items(connection))
 #print(search_media_table(connection, 'El Tango del Viudo y Su Espejo Deformante'))
 #set_data(connection, "b show", "tv show", 1999, "urlinhere", "horror thriller action", 10.19, 100.5, "1")
