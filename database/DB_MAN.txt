@@ -108,7 +108,8 @@ List of functions:
 	open_DBConnection(dict_cursor=False) -> open connection to db
 	close_DBConnection(pair) -> close connection to db
 	get_user_recommendations(pair, user_id) -> get user_recommendations based on others ratings
-	
+	search_media_table(pair, query) -> search media table for closest match to string: query
+
 	WORKS WITH -> media and/or users tables:
 	set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID, summary="None") -> set entry or insert new entry into media table
 	set_data_id(pair, oldID, newID, table="media") -> set id of existing data point
@@ -162,6 +163,15 @@ close_DBConnection(pair):
 		pair->tuple from open_DBConnection()
 	Return Type:
 		none
+
+search_media_table(pair, query):
+        Constraints:
+                none
+        Parameters:
+                pair->tuple from open_DBConnection()
+                query -> string name of movie to look for
+        Return Type:
+                list of tuples from the media table
 
 get_user_recommendations(pair, user_id):
         Constraints:
