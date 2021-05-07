@@ -87,6 +87,10 @@ def get_movie_info(id):
     ia = IMDb()
     m = ia.get_movie(id)
     print(m.keys())
+<<<<<<< HEAD
+=======
+
+>>>>>>> wlphyo
 # return movie ids searched by keyword
 def filter_by_keyword(keyword):
     ia = IMDb()
