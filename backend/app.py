@@ -12,7 +12,8 @@ import bcrypt
 
 # TA email: yogolan@ucsc.edu
 # .\venv\Scripts\activate
-# use flask-jwt-extended if you are
+# JWT token: user id, access token
+# maybe token dates i.e. timestamp
 
 # instance of flask web app
 app = Flask(__name__)
@@ -26,9 +27,10 @@ jwt = JWTManager(app)
 # connection to database constantly maintained
 db = database.open_DBConnection()
 
-# number of attributes currently: 9
-# attributes currently: movie name, media type, id
-def convert_tuple(tuple1):
+# number of attributes: 9
+# user based collaborative filtering or item based collaborative filtering
+# get what they watched and rated and get probability of what they watched and returned, highest one
+def convert_media(tuple1):
     item_js = {
         "name": tuple1[0],
         "mediaType": tuple1[1],
@@ -43,26 +45,45 @@ def convert_tuple(tuple1):
 
     return item_js
 
+# Should move these functions to a utility file
+def convert_pref(tuple1):
+    item_js = {
+        "watched": tuple1[0],
+        "liked": tuple1[1],
+        "rating": str(tuple1[2]),
+        "review": tuple1[3],
+        "user_id": tuple1[4],
+        "media_id": tuple1[5]
+    }
+
+    return item_js
+
+
 # items in list are tuples
 # json.dumps() converts tuples to arrays
 # all the values in the array are converted to strings
-# structure: {"movie name": (json array of attributes)}
-def format_media(list1):
+def format_media(db_list):
     json1 = []
-    for item in list1:
-        item_js = convert_tuple(item)
+    for item in db_list:
+        item_js = convert_media(item)
         json1.append(item_js)
 
     return jsonify(json1)
 
-# gives the route to the function
+
+def format_preferences(db_list):
+    json1 = []
+    for item in db_list:
+        item_js = convert_pref(item)
+        json1.append(item_js)
+
+    return json1
+
 @app.route("/", methods=['POST', 'GET'])
 def index():
-    if request.method == 'POST':
-        # could check the json to determine which function to implement
-        pass
-
+    # could check the json to determine which function to implement
     return "West virgina Country Roads"
+
 
 # too many movies, need to split it off
 @app.route("/movies", methods=['GET'])
@@ -78,6 +99,7 @@ def search():
     to_return = format_media(database.get_by_name(db, request.json.get("searchContents", None)))
     return to_return
 
+
 # advanced search
 @app.route("/advSearch", methods=["POST"])
 def advSearch():
@@ -92,7 +114,6 @@ def advSearch():
     return to_return
 
 
-
 @app.route("/pages", methods=['GET'])
 def pages():
     limit = request.args.get('limit', 100)
@@ -102,23 +123,94 @@ def pages():
     media = pair[1].fetchall()
     return jsonify(json.loads(simplejson.dumps(media)))
 
+
 @app.route('/movieCount')
 def movieCount():
     pair = database.open_DBConnection()
     return jsonify(database.num_items(pair, 'media'))
 
-@app.route("/review", methods=['GET'])
+
+@app.route("/review", methods=["POST"])
 @jwt_required()
 def review():
-    pass
+    identity = get_jwt_identity()
+    user_id = identity[0]
+
+    media_id = request.json.get("media_id")
+    review = request.json.get("review")
+    database.set_data_review(db, user_id, media_id, review)
+
+    return "Review posted", 200
+
 
 # frontend sends jwt, I look up user
-@app.route("/profile")
+# identity returned as list, so need to access it
+@app.route("/profile", methods=["GET"])
 @jwt_required()
 def profile():
+    identity = get_jwt_identity()
+    user_id = identity[0]
+
+    # new function, I do not want to grab the password hash
+    attributes = database.get_by_id(db, user_id, "users")
+    print(attributes)
+    return jsonify({"username": attributes[0]}), 200
+
+
+@app.route("/favorite", methods=["POST", "GET"])
+@jwt_required()
+def favorite():
+    identity = get_jwt_identity()
+    user_id = identity[0]
+
+    if request.method == "POST":
+        media_id = request.json.get("media_id")
+
+        # if id does not exist, then what?
+        database.set_data_liked(db, user_id, media_id, True)
+        return "Movie favorited", 200
+
+    fav_movies = database.get_user_liked(db, user_id, True)
+    fav_movies = format_preferences(fav_movies)
+
+    return jsonify(fav_movies), 200
+
+
+@app.route("/recommend_movies", methods=['GET'])
+@jwt_required()
+def recommend_movies():
     pass
 
-# add: search, profile
+
+@app.route("/watchlist", methods=['GET'])
+@jwt_required()
+def watchlist():
+    identity = get_jwt_identity()
+    user_id = identity[0]
+
+    watched = database.get_user_watched(db, user_id, True)
+    watched = format_preferences(watched)
+    return jsonify(watched), 200
+
+# 0065392, 0104988
+
+# 2 functions below for testing JWT
+# protects a route with jwt_required
+@app.route("/protected", methods=["GET"])
+@jwt_required()
+def protected():
+    current_user = get_jwt_identity()
+    database.set_preference(db, True, False, "3748288412750637086", "0065392", rating=0, review=" ")
+    return jsonify(logged=current_user), 200
+
+
+@app.route("/refresh", methods=["POST"])
+@jwt_required(refresh=True)
+def refresh():
+    identity = get_jwt_identity()
+    access_token = create_access_token(identity=identity)
+    return jsonify(access_token=access_token)
+
 
 # if user, enter; if not, try again
 # ask for query method
@@ -142,17 +234,12 @@ def login():
         return jsonify({"msg": "Invalid username or password"})
 
     # if bcrypt.hashpw(password, stored_hash) == stored hash
+    user_id = database.get_user_id(db, username)
 
-    # return token
-    access_token = create_access_token(identity=username)
-    return jsonify({"token": access_token, "username": username})
+    # return token    
+    access_token = create_access_token(identity=user_id)
+    return jsonify({"token": access_token, "id": user_id, "username": username})
 
-# protects a route with jwt_required
-@app.route("/protected", methods=["GET"])
-@jwt_required()
-def protected():
-    current_user = get_jwt_identity()
-    return jsonify(logged=current_user), 201
 
 # if user, user already exists
 @app.route("/signup", methods=['GET', 'POST'])
@@ -173,12 +260,14 @@ def signup():
         #print(hashed.decode("utf-8"))
 
         database.add_user(db, username, hashed.decode("utf-8"))
+        user_id = database.get_user_id(db, username)
 
         # send token
-        access_token = create_access_token(identity=username)
-        return jsonify({"token": access_token, "username": username})
+        access_token = create_access_token(identity=user_id)
+        return jsonify({"token": access_token, "id": user_id, "username": username})
 
     return "signup"
+
 
 if __name__ == "__main__":
     app.run(debug=True)

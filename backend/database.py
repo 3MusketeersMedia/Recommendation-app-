@@ -170,6 +170,10 @@ def set_data_watched(pair, user_id, media_id, watched=True):
     pair[1].execute("UPDATE preferences SET watched = %s WHERE user_id = %s AND media_id = %s;", (watched, user_id, media_id))
 
 
+def set_data_review(pair, user_id, media_id, review):
+    pair[1].execute("UPDATE preferences SET review = %s WHERE user_id = %s AND media_id = %s;", (review, user_id, media_id))
+
+
 def set_data_id(pair, oldID, newID, table="media"):
     pair[1].execute("UPDATE {} SET ID = %s WHERE ID = %s;".format(table), (newID, oldID))
 
