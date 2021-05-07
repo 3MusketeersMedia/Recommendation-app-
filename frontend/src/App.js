@@ -1,39 +1,24 @@
 import React from 'react';
-import {BrowserRouter, Route, Redirect} from 'react-router-dom';
-import {AppContext} from './AppContext'
+import {BrowserRouter, Route} from 'react-router-dom';
+import ContextWrapper from './AppContext';
 import MovieList from './pages/MovieList';
 import ZoomedPage from './pages/zoomedpage';
 import HomePage from './pages/HomePage.js';
+import ProfilePage from './pages/ProfilePage.js';
 import LoginPage from './pages/LoginPage.js';
 
 export default class App extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      movie: {},
-    };
-  }
-  async componentDidMount() {
-    const movie = JSON.parse(localStorage.getItem('movie'));
-    await this.setState({movie});
-  }
-  setMovie = async(movie) => {
-    localStorage.setItem('movie', JSON.stringify(movie));
-    await this.setState({movie});
-  }
+
   render() {
-    const context = {
-      movie: this.state.movie,
-      setMovie: this.setMovie,
-    };
     return (
       <BrowserRouter>
-        <AppContext.Provider value={context}>
+        <ContextWrapper>
           <Route exact path='/' component={HomePage}/>
           <Route exact path='/list' component={MovieList}/>
           <Route exact path='/movie' component={ZoomedPage}/>
+          <Route exact path='/user/profile' component={ProfilePage}/>
           <Route exact path='/login' component={LoginPage}/>
-        </AppContext.Provider>
+        </ContextWrapper>
       </BrowserRouter>
     );
   }

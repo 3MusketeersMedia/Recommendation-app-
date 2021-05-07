@@ -1,6 +1,11 @@
 import psycopg2
 import psycopg2.extras
 from model import *
+<<<<<<< HEAD
+=======
+from searchDB import advanced_search
+
+>>>>>>> da569b6e9b626bf2707cdea0963510850c597be1
 #----------Setup----------------------
 #verify connection
 #setup database
@@ -15,7 +20,11 @@ if conn is None:
 #make tables
 database.execute("CREATE TABLE IF NOT EXISTS media(name VARCHAR NOT NULL, mediaType VARCHAR NOT NULL, year INT, link VARCHAR, genres VARCHAR, rating NUMERIC, running_time NUMERIC, summary VARCHAR, ID VARCHAR, PRIMARY KEY(ID));")
 
+<<<<<<< HEAD
 database.execute("CREATE TABLE IF NOT EXISTS users(username VARCHAR NOT NULL UNIQUE, password_hash VARCHAR NOT NULL, password_salt VARCHAR NOT NULL, ID VARCHAR, PRIMARY KEY(ID));")
+=======
+database.execute("CREATE TABLE IF NOT EXISTS users(username VARCHAR NOT NULL UNIQUE, password_hash VARCHAR NOT NULL, ID VARCHAR, PRIMARY KEY(ID));")
+>>>>>>> da569b6e9b626bf2707cdea0963510850c597be1
 
 database.execute("CREATE TABLE IF NOT EXISTS preferences(watched BOOLEAN NOT NULL, liked BOOLEAN NOT NULL, rating NUMERIC, review VARCHAR, user_id VARCHAR, media_id VARCHAR, FOREIGN KEY (user_id) REFERENCES users (ID), FOREIGN KEY (media_id) REFERENCES media (ID));")
 
@@ -29,7 +38,7 @@ def open_DBConnection(dict_cursor=False):
     connection = psycopg2.connect(host="mediadb.c3txk3dmci6e.us-west-1.rds.amazonaws.com", port="5432", user='postgres', password='postgres', dbname='db')
     connection.autocommit = True
     if dict_cursor == True:
-        db = connection.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        db = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     else:
         db = connection.cursor()
     return (connection, db, dict_cursor)
@@ -39,13 +48,18 @@ def close_DBConnection(pair):
     pair[0].close()
 
 
+<<<<<<< HEAD
 def add_user(pair, username, password_hash, password_salt):
+=======
+def add_user(pair, username, password_hash):
+>>>>>>> da569b6e9b626bf2707cdea0963510850c597be1
     pair[1].execute("SELECT username FROM users WHERE username = %s;", (username,))
     list_id = pair[1].fetchall()
     user_id = str(hash(username))
 
     if pair[2] == False:
         if (username,) in list_id:
+<<<<<<< HEAD
             pair[1].execute("UPDATE users SET username = %s, password_hash = %s, password_salt = %s WHERE ID = %s;", (username, password_hash, password_salt, user_id))
             #update if true
         else:
@@ -57,13 +71,33 @@ def add_user(pair, username, password_hash, password_salt):
             #update if true
         else:
             pair[1].execute("INSERT INTO users VALUES(%s, %s, %s, %s);", (username, password_hash, password_salt, user_id))
+=======
+            pair[1].execute("UPDATE users SET username = %s, password_hash = %s WHERE ID = %s;", (username, password_hash, user_id))
+            #update if true
+        else:
+            pair[1].execute("INSERT INTO users VALUES(%s, %s, %s);", (username, password_hash, user_id))
+            #insert if false
+    else:
+        if len(list_id) > 0 and username == list_id[0]['username']:
+            pair[1].execute("UPDATE users SET username = %s, password_hash = %s WHERE ID = %s;", (username, password_hash, user_id))
+            #update if true
+        else:
+            pair[1].execute("INSERT INTO users VALUES(%s, %s, %s);", (username, password_hash, user_id))
+>>>>>>> da569b6e9b626bf2707cdea0963510850c597be1
             #insert if false
 
 
 def check_user_exists(pair, username):
     pair[1].execute("SELECT username FROM users WHERE username = %s", (username,))
     list_id = pair[1].fetchall()
+<<<<<<< HEAD
     if (username,) in list_id:
+=======
+    if not list_id:
+        return False
+
+    if username == list_id[0][0]:
+>>>>>>> da569b6e9b626bf2707cdea0963510850c597be1
         return True
     else:
         return False
@@ -74,6 +108,14 @@ def get_user_id(pair, username):
     return pair[1].fetchone()
 
 
+<<<<<<< HEAD
+=======
+def get_user_hash(pair, username):
+    pair[1].execute("SELECT password_hash FROM users WHERE username = %s", (username,))
+    return pair[1].fetchone()
+
+
+>>>>>>> da569b6e9b626bf2707cdea0963510850c597be1
 def set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID, summary="None"):
     #retrieve list of ID's
     pair[1].execute("SELECT ID FROM media WHERE ID = %s;", (ID,))
@@ -117,14 +159,24 @@ def set_preference(pair, watched, liked, user_id, media_id, rating=0, review=" "
 
 def set_data_liked(pair, user_id, media_id, liked=True):
     pair[1].execute("UPDATE preferences SET liked = %s WHERE user_id = %s AND media_id = %s;", (liked, user_id, media_id))
+<<<<<<< HEAD
 
 
+=======
+
+
+>>>>>>> da569b6e9b626bf2707cdea0963510850c597be1
 def set_data_watched(pair, user_id, media_id, watched=True):
     pair[1].execute("UPDATE preferences SET watched = %s WHERE user_id = %s AND media_id = %s;", (watched, user_id, media_id))
 
 
 def set_data_id(pair, oldID, newID, table="media"):
     pair[1].execute("UPDATE {} SET ID = %s WHERE ID = %s;".format(table), (newID, oldID))
+
+
+def get_user_preferences(pair, user_id):
+    pair[1].execute("SELECT * FROM preferences WHERE user_id = %s;", (user_id,))
+    return pair[1].fetchall()
 
 
 def get_user_preference(pair, user_id, media_id):
@@ -196,7 +248,7 @@ def get_next(pair):
 
 def get_by_mediaType(pair, mediaType):
     pair[1].execute("SELECT * FROM media WHERE mediaType = %s;", (mediaType,))
-    return pair[1].fetchall() 
+    return pair[1].fetchall()
 
 
 def get_by_year(pair, start, end=-1):

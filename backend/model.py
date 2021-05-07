@@ -64,7 +64,6 @@ for i in ids:
 
 
 #get movie_id, user_id and rating and name
-
 print(get_user_recommendations(conn, "0"))
 
 clear_data(conn, "preferences")

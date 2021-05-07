@@ -73,7 +73,7 @@ MEDIA:
 entry -> name, mediaType, year, link, genres, rating, running_time, ID, summary
 
 USERS: 
-entry -> username, password_hash, password_salt, user_id
+entry -> username, password_hash, user_id
 
 Preferences:
 entry -> watched, liked, rating, review, user_id (foreign key in users), media_id (foreign key in media)
@@ -112,7 +112,7 @@ List of functions:
 	WORKS WITH -> media and/or users tables:
 	set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID, summary="None") -> set entry or insert new entry into media table
 	set_data_id(pair, oldID, newID, table="media") -> set id of existing data point
-	add_user(pair, username, password_hash, password_salt) -> add to users table
+	add_user(pair, username, password_hash) -> add to users table
 	check_user_exists(pair, username) -> returns true if exists and false if not
 	get_by_id(pair, ID, table="media") -> get entry by ID
 	delete_data(pair, ID, table) -> delete a data point
@@ -122,7 +122,8 @@ List of functions:
 	set_data_liked(pair, user_id, media_id, liked=true) -> set boolean liked value of data with ID
 	set_data_watched(pair, user_id, media_id, watched=false) -> set boolean watched value of data with ID
 	set_preference(pair, watched, liked, user_id, media_id, rating="NULL", review=" "):	
-	get_user_preference(pair, user_id, media_id)
+	get_user_preference(pair, user_id, media_id) -> get single preference
+	get_user_preferences(pair, user_id, media_id) -> get all preferences
 	get_user_liked(pair, user_id, media_id, liked=True)
 	get_user_watched(pair, user_id, media_id, watched=True)
 	delete_preference(pair, user_id, media_id)	
@@ -276,6 +277,16 @@ get_user_preference(pair, user_id, media_id):
                 pair -> tuple from open_DBConnection()
                 user_id -> string
 		media_id -> string
+        Return Type:
+                list of tuples -> MAX_LIST_SIZE list of tuples
+
+get_user_preferences(pair, user_id, media_id):
+        Constraints:
+                none
+        Paremeters:
+                pair -> tuple from open_DBConnection()
+                user_id -> string
+                media_id -> string
         Return Type:
                 list of tuples -> MAX_LIST_SIZE list of tuples
 

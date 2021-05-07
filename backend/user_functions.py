@@ -87,7 +87,6 @@ def get_movie_info(id):
     ia = IMDb()
     m = ia.get_movie(id)
     print(m.keys())
-
 # return movie ids searched by keyword
 def filter_by_keyword(keyword):
     ia = IMDb()
@@ -178,5 +177,4 @@ populate_database()
 #         print(genre)
 
 # bottom = ia.get_bottom100_movies()
-
 
