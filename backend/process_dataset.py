@@ -1,6 +1,7 @@
 import csv
 import json
 import pandas as pd
+from datetime import datetime
 def data_json(filename):
     data = {}
     data['movies'] = []
@@ -46,9 +47,10 @@ def imdb_basic():
         next(reader) #skip first row i.e header of csv file
         for row in reader:
             link = "https://www.imdb.com/title/" + row[0]
+            currentYear = datetime.today().year
             # id, type, primary title, original title, isAdult, start, end, runtime, genre, imdb link
             # print(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], link)
-            if row[5] >= '1970' and row[1] == 'movie':
+            if row[5] >= '2020' and row[5] <= str(currentYear) and row[1] == 'movie':
                 data.append((row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], link))
     return data
             # create a json format

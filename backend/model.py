@@ -37,9 +37,9 @@ def get_user_recommendations(pair, user_id):
     #return list of ids
     return(list(filteredSims.index.array))
 
-"""
+'''
 #load file
-exec(open("../database/database.py").read())
+exec(open("backend/database.py").read())
 random.seed(0)
 
 conn = open_DBConnection()
@@ -64,10 +64,12 @@ for i in ids:
 
 
 #get movie_id, user_id and rating and name
+
 print(get_user_recommendations(conn, "0"))
 
 clear_data(conn, "preferences")
 clear_data(conn, "users")
 
 close_DBConnection(conn)
-"""
+
+'''
