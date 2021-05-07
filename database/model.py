@@ -71,7 +71,7 @@ def search_media_table(pair, query):
     return end
 
 
-def advanced_search_media_table(pair, query, genre, yearStart, ratingMin, yearEnd=-1, ratingMax=-1):
+def advanced_search_media_table(pair, query, mediaType, genre, yearStart, ratingMin, yearEnd=-1, ratingMax=-1):
     
     if yearEnd == -1:
         yearEnd = yearStart
@@ -81,7 +81,8 @@ def advanced_search_media_table(pair, query, genre, yearStart, ratingMin, yearEn
     #filter
     filtered_query = filter(query)
     tmp = "%" + query + "%"
-    pair[1].execute("SELECT * FROM media WHERE name LIKE %s AND year >= %s AND year <= %s AND rating >= %s AND rating <= %s;", (tmp, yearStart, yearEnd, ratingMin, ratingMax))
+    tmp2 = "%" + mediaType + "%"
+    pair[1].execute("SELECT * FROM media WHERE name LIKE %s AND year >= %s AND year <= %s AND rating >= %s AND rating <= %s AND mediaType LIKE %s;", (tmp, yearStart, yearEnd, ratingMin, ratingMax, tmp2))
     exact = pair[1].fetchall()
 
     #get list, we are going to add the exact match at the end as the first result
@@ -90,9 +91,9 @@ def advanced_search_media_table(pair, query, genre, yearStart, ratingMin, yearEn
     for i in filtered_query:
         tmp = "%" + i + "%"
         if len(exact) > 0:
-            pair[1].execute("SELECT * FROM media WHERE name LIKE %s AND ID <> %s AND year >= %s AND year <= %s AND rating >= %s AND rating <= %s;", (tmp, exact[0][8], yearStart, yearEnd, ratingMin, ratingMax))
+            pair[1].execute("SELECT * FROM media WHERE name LIKE %s AND ID <> %s AND year >= %s AND year <= %s AND rating >= %s AND rating <= %s AND mediaType LIKE %s;", (tmp, exact[0][8], yearStart, yearEnd, ratingMin, ratingMax, tmp2))
         else:
-            pair[1].execute("SELECT * FROM media WHERE name LIKE %s AND year >= %s AND year <= %s AND rating >= %s AND rating <= %s;", (tmp, yearStart, yearEnd, ratingMin, ratingMax))
+            pair[1].execute("SELECT * FROM media WHERE name LIKE %s AND year >= %s AND year <= %s AND rating >= %s AND rating <= %s AND mediaType LIKE %s;", (tmp, yearStart, yearEnd, ratingMin, ratingMax, tmp2))
         results += pair[1].fetchall()
 
     #sort list by frequency of tuple

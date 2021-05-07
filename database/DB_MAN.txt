@@ -111,6 +111,7 @@ List of functions:
 	close_DBConnection(pair) -> close connection to db
 	get_user_recommendations(pair, user_id) -> get user_recommendations based on others ratings
 	search_media_table(pair, query) -> search media table for closest match to query
+	advanced_search_media_table(pair, query, genre, yearStart, ratingMin, yearEnd, ratingEnd) -> search media table for closest match to query
 
 	WORKS WITH -> media and/or users tables:
 	set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID, summary="None") -> set entry or insert new entry into media table
@@ -175,12 +176,25 @@ get_user_recommendations(pair, user_id):
 	Return Type:
                 list of media_id's from the media table
 
-search_media_table(pair, user_id):
+search_media_table(pair, query):
         Constraints:
                 none
         Parameters:
                 pair->tuple from open_DBConnection()
                 query-> string name of movie
+        Return Type:
+                list of tuples from the media table
+
+advanced_search_media_table(pair, query, genre, yearStart, ratingMin, yearEnd, ratingMax):
+        Constraints:
+                none
+        Parameters:
+                pair->tuple from open_DBConnection()
+                query-> string name of movie
+		yearStart -> int
+		ratingMin -> float
+		yearEnd -> int
+		ratingMax -> float
         Return Type:
                 list of tuples from the media table
 
