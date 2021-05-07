@@ -47,8 +47,7 @@ def filter(text):
 def search_media_table(pair, query):
     #filter
     filtered_query = filter(query)
-    tmp = "%" + query + "%"
-    pair[1].execute("SELECT * FROM media WHERE name LIKE %s;", (tmp,))
+    pair[1].execute("SELECT * FROM media WHERE name LIKE %s;", (query,))
     exact = pair[1].fetchall()
 
     #get list, we are going to add the exact match at the end as the first result
@@ -68,7 +67,7 @@ def search_media_table(pair, query):
     #add exact match as first result if it exists
     if len(exact) > 0:
         end = exact + end
-    return [key for key, value in collections.Counter(end).most_common()]
+    return end
 
 
 def advanced_search_media_table(pair, query, mediaType, genre, yearStart, ratingMin, yearEnd=-1, ratingMax=-1):
@@ -80,9 +79,8 @@ def advanced_search_media_table(pair, query, mediaType, genre, yearStart, rating
 
     #filter
     filtered_query = filter(query)
-    tmp = "%" + query + "%"
     tmp2 = "%" + mediaType + "%"
-    pair[1].execute("SELECT * FROM media WHERE name LIKE %s AND year >= %s AND year <= %s AND rating >= %s AND rating <= %s AND mediaType LIKE %s;", (tmp, yearStart, yearEnd, ratingMin, ratingMax, tmp2))
+    pair[1].execute("SELECT * FROM media WHERE name LIKE %s AND year >= %s AND year <= %s AND rating >= %s AND rating <= %s AND mediaType LIKE %s;", (query, yearStart, yearEnd, ratingMin, ratingMax, tmp2))
     exact = pair[1].fetchall()
 
     #get list, we are going to add the exact match at the end as the first result
@@ -102,7 +100,7 @@ def advanced_search_media_table(pair, query, mediaType, genre, yearStart, rating
     #add exact match as first result if it exists
     if len(exact) > 0:
         end = exact + end 
-    return [key for key, value in collections.Counter(end).most_common()]
+    return end
 
 
 def get_user_recommendations(pair, user_id):
