@@ -7,3 +7,5 @@ Additions:
 - get_user_hash(pair, username)
     - Uses username to find the corresponding password hash and
     returns it in the form of a list
+- set_data_review(pair, user_id, media_id, review)
+    - Sets the review
