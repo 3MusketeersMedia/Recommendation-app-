@@ -10,10 +10,10 @@ const moviePic = ({movie}) => {
         favorites = JSON.parse(list);
     return (
         <div className='MovieFrame d-flex justify-content-start m-3'>            
-            <img src={movie.picture} alt={movie.title + " picture"}></img>
+            <img src={movie.link} alt={movie.name + " picture"}></img>
             <div className="overlay d-flex align-items-center justify-content-center">
                 <AddFavorite movie={movie} 
-                isFavorited={favorites.find((ele) => movie.title === ele.title) ? true : false}/>
+                isFavorited={favorites.find((ele) => movie.name === ele.name) ? true : false}/>
             </div>
         </div>
     )
