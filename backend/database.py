@@ -189,6 +189,9 @@ def get_all(pair, table="media"):
     pair[1].execute("SELECT * FROM {};".format(table))
     return pair[1].fetchall()
 
+def get_all_users(pair, table="users"):
+    pair[1].execute("SELECT * FROM {};".format(table))
+    return pair[1].fetchall()
 
 def get_next(pair):
     return pair[1].fetchall()
