@@ -85,7 +85,7 @@ const MyNav = () => {
             <Nav.Link href="/list">Movie List</Nav.Link>
           </Nav> 
           <Nav>
-            {context.store.token && context.store.token !== "" && context.store.token !== undefined ? 
+            {context.actions.checkedLogin() ? 
               <> <Nav.Link onClick={() => context.actions.logout()}>Signout</Nav.Link> 
               <Nav.Link href="/user/profile"> Profile </Nav.Link></>: 
               <><Nav.Link href="/login">Login</Nav.Link>

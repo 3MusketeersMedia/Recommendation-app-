@@ -17,7 +17,7 @@ export const AppContext = React.createContext();
  *              -> To access variables use this this.context.store.<varType>
  *              -> To access action use this this.context.action.<actionType>
  * 
- *   -> Hooks: Use import Appcontext from Appcontext; ... const {state, actions} = useContext(AppContext);  
+ *   -> Hooks: Use import Appcontext from Appcontext; ... const {store, actions} = useContext(AppContext);  
  *              -> To access variables or actions, simply append the type you want. (i.e. action.setMovies(), store.token)
  * 
  * It's preferred to use this Context when setting global variables and fetching from back end. Data shared here will be available to any 
@@ -45,7 +45,10 @@ const ContextWrapper = ({children}) => {
          **/
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-            state.actions.syncToken(); 
+        state.actions.syncToken(); 
+        if(state.actions.checkedLogin()){
+            state.actions.getMovieFavorites();
+        }
     },[state.store.token]);
 
     // The initial value for the context is not null anymore, but the current state of this component,
@@ -75,15 +78,24 @@ const GetState = ({ getStore, getActions, setStore }) => {
 		store: {
 			movie: null, 
 			token: null,
-            favorites: [], // Concurrently waiting for backend to implement favorites 
+            movieFavorites: [], // Currently waiting for backend to implement favorites 
 		},
 		actions: {
             /** */
             syncToken: async () => {
                 const token = await sessionStorage.getItem("token");
-                if(token && token !== "" && token !== undefined) 
+                if(token && token !=="" && token!==undefined) 
                     setStore({token: token});
             }, 
+
+            /** Checks if user is logged in */
+            checkedLogin: () => {
+                const store = getStore();
+                if (store.token && store.token !== "" && store.token !== 'undefined'){
+                    return true; 
+                }
+                return false;
+            },
 
             /**Login checks new  and returns token 
              * @return Currently returns  TRUE/FALSE whether methods is successful 
@@ -146,7 +158,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 });
 
                 try{
-                    const response = await fetch('http://localhost:5000/signup', {args})
+                    const response = await fetch('http://localhost:5000/signup', args)
                     const data = await response.json(); 
                     console.log(data);
                     
@@ -178,8 +190,75 @@ const GetState = ({ getStore, getActions, setStore }) => {
             syncMovies: async() =>{
                 const movie = JSON.parse(localStorage.getItem('movie'));
                 await setStore({movie: movie});
-                console.log("Hello");
             }, 
+
+            /** Gets favorited movies and stores in localstorage */
+            getMovieFavorites: async() =>{ 
+                const store = getStore(); 
+                const opts = {
+                    method: "GET",
+                    headers: {
+                        Authorization: "Bearer " + store.token
+                    },
+                }; 
+                const response = await fetch("http://localhost:5000/favorite", opts);
+                const data = await response.json(); 
+
+                if(response.status !== 200){
+                    console.log("Status Code: " + response.status); 
+                    return false 
+                }
+                
+                const favorites = JSON.stringify(data);
+                console.log(favorites);
+                localStorage.setItem('movie-favorites', favorites);
+                setStore({movieFavorites: favorites}) 
+            },
+
+            setMovieFavorite: async(movie) =>{
+                const store = getStore(); 
+                const opts = {
+                    method: "POST",
+                    headers: {
+                        Authorization: "Bearer " + store.token,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(movie),
+                }; 
+                const response = await fetch("http://localhost:5000/favorite", opts);
+                
+                if(response.status !== 200){
+                    console.log("Status Code: " + response.status); 
+                    return false 
+                }
+                
+                const favorites = [...getStore().movieFavorites, movie];
+                console.log(favorites);
+                localStorage.setItem('movie-favorites', JSON.stringify(favorites));
+                setStore({movieFavorites: favorites})
+            },
+
+            removeMovieFavorite: async(movie) => {  
+                const store = getStore(); 
+                const opts = {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: "Bearer " + store.token,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(movie),
+                }; 
+                const response = await fetch("http://localhost:5000/favorite", opts);
+                
+                if(response.status !== 200){
+                    console.log("Status Code: " + response.status); 
+                    return false 
+                }
+                
+                const favorites = getStore().movieFavorites.filter(item => item !== movie)
+                localStorage.setItem('movie-favorites', JSON.stringify(favorites));
+                setStore({movieFavorites: favorites})
+            }
 
 		}
 	};

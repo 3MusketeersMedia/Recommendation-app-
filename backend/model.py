@@ -72,8 +72,4 @@ clear_data(conn, "users")
 
 close_DBConnection(conn)
 
-<<<<<<< HEAD
 '''
-=======
-'''
->>>>>>> wlphyo

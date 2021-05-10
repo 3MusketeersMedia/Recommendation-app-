@@ -157,23 +157,29 @@ def profile():
     return jsonify({"username": attributes[0]}), 200
 
 
-@app.route("/favorite", methods=["POST", "GET"])
+@app.route("/favorite", methods=["POST", "GET", "DELETE"])
 @jwt_required()
 def favorite():
     identity = get_jwt_identity()
     user_id = identity[0]
-
     if request.method == "POST":
-        media_id = request.json.get("media_id")
+        media_id = request.json.get("id")
+        rating = request.json.get("rating")
 
         # if id does not exist, then what?
-        database.set_data_liked(db, user_id, media_id, True)
+        database.set_preference(db, False , True, user_id, media_id, rating, " ")
         return "Movie favorited", 200
+    elif request.method == "DELETE": 
+        media_id = request.json.get("id")
 
-    fav_movies = database.get_user_liked(db, user_id, True)
-    fav_movies = format_preferences(fav_movies)
-
-    return jsonify(fav_movies), 200
+        # if id does not exist, then what?
+        database.set_preference(db, False , False, user_id, media_id, rating, " ")
+        return "Movie unfavorited", 200
+    elif request.method == "GET":
+        fav_movies = database.get_user_liked(db, user_id, True)
+        fav_movies = format_media(fav_movies)
+        return fav_movies, 200
+    return "Method not supported", 403
 
 
 @app.route("/recommend_movies", methods=['GET'])
