@@ -1,6 +1,107 @@
 import pandas as pd
 import numpy as np
+import collections
+import Stemmer
 import random
+import re
+import string
+
+#pip install PyStemmer
+
+STOPWORDS = set(['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you', "you're", "you've", "you'll", "you'd", 'your', 'yours', 'yourself', 'yourselves', 'he', 'him', 'his', 'himself', 'she', "she's", 'her', 'hers', 'herself', 'it', "it's", 'its', 'itself', 'they', 'them', 'their', 'theirs', 'themselves', 'what', 'which', 'who', 'whom', 'this', 'that', "that'll", 'these', 'those', 'am', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'having', 'do', 'does', 'did', 'doing', 'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of', 'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'to', 'from', 'up', 'down', 'in', 'out', 'on', 'off', 'over', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'any', 'both', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 's', 't', 'can', 'will', 'just', 'don', "don't", 'should', "should've", 'now', 'd', 'll', 'm', 'o', 're', 've', 'y', 'ain', 'aren', "aren't", 'couldn', "couldn't", 'didn', "didn't", 'doesn', "doesn't", 'hadn', "hadn't", 'hasn', "hasn't", 'haven', "haven't", 'isn', "isn't", 'ma', 'mightn', "mightn't", 'mustn', "mustn't", 'needn', "needn't", 'shan', "shan't", 'shouldn', "shouldn't", 'wasn', "wasn't", 'weren', "weren't", 'won', "won't", 'wouldn', "wouldn't"])
+
+PUNCTUATION = re.compile('[%s]' % re.escape(string.punctuation))
+
+STEMMER = Stemmer.Stemmer('english')
+
+def tokenize(text):
+    return text.split()
+
+
+def lowercase_filter(tokens):
+    return [token.lower() for token in tokens]
+
+
+def stem_filter(tokens):
+    return STEMMER.stemWords(tokens)
+
+
+def punctuation_filter(tokens):
+    return [PUNCTUATION.sub('', token) for token in tokens]
+
+
+def stopword_filter(tokens):
+    return [token for token in tokens if token not in STOPWORDS]
+
+
+def filter(text):
+    tokens = tokenize(text)
+    tokens = lowercase_filter(tokens)
+    tokens = punctuation_filter(tokens)
+    tokens = stopword_filter(tokens)
+    tokens = stem_filter(tokens)
+
+    return [token for token in tokens if token]
+
+
+def search_media_table(pair, query):
+    #filter
+    filtered_query = filter(query)
+    pair[1].execute("SELECT * FROM media WHERE name LIKE %s;", (query,))
+    exact = pair[1].fetchall()
+
+    #get list, we are going to add the exact match at the end as the first result
+    #so make sure that it isnt the same movie as exact match
+    results = []
+    for i in filtered_query:
+        tmp = "%" + i + "%"
+        if len(exact) > 0:
+            pair[1].execute("SELECT * FROM media WHERE name LIKE %s AND ID <> %s;", (tmp, exact[0][8]))
+        else:
+            pair[1].execute("SELECT * FROM media WHERE name LIKE %s;", (tmp,))
+        results += pair[1].fetchall()
+    
+    #sort list by frequency of tuple
+    end = [key for key, value in collections.Counter(results).most_common()]
+    
+    #add exact match as first result if it exists
+    if len(exact) > 0:
+        end = exact + end
+    return end
+
+
+def advanced_search_media_table(pair, query, mediaType, genre, yearStart, ratingMin, yearEnd=-1, ratingMax=-1):
+    
+    if yearEnd == -1:
+        yearEnd = yearStart
+    if ratingMax == -1:
+        ratingMax = ratingMin
+
+    #filter
+    filtered_query = filter(query)
+    tmp2 = "%" + mediaType + "%"
+    pair[1].execute("SELECT * FROM media WHERE name LIKE %s AND year >= %s AND year <= %s AND rating >= %s AND rating <= %s AND mediaType LIKE %s;", (query, yearStart, yearEnd, ratingMin, ratingMax, tmp2))
+    exact = pair[1].fetchall()
+
+    #get list, we are going to add the exact match at the end as the first result
+    #so make sure that it isnt the same movie as exact match
+    results = []
+    for i in filtered_query:
+        tmp = "%" + i + "%"
+        if len(exact) > 0:
+            pair[1].execute("SELECT * FROM media WHERE name LIKE %s AND ID <> %s AND year >= %s AND year <= %s AND rating >= %s AND rating <= %s AND mediaType LIKE %s;", (tmp, exact[0][8], yearStart, yearEnd, ratingMin, ratingMax, tmp2))
+        else:
+            pair[1].execute("SELECT * FROM media WHERE name LIKE %s AND year >= %s AND year <= %s AND rating >= %s AND rating <= %s AND mediaType LIKE %s;", (tmp, yearStart, yearEnd, ratingMin, ratingMax, tmp2))
+        results += pair[1].fetchall()
+
+    #sort list by frequency of tuple
+    end = [key for key, value in collections.Counter(results).most_common()]
+
+    #add exact match as first result if it exists
+    if len(exact) > 0:
+        end = exact + end 
+    return end
+
 
 def get_user_recommendations(pair, user_id):
 
