@@ -42,7 +42,6 @@ def close_DBConnection(pair):
 
 
 def add_user(pair, username, password_hash):
->>>>>>> da569b6e9b626bf2707cdea0963510850c597be1
     pair[1].execute("SELECT username FROM users WHERE username = %s;", (username,))
     list_id = pair[1].fetchall()
     user_id = str(hash(username))
