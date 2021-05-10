@@ -3,6 +3,7 @@ from imdb import IMDb, IMDbError
 from database import*
 from apiRequests import *
 from process_dataset import *
+from model import *
 import random
 import csv
 import json
@@ -86,7 +87,8 @@ def get_movie_rating(id):
 def get_movie_info(id):
     ia = IMDb()
     m = ia.get_movie(id)
-    print(m.keys())
+    # print(m.keys())
+    print(m['title'])
 
 # return movie ids searched by keyword
 def filter_by_keyword(keyword):
@@ -136,13 +138,18 @@ def populate_database():
         # print(name, mediaType, year, link, genres, rating, running_time, id)
     close_DBConnection(connection)
 
-populate_database()
+# populate_database()
+populate_user()
 
-# exec(open("backend/database.py").read())
-# connection = open_DBConnection()
-# print(num_items(connection, 'media'))
-# # clear_data(connection, 'media')
-# close_DBConnection(connection)
+# user_recs = get_user_recommendations('username', 'password_hash')
+# for id in user_recs:
+#     get_movie_info(id)
+
+
+
+
+
+
 
 
 # getting top 250 movies and bottom 100 movies
@@ -178,5 +185,4 @@ populate_database()
 #         print(genre)
 
 # bottom = ia.get_bottom100_movies()
-
 
