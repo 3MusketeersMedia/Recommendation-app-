@@ -1,13 +1,20 @@
-import Image from "react-bootstrap"
-
+import React from 'react';
+import AddFavorite from './AddFavorite'
 
 //Compoment takes in the image of the movie, the title and the link to where
 // the image is stored. 
 const moviePic = ({movie}) => {
-    console.log(movie)
+    let list = localStorage.getItem('react-movie-app-favorites');
+    let favorites = [];
+    if(list)
+        favorites = JSON.parse(list);
     return (
-        <div className="MovieFrame">
-            <img src={movie[0].picture} alt={movie[0].title + " picture"}/>
+        <div className='MovieFrame d-flex justify-content-start m-3'>            
+            <img src={movie.picture} alt={movie.title + " picture"}></img>
+            <div className="overlay d-flex align-items-center justify-content-center">
+                <AddFavorite movie={movie} 
+                isFavorited={favorites.find((ele) => movie.title === ele.title) ? true : false}/>
+            </div>
         </div>
     )
 }

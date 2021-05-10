@@ -89,6 +89,7 @@ def get_movie_info(id):
     m = ia.get_movie(id)
     # print(m.keys())
     print(m['title'])
+    print(m.keys())
 
 # return movie ids searched by keyword
 def filter_by_keyword(keyword):
