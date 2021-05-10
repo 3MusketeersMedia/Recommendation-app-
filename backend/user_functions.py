@@ -3,6 +3,7 @@ from imdb import IMDb, IMDbError
 from database import*
 from apiRequests import *
 from process_dataset import *
+from model import *
 import random
 import csv
 import json
@@ -18,13 +19,6 @@ def get_imgurl_tmdbsimple(title, year):
     search = tmdb.Search()
     response = search.movie(query=title)
     # poster prefix: https://www.themoviedb.org/t/p/w600_and_h900_bestv2/'poster_path'
-    # for s in search.results:
-    #     if 'release_date' in s:
-    #         # print(s['release_date'], title)
-    #         if year != None and s['release_date'][:4] == year:
-    #             if s['poster_path'] != None:
-    #                 return 'https://www.themoviedb.org/t/p/w600_and_h900_bestv2/' + s['poster_path']
-    # print(len(search.results[0]))
     try:
         if(len(search.results[0]) != 0):
             if 'release_date' in search.results[0]:
@@ -67,7 +61,6 @@ def detailed_info(title, id):
     summary = " "
     for i in data[id]["genres"]:
         s+= i + " "
-        # print(i, end=' ')
     print("\nImage URL: ", data[id]["title"]["image"]["url"])
     result = [title, data[id]["title"]["year"], s, data[id]["title"]["image"]["url"], data[id]["certificate"], data[id]["title"]["runningTimeInMinutes"], summary, data[id]["title"]["titleType"], id] 
     return result
@@ -91,29 +84,13 @@ def get_movie_rating(id):
     movie = ia.get_movie(id)
     return movie['rating']
 
-# lst = get_movie_id('Matrix')
-# for i, j in lst:
-#     try:
-#         rating = get_movie_rating(j)
-#         print(i, rating)
-#     except:
-#         pass
-
 def get_movie_info(id):
     ia = IMDb()
     m = ia.get_movie(id)
+    # print(m.keys())
+    print(m['title'])
     print(m.keys())
-    # use print(m.keys()) to see more options avaiable.
-    # print(m['title'])
-    # print(m['year'])
-    # print(m['rating'])
-    # directors = m['directors']
-    # direcStr = ' '.join(map(str, directors))
-    # print(f'directors: {direcStr}')
-    # for genre in m['genres']:
-    #     print(genre)
 
-# get_movie_info(1234)
 # return movie ids searched by keyword
 def filter_by_keyword(keyword):
     ia = IMDb()
@@ -136,10 +113,6 @@ def filter_by_genre(genre):
                 movies.append(title_row)
     return movies
 
-# movies = filter_by_genre('Comedy')
-# for m in movies:
-#     print(m)
-
 def populate_database():
     exec(open("backend/database.py").read())
     connection = open_DBConnection()
@@ -153,51 +126,29 @@ def populate_database():
         mediaType = row[1]
         year = row[5]
         link = get_imgurl_tmdbsimple(name, year)
-        # link = getImage(row[0])  # movie image
         genres = row[8].replace(',', '|')
         rating = 0
         running_time = row[7]
         id = row[0][2:]
         if "N" in running_time:
             running_time = 0
+        if "N" in year:
+            year = 0
         # print(id)
         set_data(connection, name, mediaType, year, link, genres, rating, running_time, id)
         # print(name, mediaType, year, link, genres, rating, running_time, id)
-    #     movies.append((name, mediaType, year, link, genres, rating, running_time, id))
-    # for m in movies:
-    #     # print(m[3])
-    #     set_data(connection, m[0], m[1], m[2], m[3], m[4], m[5], m[6], m[7])
-    #     print("movie set:", m[0])
     close_DBConnection(connection)
-    # return movies
 
 # populate_database()
+populate_user()
 
-exec(open("backend/database.py").read())
-connection = open_DBConnection()
-print(num_items(connection, 'media'))
-close_DBConnection(connection)
+# user_recs = get_user_recommendations('username', 'password_hash')
+# for id in user_recs:
+#     get_movie_info(id)
 
-# get_movie_info(1234567)
-# data base connection example
 
-# exec(open("backend/database.py").read())
-# connection = open_DBConnection()
-# print(connection)
-# # name, type, ID
-# print(res[8])
-# set_data(connection, res[0], "movie", res[8])
-# list_of_items = get_by_id(connection, "tt4154756", table="media")
-# for i in list_of_items:
-#     print(i)
-# delete_data(connection, "tt4154756", table="media")
-# list_of_items = get_by_id(connection, "tt4154756", table="media")
-# if list_of_items is not None:
-#     for i in list_of_items:
-#         print(i)
-# else:
-#     print("empty")
-# close_DBConnection(connection)
+
+
 
 
 
