@@ -45,6 +45,7 @@ def convert_media(tuple1):
 
     return item_js
 
+
 # Should move these functions to a utility file
 def convert_pref(tuple1):
     item_js = {
@@ -78,6 +79,7 @@ def format_preferences(db_list):
         json1.append(item_js)
 
     return json1
+
 
 @app.route("/", methods=['POST', 'GET'])
 def index():
@@ -151,9 +153,8 @@ def profile():
     identity = get_jwt_identity()
     user_id = identity[0]
 
-    # new function, I do not want to grab the password hash
     attributes = database.get_by_id(db, user_id, "users")
-    print(attributes)
+    #print(attributes)
     return jsonify({"username": attributes[0]}), 200
 
 
