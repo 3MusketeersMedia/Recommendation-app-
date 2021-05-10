@@ -2,7 +2,7 @@ const review = ({movie}) => {
     return (
         <div>
             <header>Rating from IMDB:</header>
-            <h1>{movie[0].Rating}</h1>
+            <h1>{movie.Rating}/10</h1>
         </div>
     )
 }

@@ -80,10 +80,3 @@ def user_recommendations(pair, user_id):
 
 # close_DBConnection(conn)
 
-# chars = string.ascii_letters + string.digits + '+/'
-# assert 256 % len(chars) == 0  # non-biased later modulo
-# PWD_LEN = 16
-# password = ''.join(chars[c % len(chars)] for c in os.urandom(PWD_LEN))
-# print(password)
-
-# print(generate_username(5))

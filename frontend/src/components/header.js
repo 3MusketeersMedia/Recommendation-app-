@@ -2,7 +2,7 @@
 const Header = ({movie}) => {
     return (
         <header>
-            <h3>{movie[0].title}</h3>
+            <h3>{movie.title}</h3>
         </header>
     )
 }
