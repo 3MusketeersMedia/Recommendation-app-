@@ -183,7 +183,8 @@ def get_by_watched(pair, watched=True):
 
 
 def get_by_genre(pair, genre):
-    pair[1].execute("SELECT * FROM media WHERE POSITION(%s in genres) > 0;", (genre,))
+    tmp = "%" + genre +"%"
+    pair[1].execute("SELECT * FROM media WHERE genre LIKE %s;", (tmp,))
     return pair[1].fetchall()
 
 
