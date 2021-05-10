@@ -83,6 +83,7 @@ def get_user_hash(pair, username):
     pair[1].execute("SELECT password_hash FROM users WHERE username = %s", (username,))
     return pair[1].fetchone()
 
+
 def set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID, summary="None"):
     #retrieve list of ID's
     pair[1].execute("SELECT ID FROM media WHERE ID = %s;", (ID,))
@@ -131,6 +132,7 @@ def set_preference(pair, watched, liked, user_id, media_id, rating=0, review=" "
 
 def set_data_liked(pair, user_id, media_id, liked=True):
     pair[1].execute("UPDATE preferences SET liked = %s WHERE user_id = %s AND media_id = %s;", (liked, user_id, media_id))
+
 
 def set_data_watched(pair, user_id, media_id, watched=True):
     pair[1].execute("UPDATE preferences SET watched = %s WHERE user_id = %s AND media_id = %s;", (watched, user_id, media_id))
@@ -215,6 +217,9 @@ def get_all(pair, table="media"):
     pair[1].execute("SELECT * FROM {};".format(table))
     return pair[1].fetchall()
 
+def get_all_users(pair, table="users"):
+    pair[1].execute("SELECT * FROM {};".format(table))
+    return pair[1].fetchall()
 
 def get_next(pair):
     return pair[1].fetchall()
