@@ -171,4 +171,5 @@ clear_data(conn, "preferences")
 clear_data(conn, "users")
 
 close_DBConnection(conn)
-"""
+'''
+

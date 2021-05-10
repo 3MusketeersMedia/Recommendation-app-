@@ -65,7 +65,10 @@ def add_user(pair, username, password_hash):
 def check_user_exists(pair, username):
     pair[1].execute("SELECT username FROM users WHERE username = %s", (username,))
     list_id = pair[1].fetchall()
-    if (username,) in list_id:
+    if not list_id:
+        return False
+
+    if username == list_id[0][0]:
         return True
     else:
         return False
@@ -75,6 +78,10 @@ def get_user_id(pair, username):
     pair[1].execute("SELECT ID FROM users WHERE username = %s", (username,))
     return pair[1].fetchone()
 
+
+def get_user_hash(pair, username):
+    pair[1].execute("SELECT password_hash FROM users WHERE username = %s", (username,))
+    return pair[1].fetchone()
 
 def set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID, summary="None"):
     #retrieve list of ID's
@@ -95,6 +102,11 @@ def set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID
         else:
             pair[1].execute("INSERT INTO media VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s);", (name, mediaType, year, link, genres, rating, running_time, summary, ID))
             #insert if false
+
+def check_preference(pair, user_id, media_id): 
+    pair[1].execute("SELECT user_id, media_id FROM preferences WHERE user_id = %s AND media_id = %s;", (user_id, media_id))
+    list_id = pair[1].fetchall()
+    return (len(list_id) > 0) if True else false 
 
 
 def set_preference(pair, watched, liked, user_id, media_id, rating=0, review=" "):
@@ -120,7 +132,6 @@ def set_preference(pair, watched, liked, user_id, media_id, rating=0, review=" "
 def set_data_liked(pair, user_id, media_id, liked=True):
     pair[1].execute("UPDATE preferences SET liked = %s WHERE user_id = %s AND media_id = %s;", (liked, user_id, media_id))
 
-
 def set_data_watched(pair, user_id, media_id, watched=True):
     pair[1].execute("UPDATE preferences SET watched = %s WHERE user_id = %s AND media_id = %s;", (watched, user_id, media_id))
 
@@ -140,8 +151,15 @@ def get_user_preference(pair, user_id, media_id):
 
 
 def get_user_liked(pair, user_id, liked=True):
-    pair[1].execute("SELECT * FROM preferences WHERE user_id = %s AND liked = %s;", (user_id, liked))
-    return pair[1].fetchall()
+    pair[1].execute("SELECT media_id FROM preferences WHERE user_id = %s AND liked = %s;", (user_id, liked))
+    
+    #Gets list of movies with ids 
+    movie_list = []
+    movid_id_list = pair[1].fetchall(); 
+    for (media_id) in movid_id_list: 
+        movie_list.append(get_by_id(pair, media_id[0]))
+
+    return movie_list
 
 
 def get_user_watched(pair, user_id, watched=True):
