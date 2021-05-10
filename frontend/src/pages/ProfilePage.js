@@ -10,23 +10,14 @@ import MovieList from '../components/similarMovies'
 export default class ProfilePage extends React.Component { 
     constructor() { 
         super();
-        const favoriteList = JSON.parse(localStorage.getItem('react-movie-app-favorites'));
+        const favoritedMovieList = JSON.parse(localStorage.getItem('movie-favorites'));
         this.state = {
             isMainProf: true,
-            favorites: favoriteList
+            favoritedMovies : favoritedMovieList,
         };
+        console.log(this.state.favoritedMovies);
     }   
 
-
-    saveToLocalStorage = (item) =>{ 
-        localStorage.setItem('react-movie-app-favorites', JSON.stringify(item))
-    }
-
-    addFavoriteMovie = (movie) =>{ 
-        const newFavouriteList =  {...this.state.favorites, movie}; 
-        this.setState({favorites: newFavouriteList}); 
-        this.saveToLocalStorage(newFavouriteList);
-    }
 
     render() { 
         let page;
@@ -39,7 +30,7 @@ export default class ProfilePage extends React.Component {
                     <Col></Col>
                     {/* Liked Components */}
                     <Col>
-                        <MovieList movies={this.state.favorites} />
+                        <MovieList movies={this.state.favoritedMovies} />
                     </Col>
                     {/* News Feeds */}
                     <Col></Col>
