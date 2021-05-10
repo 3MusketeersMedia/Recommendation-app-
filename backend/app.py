@@ -166,14 +166,20 @@ def favorite():
         media_id = request.json.get("id")
         rating = request.json.get("rating")
 
-        # if id does not exist, then what?
-        database.set_preference(db, False , True, user_id, media_id, rating, " ")
+        # if id does not exist, add to database with set_preference
+        if(database.check_preference(db, user_id, media_id)): 
+            database.set_data_liked(db, user_id, media_id, True)
+        else: 
+            database.set_preference(db, False , True, user_id, media_id)
         return "Movie favorited", 200
     elif request.method == "DELETE": 
         media_id = request.json.get("id")
 
-        # if id does not exist, then what?
-        database.set_preference(db, False , False, user_id, media_id, rating, " ")
+        # if id does not exist, add to database with set_preference
+        if(database.check_preference(db, user_id, media_id)): 
+            database.set_data_liked(db, user_id, media_id, False)
+        else: 
+            database.set_preference(db, False , False, user_id, media_id)
         return "Movie unfavorited", 200
     elif request.method == "GET":
         fav_movies = database.get_user_liked(db, user_id, True)
