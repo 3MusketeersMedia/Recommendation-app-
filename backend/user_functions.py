@@ -89,6 +89,7 @@ def get_movie_info(id):
     m = ia.get_movie(id)
     # print(m.keys())
     print(m['title'])
+    print(m.keys())
 
 # return movie ids searched by keyword
 def filter_by_keyword(keyword):
@@ -139,8 +140,11 @@ def populate_database():
     close_DBConnection(connection)
 
 # populate_database()
-populate_user()
-
+# populate_user()
+exec(open("backend/database.py").read())
+connection = open_DBConnection()
+print(get_all_users(connection))
+close_DBConnection(connection)
 # user_recs = get_user_recommendations('username', 'password_hash')
 # for id in user_recs:
 #     get_movie_info(id)
