@@ -5,6 +5,8 @@ import Stemmer
 import random
 import re
 import string
+import os
+from random_username.generate import generate_username
 
 #pip install PyStemmer
 
@@ -60,10 +62,10 @@ def search_media_table(pair, query):
         else:
             pair[1].execute("SELECT * FROM media WHERE name LIKE %s;", (tmp,))
         results += pair[1].fetchall()
-    
+
     #sort list by frequency of tuple
     end = [key for key, value in collections.Counter(results).most_common()]
-    
+
     #add exact match as first result if it exists
     if len(exact) > 0:
         end = exact + end
@@ -71,7 +73,7 @@ def search_media_table(pair, query):
 
 
 def advanced_search_media_table(pair, query, mediaType, genre, yearStart, ratingMin, yearEnd=-1, ratingMax=-1):
-    
+
     if yearEnd == -1:
         yearEnd = yearStart
     if ratingMax == -1:
@@ -99,7 +101,7 @@ def advanced_search_media_table(pair, query, mediaType, genre, yearStart, rating
 
     #add exact match as first result if it exists
     if len(exact) > 0:
-        end = exact + end 
+        end = exact + end
     return end
 
 
@@ -108,20 +110,20 @@ def get_user_recommendations(pair, user_id):
     pair[1].execute("SELECT user_id, media_id, rating FROM preferences;")
     table = pair[1].fetchall()
 
-    table = [(a, b, int(c)) for a,b,c in table] 
+    table = [(a, b, int(c)) for a,b,c in table]
 
     #list of all ratings
     df = pd.DataFrame(table, columns=["user_id", "media_id", "rating"])
     allRatings = df.pivot_table(index=['user_id'], columns=['media_id'], values='rating')
-    
+
     #evaluate all correlation combos -> as more users increase min_periods
     corrMatrix = allRatings.corr(method='pearson', min_periods = 2)
-    
+
     #get correlation for user
     myRatings = allRatings.loc[user_id].dropna()
-    
+
     simCandidates = pd.Series(dtype='object')
-    
+
     for i in range(0, len(myRatings.index)):
         #print ("Adding sims for " + myRatings.index[i] + "...")
         # Retrieve similar movies to this one that I rated
@@ -134,13 +136,13 @@ def get_user_recommendations(pair, user_id):
     #sort values and drop movies already rated
     simCandidates.sort_values(inplace = True, ascending = False)
     filteredSims = simCandidates.drop(myRatings.index)
-    
+
     #return list of ids
     return(list(filteredSims.index.array))
 
 
 #load file
-exec(open("backend/database.py").read())
+exec(open("database.py").read())
 random.seed(0)
 
 conn = open_DBConnection()
@@ -173,10 +175,9 @@ for i in ids:
 
 # get movie_id, user_id and rating and name
 
-print(user_recommendations(conn, "0"))
+print(get_user_recommendations(conn, "0"))
 
 clear_data(conn, "preferences")
 clear_data(conn, "users")
 
 close_DBConnection(conn)
-
