@@ -27,8 +27,8 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)
 app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(hours=1)
 jwt = JWTManager(app)
 
-# connection to database constantly maintained
-db = database.open_DBConnection()
+# connection to database constantly not maintained
+#db = database.open_DBConnection()
 
 # number of attributes: 9
 # user based collaborative filtering or item based collaborative filtering
@@ -86,13 +86,15 @@ def format_preferences(db_list):
 
 @app.route("/", methods=['POST', 'GET'])
 def index():
-    # could check the json to determine which function to implement
+    # could check the json to determine which function to implement if you want
+    # to fit multiple functions in one route
     return "West virgina Country Roads"
 
 
 # too many movies, need to split it off
 @app.route("/movies", methods=['GET'])
 def movies():
+    db = database.open_DBConnection()
     all_media = database.get_all(db, "media")
     dict1 = format_media(all_media)
     return dict1
@@ -100,6 +102,7 @@ def movies():
 # standard search by name function
 @app.route("/search", methods=["POST"])
 def search():
+    db = database.open_DBConnection()
     #to_return = format_media(database.get_all(db,"media"))
     to_return = format_media(database.get_by_name(db, request.json.get("searchContents", None)))
     return to_return
@@ -114,6 +117,7 @@ def advSearch():
     minRate = request.json.get("minRate", None)
     maxRate = request.json.get("maxRate", None)
     #media = database.advanced_search(db, genre, minYear, maxYear, minRate, maxRate)
+    db = database.open_DBConnection()
     media = database.get_by_genre(db, genre)
     to_return = format_media(media)
     return to_return
@@ -143,6 +147,7 @@ def review():
 
     media_id = request.json.get("media_id")
     review = request.json.get("review")
+    db = database.open_DBConnection()
     database.set_data_review(db, user_id, media_id, review)
 
     return "Review posted", 200
@@ -156,6 +161,7 @@ def profile():
     identity = get_jwt_identity()
     user_id = identity[0]
 
+    db = database.open_DBConnection()
     attributes = database.get_by_id(db, user_id, "users")
     #print(attributes)
     return jsonify({"username": attributes[0]}), 200
@@ -166,6 +172,7 @@ def profile():
 def favorite():
     identity = get_jwt_identity()
     user_id = identity[0]
+    db = database.open_DBConnection()
 
     if request.method == "POST":
         media_id = request.json.get("media_id")
@@ -191,6 +198,7 @@ def recommend_movies():
 def watchlist():
     identity = get_jwt_identity()
     user_id = identity[0]
+    db = database.open_DBConnection()
 
     watched = database.get_user_watched(db, user_id, True)
     watched = format_preferences(watched)
@@ -204,6 +212,7 @@ def watchlist():
 @jwt_required()
 def protected():
     current_user = get_jwt_identity()
+    db = database.open_DBConnection()
     database.set_preference(db, True, False, "3748288412750637086", "0065392", rating=0, review=" ")
     return jsonify(logged=current_user), 200
 
@@ -223,6 +232,8 @@ def refresh():
 def login():
     username = request.json.get("username", None)
     password = request.json.get("password", None)
+
+    db = database.open_DBConnection()
 
     # query database
     # need to pull hash and salt from db, then hash the password passed in
@@ -251,6 +262,8 @@ def signup():
     if request.method == "POST":
         username = request.json.get("username")
         password = request.json.get("password")
+        db = database.open_DBConnection()
+
         # existing user check
         # check if password length long?
         if database.check_user_exists(db, username):
