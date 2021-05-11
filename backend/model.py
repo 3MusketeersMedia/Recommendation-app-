@@ -151,6 +151,7 @@ list_movies = get_all(conn)
 ids = []
 z = 5
 for i in range (z):
+    # pip install random-username
     username = generate_username(1)
     chars = string.ascii_letters + string.digits + '+/'
     assert 256 % len(chars) == 0  # non-biased later modulo
