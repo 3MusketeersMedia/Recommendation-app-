@@ -67,7 +67,7 @@ def check_user_exists(pair, username):
     list_id = pair[1].fetchall()
     if not list_id:
         return False
-
+    
     if username == list_id[0][0]:
         return True
     else:
@@ -136,6 +136,10 @@ def set_data_liked(pair, user_id, media_id, liked=True):
 
 def set_data_watched(pair, user_id, media_id, watched=True):
     pair[1].execute("UPDATE preferences SET watched = %s WHERE user_id = %s AND media_id = %s;", (watched, user_id, media_id))
+
+
+def set_data_review(pair, user_id, media_id, review):
+    pair[1].execute("UPDATE preferences SET review = %s WHERE user_id = %s AND media_id = %s;", (review, user_id, media_id))
 
 
 def set_data_id(pair, oldID, newID, table="media"):
