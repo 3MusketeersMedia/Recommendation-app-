@@ -15,6 +15,9 @@ import bcrypt
 # JWT token: user id, access token
 # maybe token dates i.e. timestamp
 
+# To-do list:
+# 1) password hashes are not unique for some reason
+
 # instance of flask web app
 app = Flask(__name__)
 cors = CORS(app)
