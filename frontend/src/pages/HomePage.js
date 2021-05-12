@@ -29,6 +29,7 @@ export default function HomePage() {
             recommendation lists based the things you love.
             </h3>
           </div>
+          
           <Link to="/login" className = "btn">Sign Up/Log In</Link>
         </div>
       </div>
