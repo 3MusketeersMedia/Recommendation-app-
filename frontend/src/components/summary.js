@@ -1,7 +1,7 @@
 const summary = ({movie}) => {
     return (
         <div>
-            <p>{movie.text}</p>
+            <p>{movie.summary}</p>
         </div>
     )
 }

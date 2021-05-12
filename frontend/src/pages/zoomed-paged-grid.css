@@ -37,7 +37,7 @@
 
   .MovieFrame:hover{
     cursor: pointer;
-    transform: scale(1.1);
+    transform: scale(1.05);
   }
 
   .MovieFrame:hover .overlay{
@@ -63,9 +63,11 @@
     min-width: 100%;
   }
   
-  .NavBar{
+  /* .NavBar{
+    Redacted in favor of a Movie banner
     margin-bottom: 20px;
-  }
+  } */
+  
   #content-wrap {
     padding-bottom: 10rem;    /* Footer height */
   }
@@ -75,3 +77,28 @@
     overflow-x: auto;
     flex-wrap: nowrap
   }
+
+
+  .MovieBanner{
+    position: relative;
+    width: 100%;
+  }
+  
+  
+  .MovieBanner > img{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    filter: blur(8px);
+    -webkit-filter: blur(8px);
+    min-width: 100%;
+    max-height: 100%;
+    display: stretch;
+  }
+  
+  .centerThis{
+    position: relative; 
+    z-index: 10;
+    margin: auto;
+  }
+  

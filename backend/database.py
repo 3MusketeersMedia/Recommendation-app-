@@ -107,7 +107,7 @@ def set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID
 def check_preference(pair, user_id, media_id): 
     pair[1].execute("SELECT user_id, media_id FROM preferences WHERE user_id = %s AND media_id = %s;", (user_id, media_id))
     list_id = pair[1].fetchall()
-    return (len(list_id) > 0) if True else false 
+    return (len(list_id) > 0) if True else False 
 
 
 def set_preference(pair, watched, liked, user_id, media_id, rating=0, review=" "):
