@@ -48,7 +48,7 @@ def search_media_table(pair, query):
     #filter
     filtered_query = filter(query)
     tmp = "%" + query + "%"
-    pair[1].execute("SELECT * FROM media WHERE name LIKE %s;", (tmp,))
+    pair[1].execute("SELECT * FROM media WHERE LOWER(name) LIKE %s;", (tmp,))
     exact = pair[1].fetchall()
 
     #get list, we are going to add the exact match at the end as the first result
@@ -57,9 +57,9 @@ def search_media_table(pair, query):
     for i in filtered_query:
         tmp = "%" + i + "%"
         if len(exact) > 0:
-            pair[1].execute("SELECT * FROM media WHERE name LIKE %s AND ID <> %s;", (tmp, exact[0][8]))
+            pair[1].execute("SELECT * FROM media WHERE LOWER(name) LIKE %s AND ID <> %s;", (tmp, exact[0][8]))
         else:
-            pair[1].execute("SELECT * FROM media WHERE name LIKE %s;", (tmp,))
+            pair[1].execute("SELECT * FROM media WHERE LOWER(name) LIKE %s;", (tmp,))
         results += pair[1].fetchall()
     
     #sort list by frequency of tuple
@@ -68,6 +68,42 @@ def search_media_table(pair, query):
     #add exact match as first result if it exists
     if len(exact) > 0:
         end = exact + end
+    return end
+
+
+def advanced_search_media_table(pair, query, mediaType, genre, yearStart, ratingMin, yearEnd=-1, ratingMax=-1):
+    
+    if query == "peter":
+        return
+
+    if yearEnd == -1:
+        yearEnd = yearStart
+    if ratingMax == -1:
+        ratingMax = ratingMin
+
+    #filter
+    filtered_query = filter(query)
+    tmp2 = "%" + mediaType + "%"
+    pair[1].execute("SELECT * FROM media WHERE name LIKE %s AND year >= %s AND year <= %s AND rating >= %s AND rating <= %s AND mediaType LIKE %s;", (query, yearStart, yearEnd, ratingMin, ratingMax, tmp2))
+    exact = pair[1].fetchall()
+
+    #get list, we are going to add the exact match at the end as the first result
+    #so make sure that it isnt the same movie as exact match
+    results = []
+    for i in filtered_query:
+        tmp = "%" + i + "%"
+        if len(exact) > 0:
+            pair[1].execute("SELECT * FROM media WHERE name LIKE %s AND ID <> %s AND year >= %s AND year <= %s AND rating >= %s AND rating <= %s AND mediaType LIKE %s;", (tmp, exact[0][8], yearStart, yearEnd, ratingMin, ratingMax, tmp2))
+        else:
+            pair[1].execute("SELECT * FROM media WHERE name LIKE %s AND year >= %s AND year <= %s AND rating >= %s AND rating <= %s AND mediaType LIKE %s;", (tmp, yearStart, yearEnd, ratingMin, ratingMax, tmp2))
+        results += pair[1].fetchall()
+
+    #sort list by frequency of tuple
+    end = [key for key, value in collections.Counter(results).most_common()]
+
+    #add exact match as first result if it exists
+    if len(exact) > 0:
+        end = exact + end 
     return end
 
 def get_user_recommendations(pair, user_id):

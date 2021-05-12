@@ -2,6 +2,8 @@ import psycopg2
 import psycopg2.extras
 from model import *
 from searchDB import advanced_search
+from model import search_media_table
+from model import advanced_search_media_table
 
 #----------Setup----------------------
 #verify connection

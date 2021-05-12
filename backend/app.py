@@ -10,6 +10,7 @@ from flask_cors import CORS
 import database
 import bcrypt
 
+
 # TA email: yogolan@ucsc.edu
 # .\venv\Scripts\activate
 # use flask-jwt-extended if you are
@@ -75,19 +76,21 @@ def movies():
 @app.route("/search", methods=["POST"])
 def search():
     #to_return = format_media(database.get_all(db,"media"))
-    to_return = format_media(database.get_by_name(db, request.json.get("searchContents", None)))
+    to_return = format_media(database.search_media_table(db, request.json.get("searchContents", None)))
     return to_return
 
 # advanced search
 @app.route("/advSearch", methods=["POST"])
 def advSearch():
+    name = request.json.get("name", None)
+    mediaType = request.json.get("mediaType", None)
     genre = request.json.get("genre", None)
     minYear = request.json.get("minYear", None)
     maxYear = request.json.get("maxYear", None)
     minRate = request.json.get("minRate", None)
     maxRate = request.json.get("maxRate", None)
     #media = database.advanced_search(db, genre, minYear, maxYear, minRate, maxRate)
-    media = database.get_by_genre(db, genre)
+    media = database.advanced_search_media_table(db, name, mediaType, genre, minYear, maxYear, minRate, maxRate)
     to_return = format_media(media)
     return to_return
 

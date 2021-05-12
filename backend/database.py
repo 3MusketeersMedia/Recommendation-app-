@@ -2,6 +2,8 @@ import psycopg2
 import psycopg2.extras
 from model import *
 from searchDB import advanced_search
+from model import search_media_table
+from model import advanced_search_media_table
 
 #----------Setup----------------------
 #verify connection
@@ -72,7 +74,6 @@ def check_user_exists(pair, username):
         return True
     else:
         return False
-
 
 def get_user_id(pair, username):
     pair[1].execute("SELECT ID FROM users WHERE username = %s", (username,))

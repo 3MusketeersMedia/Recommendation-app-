@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
-import {Navbar, Nav, NavDropdown, Form, FormControl, Button} from 'react-bootstrap'
+import {Navbar, Nav, NavDropdown, FormGroup, FormControl, Button} from 'react-bootstrap'
 import {AppContext} from '../AppContext';
 import './navbar.css';
 
 const MyNav = () => {
     const [searchContents, changeSC] = useState(null);
+    const [name, changeName] = useState(null);
+    const [mediaType, changeMediaType] = useState(null);
     const [genre, changeGenre] = useState(null);
     const [minYear, changeMinYear] = useState(null);
     const [maxYear, changeMaxYear] = useState(null);
@@ -14,6 +16,16 @@ const MyNav = () => {
     function getSearchConts(val)
     {
       changeSC(val.target.value);
+      console.warn(val.target.value);
+    }
+    function getName(val)
+    {
+      changeName(val.target.value);
+      console.warn(val.target.value);
+    }
+    function getMediaType(val)
+    {
+      changeMediaType(val.target.value);
       console.warn(val.target.value);
     }
     function getGenre(val)
@@ -67,7 +79,7 @@ const MyNav = () => {
         headers: {
           'content-type': 'application/json',
         },
-        body: JSON.stringify({genre, minYear, maxYear, minRate, maxRate}),
+        body: JSON.stringify({name, mediaType, genre, minYear, maxYear, minRate, maxRate}),
       });
       console.log(response);
       const data = await response.json();
@@ -93,6 +105,16 @@ const MyNav = () => {
             }
             <NavDropdown title="Advanced Search" id="collasible-nav-dropdown">
               <div>
+              <div>Name:
+                  <div className = "searchTab">
+                    <input className = "fullSizeInput" onChange = {getName}/>
+                  </div>
+                </div>
+                <div>Media Type:
+                  <div className = "searchTab">
+                    <input className = "fullSizeInput" onChange = {getMediaType}/>
+                  </div>
+                </div>
                 <div>Genre:
                   <div className = "searchTab">
                     <input className = "fullSizeInput" onChange = {getGenre}/>
@@ -116,10 +138,19 @@ const MyNav = () => {
             </NavDropdown>
           </Nav>
           <Nav>
-            <Form inline>
-              <FormControl type="text" placeholder="Search by title" className="mr-sm-2" onChange = {getSearchConts}/>
-              <Button variant="outline-light" onClick = {normalSearch}>Search</Button>
-            </Form>
+            <div className = "searchBar">
+              <FormControl 
+              type="text"
+              placeholder="Search by title" 
+              className="mr-sm-2"  
+              onKeyPress={event => {
+                if (event.key === "Enter") {
+                  normalSearch();
+                }
+              }}
+              onChange = {getSearchConts}/>
+            </div>
+            <Button variant="outline-light" onClick = {normalSearch}>Search</Button>
           </Nav>
           </Navbar.Collapse>
         </Navbar>
