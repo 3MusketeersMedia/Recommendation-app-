@@ -1,5 +1,8 @@
 import psycopg2
 import psycopg2.extras
+import os
+import io
+import PIL.Image as Image
 from model import *
 from searchDB import advanced_search
 
@@ -17,7 +20,7 @@ if conn is None:
 #make tables
 database.execute("CREATE TABLE IF NOT EXISTS media(name VARCHAR NOT NULL, mediaType VARCHAR NOT NULL, year INT, link VARCHAR, genres VARCHAR, rating NUMERIC, running_time NUMERIC, summary VARCHAR, ID VARCHAR, PRIMARY KEY(ID));")
 
-database.execute("CREATE TABLE IF NOT EXISTS users(username VARCHAR NOT NULL UNIQUE, password_hash VARCHAR NOT NULL, ID VARCHAR, PRIMARY KEY(ID));")
+database.execute("CREATE TABLE IF NOT EXISTS users(username VARCHAR NOT NULL UNIQUE, password_hash VARCHAR NOT NULL, ID VARCHAR, image BYTEA, PRIMARY KEY(ID));")
 
 database.execute("CREATE TABLE IF NOT EXISTS preferences(watched BOOLEAN NOT NULL, liked BOOLEAN NOT NULL, rating NUMERIC, review VARCHAR, user_id VARCHAR, media_id VARCHAR, FOREIGN KEY (user_id) REFERENCES users (ID), FOREIGN KEY (media_id) REFERENCES media (ID));")
 
@@ -39,6 +42,24 @@ def open_DBConnection(dict_cursor=False):
 
 def close_DBConnection(pair):
     pair[0].close()
+
+
+def add_user_pic(pair, user_id, img):
+    path = "%s" % (img,)
+    with open(path, "rb") as image:
+        f = image.read()
+        b = bytearray(f)
+
+    pair[1].execute("UPDATE users SET image = %s WHERE ID = %s;", (b, user_id))
+
+
+def get_user_pic(pair, user_id, filenm="default.png"):
+    pair[1].execute("SELECT image FROM users WHERE ID = %s;", (user_id,))
+    b = pair[1].fetchone()
+    if b[0] != None:
+        b = bytes(b[0])
+        image = Image.open(io.BytesIO(b))
+        image.save(filenm)
 
 
 def add_user(pair, username, password_hash):
@@ -65,10 +86,7 @@ def add_user(pair, username, password_hash):
 def check_user_exists(pair, username):
     pair[1].execute("SELECT username FROM users WHERE username = %s", (username,))
     list_id = pair[1].fetchall()
-    if not list_id:
-        return False
-
-    if username == list_id[0][0]:
+    if (username,) in list_id:
         return True
     else:
         return False
@@ -76,11 +94,6 @@ def check_user_exists(pair, username):
 
 def get_user_id(pair, username):
     pair[1].execute("SELECT ID FROM users WHERE username = %s", (username,))
-    return pair[1].fetchone()
-
-
-def get_user_hash(pair, username):
-    pair[1].execute("SELECT password_hash FROM users WHERE username = %s", (username,))
     return pair[1].fetchone()
 
 
@@ -191,7 +204,8 @@ def get_by_watched(pair, watched=True):
 
 
 def get_by_genre(pair, genre):
-    pair[1].execute("SELECT * FROM media WHERE POSITION(%s in genres) > 0;", (genre,))
+    tmp = "%" + genre +"%"
+    pair[1].execute("SELECT * FROM media WHERE genre LIKE %s;", (tmp,))
     return pair[1].fetchall()
 
 
@@ -254,6 +268,5 @@ def clear_data(pair, table):
 def num_items(pair, table="media"):
     pair[1].execute("SELECT * FROM {};".format(table))
     return pair[1].rowcount
-
 
 #-------------------Function Defintion End------------------------

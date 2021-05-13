@@ -75,7 +75,7 @@ MEDIA:
 entry -> name, mediaType, year, link, genres, rating, running_time, ID, summary
 
 USERS: 
-entry -> username, password_hash, user_id
+entry -> username, password_hash, user_id, image (profile pic)
 
 Preferences:
 entry -> watched, liked, rating, review, user_id (foreign key in users), media_id (foreign key in media)
@@ -112,6 +112,10 @@ List of functions:
 	get_user_recommendations(pair, user_id) -> get user_recommendations based on others ratings
 	search_media_table(pair, query) -> search media table for closest match to query
 	advanced_search_media_table(pair, query, genre, yearStart, ratingMin, yearEnd, ratingEnd) -> search media table for closest match to query
+
+	WORKS WITH -> users table:
+	add_user_pic(connection, user_id, image) -> insert image into table
+	get_user_pic(connection, user_id) -> get user current pic and save the file (no file saved if no pic)
 
 	WORKS WITH -> media and/or users tables:
 	set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID, summary="None") -> set entry or insert new entry into media table
@@ -166,6 +170,25 @@ close_DBConnection(pair):
 		pair->tuple from open_DBConnection()
 	Return Type:
 		none
+
+add_user_pic(pair, user_id, img):
+        Constraints:
+                The user must already be in the table
+        Parameters:
+                pair->tuple from open_DBConnection()
+                user_id-> string (user we want recomendations for)
+		img -> file path of image
+        Return Type:
+                none
+
+get_user_pic(pair, user_id):
+        Constraints:
+                none
+        Parameters:
+                pair->tuple from open_DBConnection()
+                user_id-> string (user we want recomendations for)
+        Return Type:
+              	none. But it will save a file in working dir if successful.
 
 get_user_recommendations(pair, user_id):
         Constraints:
