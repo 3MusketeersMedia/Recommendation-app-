@@ -127,7 +127,7 @@ def get_user_recommendations(pair, user_id):
         # Retrieve similar movies to this one that I rated
         sims = corrMatrix[myRatings.index[i]].dropna()
         # Now scale its similarity by how well I rated this movie
-        sims = sims.map(lambda x: x * myRatings[i])
+        sims = sims.map(lambda x: (x * myRatings[i])**2)
         # Add the score to the list of similarity candidates
         simCandidates = simCandidates.append(sims)
 
