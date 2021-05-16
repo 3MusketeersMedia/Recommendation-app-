@@ -7,8 +7,35 @@ exec(open("database.py").read())
 
 #establish connection
 connection = open_DBConnection()
+conn = connection
 #print(advanced_search_media_table(connection, 'El Tango del Viudo y Su Espejo Deformante', 'movie', 'Drama', 1800, 0, 2050, 10))
 print(num_items(connection))
+
+list_movies = get_all(connection)
+
+#add a bunch of users
+add_user(conn, "username1", "password_salt")
+add_user(conn, "username2", "password_salt")
+add_user(conn, "username3", "password_salt")
+add_user(conn, "username4", "password_salt")
+add_user(conn, "username5", "password_salt")
+random.seed(0)
+#set a bunch of user preferences
+ids = [str(get_user_id(conn, "username1")), str(get_user_id(conn, "username2")), str(get_user_id(conn, "username3")), str(get_user_id(conn, "username4")), str(get_user_id(conn, "username5"))]
+
+z = 5 
+for i in ids:
+    for x in range(z):
+        set_preference(conn, bool(random.randint(0,1)), bool(random.randint(0, 1)), i, list_movies[x][8], rating=random.randint(0, 10))
+    z+=1
+
+set_preference(conn, True, True, str(get_user_id(conn, "username5")), list_movies[20][8], rating=10)
+set_preference(conn, True, True, str(get_user_id(conn, "username4")), list_movies[20][8], rating=10)
+#get movie_id, user_id and rating and name
+print(get_user_recommendations(conn, str(get_user_id(conn, "username1"))))
+
+clear_data(conn, "preferences")
+clear_data(conn, "users")
 
 #add_user(connection, "user", "salt")
 #i = get_user_id(connection, "user")

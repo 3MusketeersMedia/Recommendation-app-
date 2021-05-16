@@ -115,7 +115,7 @@ def get_user_recommendations(pair, user_id):
     allRatings = df.pivot_table(index=['user_id'], columns=['media_id'], values=['rating', 'watched', 'liked'])
     
     #evaluate all correlation combos -> as more users increase min_periods
-    corrMatrix = allRatings.corr(method='pearson', min_periods = 5)
+    corrMatrix = allRatings.corr(method='pearson', min_periods = 2)
     
     #get correlation for user
     myRatings = allRatings.loc[user_id].dropna()
@@ -140,7 +140,8 @@ def get_user_recommendations(pair, user_id):
         filteredSims = simCandidates
 
     #return list of ids
-    return([value for key,value in [key for key,value in collections.Counter(filteredSims.index.array).most_common()]])
+    return([value for key,value in [key for key,value in collections.Counter(filteredSims.index.array).most_common()] if value not in [value for key,value in myRatings.index]])
+    #return([value for key,value in [key for key,value in collections.Counter(filteredSims.index.array).most_common()]])
 
 """
 #load file
