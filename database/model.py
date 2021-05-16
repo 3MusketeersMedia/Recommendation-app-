@@ -105,17 +105,17 @@ def advanced_search_media_table(pair, query, mediaType, genre, yearStart, rating
 
 def get_user_recommendations(pair, user_id):
 
-    pair[1].execute("SELECT user_id, media_id, rating FROM preferences;")
+    pair[1].execute("SELECT user_id, media_id, rating, watched, liked FROM preferences;")
     table = pair[1].fetchall()
 
-    table = [(a, b, int(c)) for a,b,c in table] 
+    table = [(a, b, int(c), int(d), int(e)) for a,b,c,d,e in table] 
 
     #list of all ratings
-    df = pd.DataFrame(table, columns=["user_id", "media_id", "rating"])
-    allRatings = df.pivot_table(index=['user_id'], columns=['media_id'], values='rating')
+    df = pd.DataFrame(table, columns=["user_id", "media_id", "rating", "watched", "liked"])
+    allRatings = df.pivot_table(index=['user_id'], columns=['media_id'], values=['rating', 'watched', 'liked'])
     
     #evaluate all correlation combos -> as more users increase min_periods
-    corrMatrix = allRatings.corr(method='pearson', min_periods = 2)
+    corrMatrix = allRatings.corr(method='pearson', min_periods = 5)
     
     #get correlation for user
     myRatings = allRatings.loc[user_id].dropna()
@@ -133,10 +133,14 @@ def get_user_recommendations(pair, user_id):
 
     #sort values and drop movies already rated
     simCandidates.sort_values(inplace = True, ascending = False)
-    filteredSims = simCandidates.drop(myRatings.index)
-    
+    temp = pd.MultiIndex.from_tuples([('rating', value) for key,value in collections.Counter([(key, value) for key,value in myRatings.index])], names=[None, 'media_id'])
+    try:
+        filteredSims = simCandidates.drop(temp)
+    except:
+        filteredSims = simCandidates
+
     #return list of ids
-    return(list(filteredSims.index.array))
+    return([value for key,value in [key for key,value in collections.Counter(filteredSims.index.array).most_common()]])
 
 """
 #load file

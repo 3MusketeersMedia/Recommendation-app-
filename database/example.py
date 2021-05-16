@@ -9,6 +9,7 @@ exec(open("database.py").read())
 connection = open_DBConnection()
 #print(advanced_search_media_table(connection, 'El Tango del Viudo y Su Espejo Deformante', 'movie', 'Drama', 1800, 0, 2050, 10))
 print(num_items(connection))
+
 #add_user(connection, "user", "salt")
 #i = get_user_id(connection, "user")
 #add_user_pic(connection, i, 'IMG_1795.png')
