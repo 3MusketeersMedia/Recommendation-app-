@@ -1,4 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # cache
-#/__pycache__
+/__pycache__
+/ml-100k
+/u.data
+/u.item
