@@ -3,6 +3,7 @@ import numpy as np
 import random
 import database
 import sklearn
+import time
 from sklearn.decomposition import TruncatedSVD
 
 # Strategy: get a couple of watched genres for user
@@ -22,8 +23,9 @@ def filter_seen_movies(pair, user_id):
 
 
 def get_user_rating(pair, user_id, media_id):
+    #start = time.time()
     columns = ['user_id', 'item_id', 'rating', 'timestamp']
-    df = pd.read_csv("u.data", sep='\t', names=columns, encoding="utf-8")
+    df = pd.read_csv("u.data", sep='\t', names=columns)
     #print(df)
 
     columns = ['item_id', 'movie title', 'release date', 'video release date', 'IMDb URL', 'unknown', 'Action', 'Adventure',
@@ -34,11 +36,10 @@ def get_user_rating(pair, user_id, media_id):
     #print(movies.loc[df["item_id"] == "1398"])
     movie_names = movies[['item_id', 'movie title']]
     combined_movies_data = pd.merge(df, movie_names, on='item_id')
-    #print(combined_movies_data)
 
     # pivot the table together
     rating_crosstab = combined_movies_data.pivot_table(values='rating', index='user_id', columns='movie title', fill_value=0)
-    print(rating_crosstab)
+    #print(rating_crosstab)
 
     # transpose the pivot table of combined movies
     tranpose = rating_crosstab.T
@@ -53,9 +54,11 @@ def get_user_rating(pair, user_id, media_id):
     # item id of star wars = 50; need to return media_id
     col_idx = rating_crosstab.columns.get_loc("Star Wars (1977)")
     corr_specific = corr_mat[col_idx]
-    print(corr_specific)
+    #print(corr_specific)
     rt = pd.DataFrame({'corr_specific':corr_specific, 'Movies': rating_crosstab.columns}).sort_values('corr_specific', ascending=False).head(20)
-    print(rt)
+    #end = time.time()
+    #print(end - start)
+    #print(rt)
 
 
 def get_user_likes(pair, user_id, media_id):
@@ -68,7 +71,6 @@ def get_user_likes(pair, user_id, media_id):
     #list of all ratings
     df = pd.DataFrame(table, columns=["user_id", "media_id", "liked"])
     df2 = df.pivot_table(index=['user_id'], columns=['media_id'], values='liked', fill_value=0)
-    #print(df2)
 
     X = df2.T
 
@@ -82,9 +84,10 @@ def get_user_likes(pair, user_id, media_id):
     corr_specific = corr_mat[col_idx]
 
     df3 = pd.DataFrame({'corr_specific':corr_specific, 'media_id': df2.columns}).sort_values('corr_specific', ascending=False).head(10)
-    print(df3)
+    #print(df3)
 
 
+"""
 # main execution for testing
 db = database.open_DBConnection()
 #list_movies = database.get_all(db)
@@ -92,3 +95,4 @@ db = database.open_DBConnection()
 
 get_user_rating(db, "3", "0068646")
 #get_user_likes(db, "3", "0068646")
+"""
