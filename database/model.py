@@ -133,7 +133,7 @@ def get_user_recommendations(pair, user_id):
 
     #sort values and drop movies already rated
     simCandidates.sort_values(inplace = True, ascending = False)
-    temp = pd.MultiIndex.from_tuples([('rating', value) for key,value in collections.Counter([(key, value) for key,value in myRatings.index])], names=[None, 'media_id'])
+    temp = pd.MultiIndex.from_tuples([('rating', value) for key,value in myRatings.index], names=[None, 'media_id'])
     try:
         filteredSims = simCandidates.drop(temp)
     except:
