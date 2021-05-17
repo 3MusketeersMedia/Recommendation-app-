@@ -32,7 +32,7 @@ for i in ids:
 set_preference(conn, True, True, str(get_user_id(conn, "username5")), list_movies[20][8], rating=10)
 set_preference(conn, True, True, str(get_user_id(conn, "username4")), list_movies[20][8], rating=10)
 #get movie_id, user_id and rating and name
-print(get_user_recommendations(conn, str(get_user_id(conn, "username1"))))
+print(get_user_recommendations(conn, str(get_user_id(conn, "username3"))))
 
 clear_data(conn, "preferences")
 clear_data(conn, "users")
