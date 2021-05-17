@@ -1,19 +1,26 @@
-import React, { useState } from 'react'
-import {Navbar, Nav, NavDropdown, Form, FormControl, Button} from 'react-bootstrap'
+import React, { useState, useContext } from 'react'
+import {Navbar, Nav, NavDropdown, FormGroup, FormControl, Button} from 'react-bootstrap'
 import {AppContext} from '../AppContext';
 import './navbar.css';
-
+ 
 const MyNav = () => {
     const [searchContents, changeSC] = useState(null);
+    const [name, changeName] = useState(null);
     const [genre, changeGenre] = useState(null);
     const [minYear, changeMinYear] = useState(null);
     const [maxYear, changeMaxYear] = useState(null);
     const [minRate, changeMinRate] = useState(null);
     const [maxRate, changeMaxRate] = useState(null);
+    const context = useContext(AppContext);
     
     function getSearchConts(val)
     {
       changeSC(val.target.value);
+      console.warn(val.target.value);
+    }
+    function getName(val)
+    {
+      changeName(val.target.value);
       console.warn(val.target.value);
     }
     function getGenre(val)
@@ -45,35 +52,13 @@ const MyNav = () => {
     // Performs normal, not advanced search (by name)
     async function normalSearch()
     {
-      const response = await fetch('http://localhost:5000/search', {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({searchContents}),
-      });
-      console.log(response);
-      const data = await response.json();
-      console.log(data);
-
-      // Need to put the data into the list page
+      context.actions.search(searchContents);
     }
 
     // Performs advanced search
     async function advancedSearch()
     {
-      const response = await fetch('http://localhost:5000/advSearch', {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-        },
-        body: JSON.stringify({genre, minYear, maxYear, minRate, maxRate}),
-      });
-      console.log(response);
-      const data = await response.json();
-      console.log(data);
-
-      // Need to put the data into the list page
+      context.actions.advancedSearch(name, genre, minYear, minRate, maxYear, maxRate);
     }
     return <AppContext.Consumer>
       {context => <div>
@@ -85,7 +70,7 @@ const MyNav = () => {
             <Nav.Link href="/list">Movie List</Nav.Link>
           </Nav> 
           <Nav>
-            {context.actions.checkedLogin() ? 
+            {context.store.token && context.store.token !== "" && context.store.token !== undefined ? 
               <> <Nav.Link onClick={() => context.actions.logout()}>Signout</Nav.Link> 
               <Nav.Link href="/user/profile"> Profile </Nav.Link></>: 
               <><Nav.Link href="/login">Login</Nav.Link>
@@ -93,6 +78,11 @@ const MyNav = () => {
             }
             <NavDropdown title="Advanced Search" id="collasible-nav-dropdown">
               <div>
+              <div>Name:
+                  <div className = "searchTab">
+                    <input className = "fullSizeInput" onChange = {getName}/>
+                  </div>
+                </div>
                 <div>Genre:
                   <div className = "searchTab">
                     <input className = "fullSizeInput" onChange = {getGenre}/>
@@ -107,7 +97,7 @@ const MyNav = () => {
                 <div>Rating (From, To):
                   <div className = "searchTab"> 
                     <input className = "halfSizeInput" onChange = {getMinRate}/>
-                    <input className = "halfSizeInput" onChange = {getMaxYear}/>
+                    <input className = "halfSizeInput" onChange = {getMaxRate}/>
                   </div>
                 </div>
               </div>
@@ -116,10 +106,19 @@ const MyNav = () => {
             </NavDropdown>
           </Nav>
           <Nav>
-            <Form inline>
-              <FormControl type="text" placeholder="Search by title" className="mr-sm-2" onChange = {getSearchConts}/>
-              <Button variant="outline-light" onClick = {normalSearch}>Search</Button>
-            </Form>
+            <div className = "searchBar">
+              <FormControl 
+              type="text"
+              placeholder="Search by title" 
+              className="mr-sm-2"  
+              onKeyPress={event => {
+                if (event.key === "Enter") {
+                  normalSearch();
+                }
+              }}
+              onChange = {getSearchConts}/>
+            </div>
+            <Button variant="outline-light" onClick = {normalSearch}>Search</Button>
           </Nav>
           </Navbar.Collapse>
         </Navbar>

@@ -103,22 +103,20 @@ def movies():
 @app.route("/search", methods=["POST"])
 def search():
     db = database.open_DBConnection()
-    #to_return = format_media(database.get_all(db,"media"))
-    to_return = format_media(database.get_by_name(db, request.json.get("searchContents", None)))
+    to_return = format_media(database.search_media_table(db, request.json.get("searchContents", None)))
     return to_return
-
 
 # advanced search
 @app.route("/advSearch", methods=["POST"])
 def advSearch():
+    name = request.json.get("name", None)
     genre = request.json.get("genre", None)
     minYear = request.json.get("minYear", None)
     maxYear = request.json.get("maxYear", None)
     minRate = request.json.get("minRate", None)
     maxRate = request.json.get("maxRate", None)
-    #media = database.advanced_search(db, genre, minYear, maxYear, minRate, maxRate)
     db = database.open_DBConnection()
-    media = database.get_by_genre(db, genre)
+    media = database.advanced_search_media_table(db, name, genre, minYear, minRate, maxYear, maxRate)
     to_return = format_media(media)
     return to_return
 

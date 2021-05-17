@@ -16,8 +16,15 @@ export default class MovieList extends React.Component {
     };
   }
   componentDidMount() {
-    this.loadMovieCount();
-    this.loadMovies();
+    if (this.context.store.searchList != null)
+    {
+      this.loadMovieCountSearch();
+      this.loadMoviesSearch();
+    }
+    else{
+      this.loadMovieCount();
+      this.loadMovies();
+    }
   }
   loadMovieCount = async () => {
     const response = await fetch('http://localhost:5000/movieCount');
@@ -29,6 +36,14 @@ export default class MovieList extends React.Component {
     const query = `limit=${this.state.limit}&offset=${offset}`
     const response = await fetch(`http://localhost:5000/pages?${query}`);
     const movies = await response.json();
+    await this.setState({movies});
+  }
+  loadMovieCountSearch = async() => {
+    const count = this.context.store.searchList.length;
+    await this.setState({count});
+  }
+  loadMoviesSearch = async () => {
+    const movies = this.context.store.searchList;
     await this.setState({movies});
   }
   pageBack = async () => {
@@ -44,11 +59,14 @@ export default class MovieList extends React.Component {
     this.props.history.push('/movie');
   }
   render() {
+    console.log(this.state.movies);
     const offset = this.state.limit * (this.state.page - 1);
     return <>
       <MyNav/>
       <Container fluid className='p-3'>
-        <p>Showing {offset+1}-{offset+this.state.limit} of {this.state.count}</p>
+        <p>
+          Showing {this.state.count > 0?offset+1:0}-{offset+this.state.limit < this.state.count? offset+this.state.limit: this.state.count} of {this.state.count}
+        </p>
         {this.state.page > 1 ? <>
           <span onClick={this.pageBack}>Previous</span>
         </> : ''}

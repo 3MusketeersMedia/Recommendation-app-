@@ -78,6 +78,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
 		store: {
 			movie: null, 
 			token: null,
+            searchList: null,
             movieFavorites: [], // Currently waiting for backend to implement favorites 
 		},
 		actions: {
@@ -95,6 +96,51 @@ const GetState = ({ getStore, getActions, setStore }) => {
                     return true; 
                 }
                 return false;
+            },
+
+            /** Calls normal search, gets the data, and then loads up movie list*/
+            search: async (searchContents) => {
+                const response = await fetch('http://localhost:5000/search', {
+                    method: 'POST',
+                    headers: {
+                      'content-type': 'application/json',
+                    },
+                    body: JSON.stringify({searchContents}),
+                  });
+                  console.log(response);
+                  const data = await response.json();
+                  setStore({searchList: data});
+                  console.log(getStore());
+                  // Now that the search is conducted, should load up list page,
+                  // which will check that the searchList is not NULL and load up
+                  // the results of the search rather than the default movie list
+                  history.push("/"); // does this so the page reloads if already on list
+                  history.push("/list");
+            },
+
+            /** Calls normal search, gets the data, and then loads up movie list*/
+            advancedSearch: async (name, genre, minYear, minRate, maxYear, maxRate) => {
+                const response = await fetch('http://localhost:5000/advSearch', {
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json',
+                        },
+                        body: JSON.stringify({name, genre, minYear, minRate, maxYear, maxRate}),
+                    });
+                    console.log(response);
+                    const data = await response.json();
+                    setStore({searchList: data});
+                    console.log(getStore());
+                    // Now that the search is conducted, should load up list page,
+                    // which will check that the searchList is not NULL and load up
+                    // the results of the search rather than the default movie list
+                    history.push("/");
+                    history.push("/list");
+            },
+
+            /** Resets the list of the search results so that the default movies are loaded into list next time */
+            resetSearchList: async() => {
+                setStore({searchList: null});
             },
 
             /**Login checks new  and returns token 
