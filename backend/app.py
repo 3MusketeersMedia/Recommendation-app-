@@ -164,7 +164,6 @@ def favorite():
     user_id = identity[0]
     if request.method == "POST":
         media_id = request.json.get("id")
-        rating = request.json.get("rating")
 
         # if id does not exist, add to database with set_preference
         if(database.check_preference(db, user_id, media_id)): 
@@ -194,15 +193,34 @@ def recommend_movies():
     pass
 
 
-@app.route("/watchlist", methods=['GET'])
+@app.route("/watchlist", methods=["POST", "GET", "DELETE"])
 @jwt_required()
 def watchlist():
     identity = get_jwt_identity()
     user_id = identity[0]
 
-    watched = database.get_user_watched(db, user_id, True)
-    watched = format_preferences(watched)
-    return jsonify(watched), 200
+    if request.method == "POST":
+        media_id = request.json.get("id")
+
+        # if id does not exist, add to database with set_preference
+        if(database.check_preference(db, user_id, media_id)): 
+            database.set_data_watched(db, user_id, media_id, True)
+        else: 
+            database.set_preference(db, True , False, user_id, media_id)
+        return "Movie watched", 200
+    elif request.method == "DELETE": 
+        media_id = request.json.get("id")
+
+        # if id does not exist, add to database with set_preference
+        if(database.check_preference(db, user_id, media_id)): 
+            database.set_data_watched(db, user_id, media_id, False)
+        else: 
+            database.set_preference(db, False , False, user_id, media_id)
+        return "Movie unwatched", 200
+    elif request.method == "GET":
+        watched = database.get_user_watched(db, user_id, True)
+        watched = format_preferences(watched)
+        return jsonify(watched), 200
 
 # 0065392, 0104988
 

@@ -261,6 +261,74 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 setStore({movieFavorites: favorites})
             }, 
 
+             /** Gets favorited movies and stores in localstorage */
+             getMovieFavorites: async() =>{ 
+                const store = getStore(); 
+                const opts = {
+                    method: "GET",
+                    headers: {
+                        Authorization: "Bearer " + store.token
+                    },
+                }; 
+                const response = await fetch("http://localhost:5000/favorite", opts);
+                const data = await response.json(); 
+
+                if(response.status !== 200){
+                    console.log("Status Code: " + response.status); 
+                    return false 
+                }
+                
+                const favorites = JSON.stringify(data);
+                console.log(favorites);
+                localStorage.setItem('movie-favorites', favorites);
+                setStore({movieFavorites: favorites}) 
+            },
+
+            setMovieFavorite: async(movie) =>{
+                const store = getStore(); 
+                const opts = {
+                    method: "POST",
+                    headers: {
+                        Authorization: "Bearer " + store.token,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(movie),
+                }; 
+                const response = await fetch("http://localhost:5000/favorite", opts);
+                
+                if(response.status !== 200){
+                    console.log("Status Code: " + response.status); 
+                    return false 
+                }
+                
+                const favorites = [...getStore().movieFavorites, movie];
+                console.log(favorites);
+                localStorage.setItem('movie-favorites', JSON.stringify(favorites));
+                setStore({movieFavorites: favorites})
+            },
+
+            removeMovieFavorite: async(movie) => {  
+                const store = getStore(); 
+                const opts = {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: "Bearer " + store.token,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(movie),
+                }; 
+                const response = await fetch("http://localhost:5000/favorite", opts);
+                
+                if(response.status !== 200){
+                    console.log("Status Code: " + response.status); 
+                    return false 
+                }
+                
+                const favorites = getStore().movieFavorites.filter(item => item !== movie)
+                localStorage.setItem('movie-favorites', JSON.stringify(favorites));
+                setStore({movieFavorites: favorites})
+            }, 
+
 		}
 	};
 };
