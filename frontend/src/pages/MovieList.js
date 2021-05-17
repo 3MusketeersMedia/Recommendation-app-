@@ -27,14 +27,14 @@ export default class MovieList extends React.Component {
     }
   }
   loadMovieCount = async () => {
-    const response = await fetch('http://localhost:5000/movieCount');
+    const response = await fetch('https://recommedia-api.herokuapp.com/movieCount');
     const count = await response.json();
     await this.setState({count})
   }
   loadMovies = async () => {
     const offset = this.state.limit * (this.state.page - 1);
     const query = `limit=${this.state.limit}&offset=${offset}`
-    const response = await fetch(`http://localhost:5000/pages?${query}`);
+    const response = await fetch(`https://recommedia-api.herokuapp.com/pages?${query}`);
     const movies = await response.json();
     await this.setState({movies});
   }
