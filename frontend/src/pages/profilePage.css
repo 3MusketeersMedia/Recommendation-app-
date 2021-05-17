@@ -1,0 +1,9 @@
+.costum-w-30{
+    width: 30%
+}
+
+.MediaModalImage >img{
+    min-height: 80%;
+    max-height: 80%;
+    object-fit: cover;
+}

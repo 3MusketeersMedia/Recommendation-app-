@@ -78,7 +78,8 @@ const GetState = ({ getStore, getActions, setStore }) => {
 		store: {
 			movie: null, 
 			token: null,
-            movieFavorites: [], // Currently waiting for backend to implement favorites 
+            movieFavorites: [], 
+            movieWatched: [], 
 		},
 		actions: {
             /** */
@@ -258,7 +259,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 const favorites = getStore().movieFavorites.filter(item => item !== movie)
                 localStorage.setItem('movie-favorites', JSON.stringify(favorites));
                 setStore({movieFavorites: favorites})
-            }
+            }, 
 
 		}
 	};
