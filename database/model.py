@@ -48,7 +48,8 @@ def filter(text):
 def search_media_table(pair, query):
     #filter
     filtered_query = filter(query)
-    pair[1].execute("SELECT * FROM media WHERE LOWER(name) LIKE LOWER(%s);", (query,))
+    query_check = "%" + query + "%"
+    pair[1].execute("SELECT * FROM media WHERE LOWER(name) LIKE LOWER(%s);", (query_check,))
     exact = pair[1].fetchall()
 
     #get list, we are going to add the exact match at the end as the first result
