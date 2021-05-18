@@ -190,7 +190,13 @@ def get_user_preference(pair, user_id, media_id):
 
 def get_user_liked(pair, user_id, liked=True):
     pair[1].execute("SELECT * FROM preferences WHERE user_id = %s AND liked = %s;", (user_id, liked))
-    return pair[1].fetchall()
+
+    movie_list = []
+    movid_id_list = pair[1].fetchall(); 
+    for (media_id) in movid_id_list: 
+        movie_list.append(get_by_id(pair, media_id[0]))
+    
+    return movie_list
 
 
 def get_user_watched(pair, user_id, watched=True):
