@@ -214,6 +214,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
                     }
 
                     sessionStorage.setItem("token", data.token);
+                    setStore({token: data.token})
                     return true;
                 }
                 catch(error){
