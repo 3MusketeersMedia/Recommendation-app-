@@ -69,7 +69,7 @@ def search_media_table(pair, query):
     #add exact match as first result if it exists
     if len(exact) > 0:
         end = exact + end
-    return end
+    return [key for key,value in collections.Counter(end).most_common()]
 
 def advanced_search_media_table(pair, query, genre, yearStart, ratingMin, yearEnd, ratingMax):
     # Checks invalid input, returns empty list if they give some stupid input

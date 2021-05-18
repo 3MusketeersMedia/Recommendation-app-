@@ -9,7 +9,7 @@ exec(open("database.py").read())
 conn = open_DBConnection()
 #print(advanced_search_media_table(connection, 'El Tango del Viudo y Su Espejo Deformante', 'movie', 'Drama', 1800, 0, 2050, 10))
 print(num_items(conn))
-print(search_media_table(conn, "mom boy"))
+print(search_media_table(conn, "avenger"))
 list_movies = get_all(conn)
 """
 #add a bunch of users
