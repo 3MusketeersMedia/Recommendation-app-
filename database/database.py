@@ -1,7 +1,9 @@
 import psycopg2
 import psycopg2.extras
+import os
+import io
+import PIL.Image as Image
 from model import *
-from searchDB import advanced_search
 
 #----------Setup----------------------
 #verify connection
@@ -15,9 +17,9 @@ if conn is None:
     exit()
 
 #make tables
-database.execute("CREATE TABLE IF NOT EXISTS media(name VARCHAR NOT NULL, mediaType VARCHAR NOT NULL, year INT, link VARCHAR, genres VARCHAR, rating NUMERIC, running_time NUMERIC, summary VARCHAR, ID VARCHAR, PRIMARY KEY(ID));")
+database.execute("CREATE TABLE IF NOT EXISTS media(name VARCHAR NOT NULL, mediaType VARCHAR NOT NULL, year INT, link VARCHAR, genres VARCHAR, rating NUMERIC, running_time NUMERIC, summary VARCHAR, certificate VARCHAR, ID VARCHAR, PRIMARY KEY(ID));")
 
-database.execute("CREATE TABLE IF NOT EXISTS users(username VARCHAR NOT NULL UNIQUE, password_hash VARCHAR NOT NULL, ID VARCHAR, PRIMARY KEY(ID));")
+database.execute("CREATE TABLE IF NOT EXISTS users(username VARCHAR NOT NULL UNIQUE, password_hash VARCHAR NOT NULL, ID VARCHAR, image BYTEA, PRIMARY KEY(ID));")
 
 database.execute("CREATE TABLE IF NOT EXISTS preferences(watched BOOLEAN NOT NULL, liked BOOLEAN NOT NULL, rating NUMERIC, review VARCHAR, user_id VARCHAR, media_id VARCHAR, FOREIGN KEY (user_id) REFERENCES users (ID), FOREIGN KEY (media_id) REFERENCES media (ID));")
 
@@ -39,6 +41,24 @@ def open_DBConnection(dict_cursor=False):
 
 def close_DBConnection(pair):
     pair[0].close()
+
+
+def add_user_pic(pair, user_id, img):
+    path = "%s" % (img,)
+    with open(path, "rb") as image:
+        f = image.read()
+        b = bytearray(f)
+
+    pair[1].execute("UPDATE users SET image = %s WHERE ID = %s;", (b, user_id))
+
+
+def get_user_pic(pair, user_id, filenm="default.png"):
+    pair[1].execute("SELECT image FROM users WHERE ID = %s;", (user_id,))
+    b = pair[1].fetchone()
+    if b[0] != None:
+        b = bytes(b[0])
+        image = Image.open(io.BytesIO(b))
+        image.save(filenm)
 
 
 def add_user(pair, username, password_hash):
@@ -76,24 +96,24 @@ def get_user_id(pair, username):
     return pair[1].fetchone()
 
 
-def set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID, summary="None"):
+def set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID, summary="None", certificate="PG"):
     #retrieve list of ID's
     pair[1].execute("SELECT ID FROM media WHERE ID = %s;", (ID,))
     list_id = pair[1].fetchall()
     #check for ID
     if pair[2] == False:
         if (ID,) in list_id:
-            pair[1].execute("UPDATE media SET name = %s, mediaType = %s, year = %s, link = %s, genres = %s, rating = %s, running_time = %s, summary = %s WHERE ID = %s;", (name, mediaType, year, link, genres, rating, running_time, summary, ID))
+            pair[1].execute("UPDATE media SET name = %s, mediaType = %s, year = %s, link = %s, genres = %s, rating = %s, running_time = %s, summary = %s, certificate = %s WHERE ID = %s;", (name, mediaType, year, link, genres, rating, running_time, summary, certificate, ID))
             #update if true
         else:
-            pair[1].execute("INSERT INTO media VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s);", (name, mediaType, year, link, genres, rating, running_time, summary, ID))
+            pair[1].execute("INSERT INTO media VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (name, mediaType, year, link, genres, rating, running_time, summary, certificate, ID))
             #insert if false
     else:
         if len(list_id) > 0 and ID == list_id[0]['id']:
-            pair[1].execute("UPDATE media SET name = %s, mediaType = %s, year = %s, link = %s, genres = %s, rating = %s, running_time = %s, summary = %s WHERE ID = %s;", (name, mediaType, year, link, genres, rating, running_time, summary, ID))
+            pair[1].execute("UPDATE media SET name = %s, mediaType = %s, year = %s, link = %s, genres = %s, rating = %s, running_time = %s, summary = %s, certificate = %s WHERE ID = %s;", (name, mediaType, year, link, genres, rating, running_time, summary, certificate, ID))
             #update if true
         else:
-            pair[1].execute("INSERT INTO media VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s);", (name, mediaType, year, link, genres, rating, running_time, summary, ID))
+            pair[1].execute("INSERT INTO media VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (name, mediaType, year, link, genres, rating, running_time, summary, certificate, ID))
             #insert if false
 
 
