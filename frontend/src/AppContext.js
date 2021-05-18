@@ -48,6 +48,8 @@ const ContextWrapper = ({children}) => {
         state.actions.syncToken(); 
         if(state.actions.checkedLogin()){
             state.actions.getMovieFavorites();
+            state.actions.getmovieWatched();
+            state.actions.getUserName();
         }
     },[state.store.token]);
 
@@ -87,6 +89,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 const token = await sessionStorage.getItem("token");
                 if(token && token !=="" && token!==undefined) 
                     setStore({token: token});
+                return token
             }, 
 
             /** Checks if user is logged in */
@@ -169,6 +172,35 @@ const GetState = ({ getStore, getActions, setStore }) => {
                     } 
                     
                     sessionStorage.setItem("token", data.token);
+                    return true;
+                }
+                catch(error){
+                    console.log("Signup connection dropped");
+                }
+            }, 
+
+            getUserName: async() => {
+                const store = getStore(); 
+                await getActions().syncToken();     
+                          
+                const opts = {
+                    method: "GET",
+                    headers: {
+                        Authorization: "Bearer " + store.token
+                    },
+                }; 
+                try{
+                    const response = await fetch('http://localhost:5000/profile', opts);
+                    const data = await response.json(); 
+                    console.log(data);
+                    
+                    if(response.status !== 200){
+                        console.log("Status Code: " + response.status); 
+                        return false;
+                    } 
+                    
+                    console.log(data.username);
+                    sessionStorage.setItem("username", data.username);
                     return true;
                 }
                 catch(error){
@@ -260,9 +292,9 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 localStorage.setItem('movie-favorites', JSON.stringify(favorites));
                 setStore({movieFavorites: favorites})
             }, 
-
-             /** Gets favorited movies and stores in localstorage */
-             getMovieFavorites: async() =>{ 
+            
+            /** Gets Watchedd movie and stores in localstorage */
+            getmovieWatched: async() =>{ 
                 const store = getStore(); 
                 const opts = {
                     method: "GET",
@@ -270,7 +302,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
                         Authorization: "Bearer " + store.token
                     },
                 }; 
-                const response = await fetch("http://localhost:5000/favorite", opts);
+                const response = await fetch("http://localhost:5000/watchlist", opts);
                 const data = await response.json(); 
 
                 if(response.status !== 200){
@@ -278,13 +310,13 @@ const GetState = ({ getStore, getActions, setStore }) => {
                     return false 
                 }
                 
-                const favorites = JSON.stringify(data);
-                console.log(favorites);
-                localStorage.setItem('movie-favorites', favorites);
-                setStore({movieFavorites: favorites}) 
+                const watched = JSON.stringify(data);
+                console.log(watched);
+                localStorage.setItem('movie-watched', watched);
+                setStore({movieWatched: watched});
             },
 
-            setMovieFavorite: async(movie) =>{
+            setMovieWatched: async(movie) =>{
                 const store = getStore(); 
                 const opts = {
                     method: "POST",
@@ -294,20 +326,20 @@ const GetState = ({ getStore, getActions, setStore }) => {
                     },
                     body: JSON.stringify(movie),
                 }; 
-                const response = await fetch("http://localhost:5000/favorite", opts);
+                const response = await fetch("http://localhost:5000/watchlist", opts);
                 
                 if(response.status !== 200){
                     console.log("Status Code: " + response.status); 
                     return false 
                 }
                 
-                const favorites = [...getStore().movieFavorites, movie];
-                console.log(favorites);
-                localStorage.setItem('movie-favorites', JSON.stringify(favorites));
-                setStore({movieFavorites: favorites})
+                const watched = [...getStore().movieWatched, movie];
+                console.log(watched);
+                localStorage.setItem('movie-watched', JSON.stringify(watched));
+                setStore({movieWatched: watched})
             },
 
-            removeMovieFavorite: async(movie) => {  
+            removeMovieWatched: async(movie) => {  
                 const store = getStore(); 
                 const opts = {
                     method: "DELETE",
@@ -317,18 +349,17 @@ const GetState = ({ getStore, getActions, setStore }) => {
                     },
                     body: JSON.stringify(movie),
                 }; 
-                const response = await fetch("http://localhost:5000/favorite", opts);
+                const response = await fetch("http://localhost:5000/watchlist", opts);
                 
                 if(response.status !== 200){
                     console.log("Status Code: " + response.status); 
                     return false 
                 }
                 
-                const favorites = getStore().movieFavorites.filter(item => item !== movie)
-                localStorage.setItem('movie-favorites', JSON.stringify(favorites));
-                setStore({movieFavorites: favorites})
+                const watched = getStore().movieWatched.filter(item => item !== movie)
+                localStorage.setItem('movie-watched', JSON.stringify(watched));
+                setStore({movieWatched: watched})
             }, 
-
 		}
 	};
 };

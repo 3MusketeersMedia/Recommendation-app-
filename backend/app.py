@@ -153,7 +153,6 @@ def profile():
 
     # new function, I do not want to grab the password hash
     attributes = database.get_by_id(db, user_id, "users")
-    print(attributes)
     return jsonify({"username": attributes[0]}), 200
 
 
@@ -219,8 +218,8 @@ def watchlist():
         return "Movie unwatched", 200
     elif request.method == "GET":
         watched = database.get_user_watched(db, user_id, True)
-        watched = format_preferences(watched)
-        return jsonify(watched), 200
+        watched = format_media(watched)
+        return watched, 200
 
 # 0065392, 0104988
 

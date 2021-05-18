@@ -1,6 +1,7 @@
 import psycopg2
 import psycopg2.extras
-from model import *
+# from model import * 
+import PIL.Image as Image
 from searchDB import advanced_search
 
 #----------Setup----------------------
@@ -39,6 +40,27 @@ def open_DBConnection(dict_cursor=False):
 
 def close_DBConnection(pair):
     pair[0].close()
+
+def add_user_pic(pair, user_id, img):
+    path = "%s" % (img,)
+    with open(path, "rb") as image:
+        f = image.read()
+        b = bytearray(f)
+
+    pair[1].execute("UPDATE users SET image = %s WHERE ID = %s;", (b, user_id))
+
+
+def get_user_pic(pair, user_id, filenm="default.png"):
+    pair[1].execute("SELECT image FROM users WHERE ID = %s;", (user_id,))
+    b = pair[1].fetchone()
+    if b[0] != None:
+        b = bytes(b[0])
+        image = Image.open(io.BytesIO(b))
+        image.save(filenm)
+
+def get_user_hash(pair, username):
+    pair[1].execute("SELECT password_hash FROM users WHERE username = %s", (username,))
+    return pair[1].fetchone()
 
 
 def add_user(pair, username, password_hash):
@@ -163,8 +185,14 @@ def get_user_liked(pair, user_id, liked=True):
 
 
 def get_user_watched(pair, user_id, watched=True):
-    pair[1].execute("SELECT * FROM preferences WHERE user_id = %s AND watched = %s;", (user_id, watched))
-    return pair[1].fetchall()
+    pair[1].execute("SELECT media_id FROM preferences WHERE user_id = %s AND watched = %s;", (user_id, watched))
+    
+    movie_list = []
+    movid_id_list = pair[1].fetchall(); 
+    for (media_id) in movid_id_list: 
+        movie_list.append(get_by_id(pair, media_id[0]))
+    
+    return movie_list
 
 
 def get_by_name(pair, name):

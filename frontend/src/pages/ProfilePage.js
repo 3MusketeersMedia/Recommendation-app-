@@ -1,5 +1,6 @@
 import React from 'react'; 
 import { Container, Row, Col } from 'react-bootstrap';
+import {AppContext} from '../AppContext';
 import MyNav from '../components/navbar';
 import Footer from '../components/Footer';
 import ProfilePic from '../components/ProfilePicture'
@@ -10,14 +11,19 @@ import MediaModal from '../components/MediaModal';
 import Header from '../components/header'
 
 export default class ProfilePage extends React.Component { 
+    static contextType = AppContext;
     constructor() { 
         super();
         const favoritedMovieList = JSON.parse(localStorage.getItem('movie-favorites'));
+        const watchedMovieList = JSON.parse(localStorage.getItem('movie-watched'));
+        let user =  sessionStorage.getItem('username');
         this.state = {
             isMainProf: true,
+            userName: user, 
             favoritedMovies : favoritedMovieList,
+            watchedMovies : watchedMovieList,
         };
-        console.log(this.state.favoritedMovies);
+        console.log(this.state.userName);
     }   
 
 
@@ -30,6 +36,15 @@ export default class ProfilePage extends React.Component {
                 <MoviePic movie={movie} />
             </div>)}
         </div>); 
+
+        let watched = 
+        (<div className="align-middle">
+            {this.state.watchedMovies.map((movie, index) => 
+            <div key={movie.id} className="d-inline-flex">
+                <MoviePic movie={movie} />
+            </div>)}
+        </div>);
+
         if(this.state.isMainProf){
             /* Profile background */
             page = (  
@@ -43,7 +58,7 @@ export default class ProfilePage extends React.Component {
                     <Col>
                     <MediaModal image="https://d279m997dpfwgl.cloudfront.net/wp/2020/12/GettyImages-1150049038-1000x630.jpg" 
                         title="WatchList"
-                        list="some content"/>
+                        list={watched}/>
                     </Col>
                     {/* Liked Components */}
                     <Col>
@@ -65,14 +80,22 @@ export default class ProfilePage extends React.Component {
             page = (<h2>A table of movies </h2>);
         }
 
-        return <>
+        let user = this.state.userName;
+
+        return (
+        <AppContext.Consumer>
+        {context => <>
             <MyNav/>
             <div className='text-center align-items-center justify-content-center p-2 m-5'>
                 <ProfilePic picture={ExamplePic}/>
                 <ProfilePicChanger/>
+                <h3>Hello {`${user}`}</h3>
             </div>
             {page}
             <Footer/>
-        </> 
+            </> }
+        </AppContext.Consumer>
+        )
+
     }
 }
