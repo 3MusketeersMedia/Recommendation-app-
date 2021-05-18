@@ -45,11 +45,10 @@ def filter(text):
 
     return [token for token in tokens if token]
 
-
 def search_media_table(pair, query):
     #filter
     filtered_query = filter(query)
-    pair[1].execute("SELECT * FROM media WHERE name LIKE %s;", (query,))
+    pair[1].execute("SELECT * FROM media WHERE LOWER(name) LIKE LOWER(%s);", (query,))
     exact = pair[1].fetchall()
 
     #get list, we are going to add the exact match at the end as the first result
@@ -58,14 +57,14 @@ def search_media_table(pair, query):
     for i in filtered_query:
         tmp = "%" + i + "%"
         if len(exact) > 0:
-            pair[1].execute("SELECT * FROM media WHERE name LIKE %s AND ID <> %s;", (tmp, exact[0][8]))
+            pair[1].execute("SELECT * FROM media WHERE LOWER(name) LIKE %s AND ID <> %s;", (tmp, exact[0][8]))
         else:
-            pair[1].execute("SELECT * FROM media WHERE name LIKE %s;", (tmp,))
+            pair[1].execute("SELECT * FROM media WHERE LOWER(name) LIKE %s;", (tmp,))
         results += pair[1].fetchall()
-    
+
     #sort list by frequency of tuple
     end = [key for key, value in collections.Counter(results).most_common()]
-    
+
     #add exact match as first result if it exists
     if len(exact) > 0:
         end = exact + end

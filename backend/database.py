@@ -1,6 +1,5 @@
 import psycopg2
 import psycopg2.extras
-from searchDB import advanced_search
 import os
 import io
 import PIL.Image as Image

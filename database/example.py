@@ -6,13 +6,12 @@ exec(open("database.py").read())
 #execfile("database.py")
 
 #establish connection
-connection = open_DBConnection()
-conn = connection
+conn = open_DBConnection()
 #print(advanced_search_media_table(connection, 'El Tango del Viudo y Su Espejo Deformante', 'movie', 'Drama', 1800, 0, 2050, 10))
-print(num_items(connection))
-
-list_movies = get_all(connection)
-
+print(num_items(conn))
+print(search_media_table(conn, "avengers"))
+list_movies = get_all(conn)
+"""
 #add a bunch of users
 add_user(conn, "username1", "password_salt")
 add_user(conn, "username2", "password_salt")
@@ -38,7 +37,7 @@ print(get_user_recommendations(conn, str(get_user_id(conn, "username5"))))
 
 clear_data(conn, "preferences")
 clear_data(conn, "users")
-
+"""
 #add_user(connection, "user", "salt")
 #i = get_user_id(connection, "user")
 #add_user_pic(connection, i, 'IMG_1795.png')
@@ -80,4 +79,4 @@ clear_data(conn, "users")
 #print(get_all(connection, "jane_goodall"))
 #print(get_by_genre(connection, "action"))
 
-close_DBConnection(connection)
+close_DBConnection(conn)
