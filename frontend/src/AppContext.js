@@ -236,7 +236,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
                     },
                 }; 
                 try{
-                    const response = await fetch('http://localhost:5000/profile', opts);
+                    const response = await fetch('https://recommedia-api.herokuapp.com/profile', opts);
                     const data = await response.json(); 
                     console.log(data);
                     
@@ -348,7 +348,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
                         Authorization: "Bearer " + store.token
                     },
                 }; 
-                const response = await fetch("http://localhost:5000/watchlist", opts);
+                const response = await fetch("https://recommedia-api.herokuapp.com/watchlist", opts);
                 const data = await response.json(); 
 
                 if(response.status !== 200){
@@ -372,7 +372,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
                     },
                     body: JSON.stringify(movie),
                 }; 
-                const response = await fetch("http://localhost:5000/watchlist", opts);
+                const response = await fetch("https://recommedia-api.herokuapp.com/watchlist", opts);
                 
                 if(response.status !== 200){
                     console.log("Status Code: " + response.status); 
@@ -395,7 +395,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
                     },
                     body: JSON.stringify(movie),
                 }; 
-                const response = await fetch("http://localhost:5000/watchlist", opts);
+                const response = await fetch("https://recommedia-api.herokuapp.com/watchlist", opts);
                 
                 if(response.status !== 200){
                     console.log("Status Code: " + response.status); 
