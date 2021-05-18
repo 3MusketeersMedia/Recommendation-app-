@@ -60,6 +60,9 @@ def get_user_pic(pair, user_id, filenm="default.png"):
         image = Image.open(io.BytesIO(b))
         image.save(filenm)
 
+def get_user_hash(pair, username):
+    pair[1].execute("SELECT password_hash FROM users WHERE username = %s", (username,))
+    return pair[1].fetchone()
 
 def add_user(pair, username, password_hash):
     pair[1].execute("SELECT username FROM users WHERE username = %s;", (username,))
