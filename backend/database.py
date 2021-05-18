@@ -1,8 +1,10 @@
 import psycopg2
 import psycopg2.extras
+import os
+import io
+import PIL.Image as Image
 from model import *
-from model import search_media_table
-from model import advanced_search_media_table
+from searchDB import advanced_search
 
 #----------Setup----------------------
 #verify connection
@@ -16,9 +18,9 @@ if conn is None:
     exit()
 
 #make tables
-database.execute("CREATE TABLE IF NOT EXISTS media(name VARCHAR NOT NULL, mediaType VARCHAR NOT NULL, year INT, link VARCHAR, genres VARCHAR, rating NUMERIC, running_time NUMERIC, summary VARCHAR, ID VARCHAR, PRIMARY KEY(ID));")
+database.execute("CREATE TABLE IF NOT EXISTS media(name VARCHAR NOT NULL, mediaType VARCHAR NOT NULL, year INT, link VARCHAR, genres VARCHAR, rating NUMERIC, running_time NUMERIC, summary VARCHAR, certificate VARCHAR, ID VARCHAR, PRIMARY KEY(ID));")
 
-database.execute("CREATE TABLE IF NOT EXISTS users(username VARCHAR NOT NULL UNIQUE, password_hash VARCHAR NOT NULL, ID VARCHAR, PRIMARY KEY(ID));")
+database.execute("CREATE TABLE IF NOT EXISTS users(username VARCHAR NOT NULL UNIQUE, password_hash VARCHAR NOT NULL, ID VARCHAR, image BYTEA, PRIMARY KEY(ID));")
 
 database.execute("CREATE TABLE IF NOT EXISTS preferences(watched BOOLEAN NOT NULL, liked BOOLEAN NOT NULL, rating NUMERIC, review VARCHAR, user_id VARCHAR, media_id VARCHAR, FOREIGN KEY (user_id) REFERENCES users (ID), FOREIGN KEY (media_id) REFERENCES media (ID));")
 
@@ -40,6 +42,24 @@ def open_DBConnection(dict_cursor=False):
 
 def close_DBConnection(pair):
     pair[0].close()
+
+
+def add_user_pic(pair, user_id, img):
+    path = "%s" % (img,)
+    with open(path, "rb") as image:
+        f = image.read()
+        b = bytearray(f)
+
+    pair[1].execute("UPDATE users SET image = %s WHERE ID = %s;", (b, user_id))
+
+
+def get_user_pic(pair, user_id, filenm="default.png"):
+    pair[1].execute("SELECT image FROM users WHERE ID = %s;", (user_id,))
+    b = pair[1].fetchone()
+    if b[0] != None:
+        b = bytes(b[0])
+        image = Image.open(io.BytesIO(b))
+        image.save(filenm)
 
 
 def add_user(pair, username, password_hash):
@@ -66,10 +86,7 @@ def add_user(pair, username, password_hash):
 def check_user_exists(pair, username):
     pair[1].execute("SELECT username FROM users WHERE username = %s", (username,))
     list_id = pair[1].fetchall()
-    if not list_id:
-        return False
-    
-    if username == list_id[0][0]:
+    if (username,) in list_id:
         return True
     else:
         return False
@@ -80,35 +97,25 @@ def get_user_id(pair, username):
     return pair[1].fetchone()
 
 
-def get_user_hash(pair, username):
-    pair[1].execute("SELECT password_hash FROM users WHERE username = %s", (username,))
-    return pair[1].fetchone()
-
-
-def set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID, summary="None"):
+def set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID, summary="None", certificate="PG"):
     #retrieve list of ID's
     pair[1].execute("SELECT ID FROM media WHERE ID = %s;", (ID,))
     list_id = pair[1].fetchall()
     #check for ID
     if pair[2] == False:
         if (ID,) in list_id:
-            pair[1].execute("UPDATE media SET name = %s, mediaType = %s, year = %s, link = %s, genres = %s, rating = %s, running_time = %s, summary = %s WHERE ID = %s;", (name, mediaType, year, link, genres, rating, running_time, summary, ID))
+            pair[1].execute("UPDATE media SET name = %s, mediaType = %s, year = %s, link = %s, genres = %s, rating = %s, running_time = %s, summary = %s, certificate = %s WHERE ID = %s;", (name, mediaType, year, link, genres, rating, running_time, summary, certificate, ID))
             #update if true
         else:
-            pair[1].execute("INSERT INTO media VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s);", (name, mediaType, year, link, genres, rating, running_time, summary, ID))
+            pair[1].execute("INSERT INTO media VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (name, mediaType, year, link, genres, rating, running_time, summary, certificate, ID))
             #insert if false
     else:
         if len(list_id) > 0 and ID == list_id[0]['id']:
-            pair[1].execute("UPDATE media SET name = %s, mediaType = %s, year = %s, link = %s, genres = %s, rating = %s, running_time = %s, summary = %s WHERE ID = %s;", (name, mediaType, year, link, genres, rating, running_time, summary, ID))
+            pair[1].execute("UPDATE media SET name = %s, mediaType = %s, year = %s, link = %s, genres = %s, rating = %s, running_time = %s, summary = %s, certificate = %s WHERE ID = %s;", (name, mediaType, year, link, genres, rating, running_time, summary, certificate, ID))
             #update if true
         else:
-            pair[1].execute("INSERT INTO media VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s);", (name, mediaType, year, link, genres, rating, running_time, summary, ID))
+            pair[1].execute("INSERT INTO media VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (name, mediaType, year, link, genres, rating, running_time, summary, certificate, ID))
             #insert if false
-
-def check_preference(pair, user_id, media_id): 
-    pair[1].execute("SELECT user_id, media_id FROM preferences WHERE user_id = %s AND media_id = %s;", (user_id, media_id))
-    list_id = pair[1].fetchall()
-    return (len(list_id) > 0) if True else false 
 
 
 def set_preference(pair, watched, liked, user_id, media_id, rating=0, review=" "):
@@ -139,10 +146,6 @@ def set_data_watched(pair, user_id, media_id, watched=True):
     pair[1].execute("UPDATE preferences SET watched = %s WHERE user_id = %s AND media_id = %s;", (watched, user_id, media_id))
 
 
-def set_data_review(pair, user_id, media_id, review):
-    pair[1].execute("UPDATE preferences SET review = %s WHERE user_id = %s AND media_id = %s;", (review, user_id, media_id))
-
-
 def set_data_id(pair, oldID, newID, table="media"):
     pair[1].execute("UPDATE {} SET ID = %s WHERE ID = %s;".format(table), (newID, oldID))
 
@@ -158,15 +161,8 @@ def get_user_preference(pair, user_id, media_id):
 
 
 def get_user_liked(pair, user_id, liked=True):
-    pair[1].execute("SELECT media_id FROM preferences WHERE user_id = %s AND liked = %s;", (user_id, liked))
-    
-    #Gets list of movies with ids 
-    movie_list = []
-    movid_id_list = pair[1].fetchall(); 
-    for (media_id) in movid_id_list: 
-        movie_list.append(get_by_id(pair, media_id[0]))
-
-    return movie_list
+    pair[1].execute("SELECT * FROM preferences WHERE user_id = %s AND liked = %s;", (user_id, liked))
+    return pair[1].fetchall()
 
 
 def get_user_watched(pair, user_id, watched=True):
@@ -222,9 +218,6 @@ def get_all(pair, table="media"):
     pair[1].execute("SELECT * FROM {};".format(table))
     return pair[1].fetchall()
 
-def get_all_users(pair, table="users"):
-    pair[1].execute("SELECT * FROM {};".format(table))
-    return pair[1].fetchall()
 
 def get_next(pair):
     return pair[1].fetchall()
