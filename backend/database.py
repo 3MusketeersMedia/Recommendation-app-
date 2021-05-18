@@ -1,15 +1,10 @@
 import psycopg2
 import psycopg2.extras
-<<<<<<< HEAD
-# from model import * 
-import PIL.Image as Image
 from searchDB import advanced_search
-=======
 import os
 import io
 import PIL.Image as Image
 from model import *
->>>>>>> d65684848ff4093881c9e471a16dcb3d6e5c3fea
 
 #----------Setup----------------------
 #verify connection
