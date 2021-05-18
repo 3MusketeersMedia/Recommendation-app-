@@ -141,14 +141,10 @@ def set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID
             pair[1].execute("INSERT INTO media VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (name, mediaType, year, link, genres, rating, running_time, summary, certificate, ID))
             #insert if false
 
-<<<<<<< HEAD
 def check_preference(pair, user_id, media_id): 
     pair[1].execute("SELECT user_id, media_id FROM preferences WHERE user_id = %s AND media_id = %s;", (user_id, media_id))
     list_id = pair[1].fetchall()
     return (len(list_id) > 0) if True else False 
-
-=======
->>>>>>> d65684848ff4093881c9e471a16dcb3d6e5c3fea
 
 def set_preference(pair, watched, liked, user_id, media_id, rating=0, review=" "):
     pair[1].execute("SELECT user_id, media_id FROM preferences WHERE user_id = %s AND media_id = %s;", (user_id, media_id))
