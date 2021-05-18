@@ -5,6 +5,8 @@ import Stemmer
 import random
 import re
 import string
+import sklearn
+from sklearn.decomposition import TruncatedSVD
 
 #pip install PyStemmer
 
@@ -125,7 +127,7 @@ def get_user_recommendations(pair, user_id):
     #list of all ratings
     df = pd.DataFrame(table, columns=["user_id", "media_id", "rating", "watched", "liked"])
     allRatings = df.pivot_table(index=['user_id'], columns=['media_id'], values=['rating', 'watched', 'liked'])
-    
+   
     #evaluate all correlation combos -> as more users increase min_periods
     corrMatrix = allRatings.corr(method='pearson', min_periods = 2)
     

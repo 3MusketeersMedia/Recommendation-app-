@@ -4,7 +4,6 @@ import os
 import io
 import PIL.Image as Image
 from model import *
-from searchDB import advanced_search
 
 #----------Setup----------------------
 #verify connection
