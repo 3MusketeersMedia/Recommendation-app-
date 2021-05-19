@@ -110,7 +110,6 @@ def advanced_search_media_table(pair, query, mediaType, genre, yearStart, rating
             pair[1].execute("SELECT * FROM media WHERE year >= %s AND year <= %s AND rating >= %s AND rating <= %s AND LOWER(genres) LIKE %s;", (yearStart, yearEnd, ratingMin, ratingMax, tmp2))
             results += pair[1].fetchall()
         else:
-            if mediaType == "" or mediaType == None: # otherwise, a separate search will be done
                 pair[1].execute("SELECT * FROM media WHERE year >= %s AND year <= %s AND rating >= %s AND rating <= %s;", (yearStart, yearEnd, ratingMin, ratingMax))
                 results += pair[1].fetchall()
     
@@ -119,10 +118,7 @@ def advanced_search_media_table(pair, query, mediaType, genre, yearStart, rating
         tmp3 = "%" + mediaType.lower().strip() + "%"
         pair[1].execute("SELECT * FROM media WHERE LOWER(mediaType) LIKE %s;", (tmp3,))
         mediaTypeResults = pair[1].fetchall()
-        if len(results) == 0:
-            results = mediaTypeResults
-        else:
-            results = list(set(results).intersection(set(mediaTypeResults))) # Removes what's different between results and mediaTypeResults
+        results = list(set(results).intersection(set(mediaTypeResults))) # Removes what's different between results and mediaTypeResults
     #sort list by frequency of tuple
     return [key for key, value in collections.Counter(results).most_common()]
 
