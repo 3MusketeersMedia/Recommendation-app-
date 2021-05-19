@@ -21,6 +21,7 @@ import bcrypt
 # instance of flask web app
 app = Flask(__name__)
 cors = CORS(app)
+
 # change secret key and implement refresh tokens
 app.config["JWT_SECRET_KEY"] = "super-key"
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(days=1)
@@ -96,6 +97,7 @@ def index():
 def movies():
     db = database.open_DBConnection()
     all_media = database.get_all(db, "media")
+    database.close_DBConnection(db)
     dict1 = format_media(all_media)
     return dict1
 
@@ -104,6 +106,7 @@ def movies():
 def search():
     db = database.open_DBConnection()
     to_return = format_media(database.search_media_table(db, request.json.get("searchContents", None)))
+    database.close_DBConnection(db)
     return to_return
 
 # advanced search
@@ -117,7 +120,8 @@ def advSearch():
     minRate = request.json.get("minRate", None)
     maxRate = request.json.get("maxRate", None)
     db = database.open_DBConnection()
-    media = database.advanced_search_media_table(db, name, mediaType, genre, minYear, minRate, maxYear, maxRate)
+    media = database.advanced_search_media_table(db, name, genre, minYear, minRate, maxYear, maxRate)
+    database.close_DBConnection(db)
     to_return = format_media(media)
     return to_return
 
@@ -129,13 +133,16 @@ def pages():
     pair = database.open_DBConnection(True)
     pair[1].execute('SELECT * FROM media LIMIT %s OFFSET %s', [limit, offset])
     media = pair[1].fetchall()
+    database.close_DBConnection(pair)
     return jsonify(json.loads(simplejson.dumps(media)))
 
 
 @app.route('/movieCount')
 def movieCount():
-    pair = database.open_DBConnection()
-    return jsonify(database.num_items(pair, 'media'))
+    db = database.open_DBConnection()
+    num = database.num_items(db, 'media')
+    database.close_DBConnection(db)
+    return jsonify(num)
 
 
 @app.route("/review", methods=["POST"])
@@ -148,6 +155,7 @@ def review():
     review = request.json.get("review")
     db = database.open_DBConnection()
     database.set_data_review(db, user_id, media_id, review)
+    database.close_DBConnection(db)
 
     return "Review posted", 200
 
@@ -162,7 +170,8 @@ def profile():
 
     db = database.open_DBConnection()
     attributes = database.get_by_id(db, user_id, "users")
-    #print(attributes)
+    database.close_DBConnection(db)
+
     return jsonify({"username": attributes[0]}), 200
 
 
@@ -195,6 +204,8 @@ def favorite():
         fav_movies = database.get_user_liked(db, user_id, True)
         fav_movies = format_media(fav_movies)
         return fav_movies, 200
+
+    database.close_DBConnection(db)
     return "Method not supported", 403
 
 
@@ -219,6 +230,8 @@ def watchlist():
             database.set_data_watched(db, user_id, media_id, True)
         else: 
             database.set_preference(db, True , False, user_id, media_id)
+        
+        database.close_DBConnection(db)
         return "Movie watched", 200
     elif request.method == "DELETE": 
         media_id = request.json.get("id")
@@ -228,11 +241,15 @@ def watchlist():
             database.set_data_watched(db, user_id, media_id, False)
         else: 
             database.set_preference(db, False , False, user_id, media_id)
+            
+        database.close_DBConnection(db)
         return "Movie unwatched", 200
     elif request.method == "GET":
         watched = database.get_user_watched(db, user_id, True)
+        database.close_DBConnection(db)
         watched = format_media(watched)
         return watched, 200
+
 
 # 0065392, 0104988
 
@@ -244,6 +261,7 @@ def protected():
     current_user = get_jwt_identity()
     db = database.open_DBConnection()
     database.set_preference(db, True, False, "3748288412750637086", "0065392", rating=0, review=" ")
+    database.close_DBConnection(db)
     return jsonify(logged=current_user), 200
 
 
@@ -283,6 +301,7 @@ def login():
 
     # return token    
     access_token = create_access_token(identity=user_id)
+    database.close_DBConnection(db)
     return jsonify({"token": access_token, "id": user_id, "username": username})
 
 
@@ -311,6 +330,7 @@ def signup():
 
         # send token
         access_token = create_access_token(identity=user_id)
+        database.close_DBConnection(db)
         return jsonify({"token": access_token, "id": user_id, "username": username})
 
     return "signup"
