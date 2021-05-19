@@ -144,6 +144,7 @@ List of functions:
 	get_by_year(pair, start, end=-1) -> get all movies from media table that are from years start to end. If end is not specified end = start.
 	get_by_rating(pair, start, end=-1) -> get all movies from media table that have a rating in range start to end. If end is not specified end = start
 	get_by_running_time(pair, start, end=-1) -> get all movies from media table that have a running time from start to end. If end is not specified end = start
+	get_all_mediaTypes(pair) -> get list of all media types in the media table
 
 	WORKS WITH -> all tables:
 	get_next(pair) -> get the next MAX_LIST_SIZE elements of previous get_by_something() query 
@@ -170,6 +171,15 @@ close_DBConnection(pair):
 		pair->tuple from open_DBConnection()
 	Return Type:
 		none
+
+get_all_mediaTypes(pair):
+	Constraints:
+                none
+        Parameters:
+                pair->tuple from open_DBConnection()
+        Return Type:
+                list of media types from the media table
+
 
 add_user_pic(pair, user_id, img):
         Constraints:

@@ -42,6 +42,12 @@ def open_DBConnection(dict_cursor=False):
 def close_DBConnection(pair):
     pair[0].close()
 
+
+def get_all_mediaTypes(pair):
+    pair[1].execute("SELECT DISTINCT mediaType FROM media;")
+    return pair[1].fetchall()
+
+
 def add_user_pic(pair, user_id, img):
     path = "%s" % (img,)
     with open(path, "rb") as image:
