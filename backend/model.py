@@ -70,9 +70,8 @@ def search_media_table(pair, query):
         end = exact + end
     return [key for key,value in collections.Counter(end).most_common()]
 
-
-def advanced_search_media_table(pair, query, genre, yearStart, ratingMin, yearEnd, ratingMax):
-    # Checks invalid input, returns empty list if they give some stupid input
+def advanced_search_media_table(pair, query, mediaType, genre, yearStart, ratingMin, yearEnd, ratingMax):
+    # Checks invalid input, returns empty list if they give some stupid 
     yearStartInvalid = (yearStart != None and not yearStart.isnumeric() and yearStart.strip() != "")
     yearEndInvalid = (yearEnd != None and not yearEnd.isnumeric() and yearEnd.strip() != "")
     ratingMinInvalid = (ratingMin != None and not ratingMin.isnumeric() and ratingMin.strip() != "")
@@ -90,6 +89,7 @@ def advanced_search_media_table(pair, query, genre, yearStart, ratingMin, yearEn
     if ratingMax == "" or ratingMax == None:
         ratingMax = "10"
 
+    # If statements below are for the cases in which there are no name or no genre input (4 cases)
     results = []
     if(query != "" and query != None):
         filtered_query = filter(query.strip())
@@ -106,13 +106,23 @@ def advanced_search_media_table(pair, query, genre, yearStart, ratingMin, yearEn
                 results += pair[1].fetchall()
     else:
         if(genre != "" and genre != None):
-            tmp2 = "%" + genre.strip() + "%"
+            tmp2 = "%" + genre.lower().strip() + "%"
             pair[1].execute("SELECT * FROM media WHERE year >= %s AND year <= %s AND rating >= %s AND rating <= %s AND LOWER(genres) LIKE %s;", (yearStart, yearEnd, ratingMin, ratingMax, tmp2))
             results += pair[1].fetchall()
         else:
-            pair[1].execute("SELECT * FROM media WHERE year >= %s AND year <= %s AND rating >= %s AND rating <= %s;", (yearStart, yearEnd, ratingMin, ratingMax))
-            results += pair[1].fetchall()
+            if mediaType == "" or mediaType == None: # otherwise, a separate search will be done
+                pair[1].execute("SELECT * FROM media WHERE year >= %s AND year <= %s AND rating >= %s AND rating <= %s;", (yearStart, yearEnd, ratingMin, ratingMax))
+                results += pair[1].fetchall()
     
+    # The below code removes all results that aren't of the type mediaType (if mediaType specified).
+    if mediaType != "" and mediaType != None:
+        tmp3 = "%" + mediaType.lower().strip() + "%"
+        pair[1].execute("SELECT * FROM media WHERE LOWER(mediaType) LIKE %s;", (tmp3,))
+        mediaTypeResults = pair[1].fetchall()
+        if len(results) == 0:
+            results = mediaTypeResults
+        else:
+            results = list(set(results).intersection(set(mediaTypeResults))) # Removes what's different between results and mediaTypeResults
     #sort list by frequency of tuple
     return [key for key, value in collections.Counter(results).most_common()]
 
@@ -124,14 +134,14 @@ def get_user_recommendations(pair, user_id):
 
     table = [(a, b, int(c), int(d)*2, int(e)*3) for a,b,c,d,e in table] 
 
-    #list of all ratings
+    # list of all ratings
     df = pd.DataFrame(table, columns=["user_id", "media_id", "rating", "watched", "liked"])
     allRatings = df.pivot_table(index=['user_id'], columns=['media_id'], values=['rating', 'watched', 'liked'])
     
-    #evaluate all correlation combos -> as more users increase min_periods
+    # evaluate all correlation combos -> as more users increase min_periods
     corrMatrix = allRatings.corr(method='pearson', min_periods = 2)
     
-    #get correlation for user
+    # get correlation for user
     myRatings = allRatings.loc[user_id].dropna()
     
     simCandidates = pd.Series(dtype='object')

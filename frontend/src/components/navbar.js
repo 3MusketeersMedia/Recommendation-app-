@@ -6,6 +6,7 @@ import './navbar.css';
 const MyNav = () => {
     const [searchContents, changeSC] = useState(null);
     const [name, changeName] = useState(null);
+    const [mediaType, changeMediaType] = useState(null);
     const [genre, changeGenre] = useState(null);
     const [minYear, changeMinYear] = useState(null);
     const [maxYear, changeMaxYear] = useState(null);
@@ -21,6 +22,11 @@ const MyNav = () => {
     function getName(val)
     {
       changeName(val.target.value);
+      console.warn(val.target.value);
+    }
+    function getMediaType(val)
+    {
+      changeMediaType(val.target.value);
       console.warn(val.target.value);
     }
     function getGenre(val)
@@ -58,7 +64,7 @@ const MyNav = () => {
     // Performs advanced search
     async function advancedSearch()
     {
-      context.actions.advancedSearch(name, genre, minYear, minRate, maxYear, maxRate);
+      context.actions.advancedSearch(name, mediaType, genre, minYear, minRate, maxYear, maxRate);
     }
     return <AppContext.Consumer>
       {context => <div>
@@ -82,7 +88,12 @@ const MyNav = () => {
                   <div className = "searchTab">
                     <input className = "fullSizeInput" onChange = {getName}/>
                   </div>
+              </div>
+              <div>Media Type:
+                <div className = "searchTab">
+                  <input className = "fullSizeInput" onChange = {getMediaType}/>
                 </div>
+              </div>
                 <div>Genre:
                   <div className = "searchTab">
                     <input className = "fullSizeInput" onChange = {getGenre}/>

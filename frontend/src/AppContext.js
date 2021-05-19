@@ -122,13 +122,13 @@ const GetState = ({ getStore, getActions, setStore }) => {
             },
 
             /** Calls normal search, gets the data, and then loads up movie list*/
-            advancedSearch: async (name, genre, minYear, minRate, maxYear, maxRate) => {
+            advancedSearch: async (name, mediaType, genre, minYear, minRate, maxYear, maxRate) => {
                 const response = await fetch('https://recommedia-api.herokuapp.com/advSearch', {
                     method: 'POST',
                     headers: {
                         'content-type': 'application/json',
                         },
-                        body: JSON.stringify({name, genre, minYear, minRate, maxYear, maxRate}),
+                        body: JSON.stringify({name, mediaType,genre, minYear, minRate, maxYear, maxRate}),
                     });
                     console.log(response);
                     const data = await response.json();

@@ -71,8 +71,8 @@ def search_media_table(pair, query):
         end = exact + end
     return [key for key,value in collections.Counter(end).most_common()]
 
-def advanced_search_media_table(pair, query, genre, yearStart, ratingMin, yearEnd, ratingMax):
-    # Checks invalid input, returns empty list if they give some stupid input
+def advanced_search_media_table(pair, query, mediaType, genre, yearStart, ratingMin, yearEnd, ratingMax):
+    # Checks invalid input, returns empty list if they give some stupid 
     yearStartInvalid = (yearStart != None and not yearStart.isnumeric() and yearStart.strip() != "")
     yearEndInvalid = (yearEnd != None and not yearEnd.isnumeric() and yearEnd.strip() != "")
     ratingMinInvalid = (ratingMin != None and not ratingMin.isnumeric() and ratingMin.strip() != "")
@@ -106,7 +106,7 @@ def advanced_search_media_table(pair, query, genre, yearStart, ratingMin, yearEn
                 results += pair[1].fetchall()
     else:
         if(genre != "" and genre != None):
-            tmp2 = "%" + genre.strip() + "%"
+            tmp2 = "%" + genre.lower().strip() + "%"
             pair[1].execute("SELECT * FROM media WHERE year >= %s AND year <= %s AND rating >= %s AND rating <= %s AND LOWER(genres) LIKE %s;", (yearStart, yearEnd, ratingMin, ratingMax, tmp2))
             results += pair[1].fetchall()
         else:
@@ -115,7 +115,6 @@ def advanced_search_media_table(pair, query, genre, yearStart, ratingMin, yearEn
     
     #sort list by frequency of tuple
     return [key for key, value in collections.Counter(results).most_common()]
-
 
 def get_user_recommendations(pair, user_id):
 
@@ -157,7 +156,6 @@ def get_user_recommendations(pair, user_id):
     end = [value for value in [value for key,value in filteredSims.index.array] if value not in [value for key,value in myRatings.index]]
     return([key for key,value in collections.Counter(end).most_common()])
     #return([value for key,value in [key for key,value in collections.Counter(filteredSims.index.array).most_common()]])
-
 """
 #load file
 exec(open("../database/database.py").read())
