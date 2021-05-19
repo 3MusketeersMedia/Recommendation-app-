@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react'
 import {Navbar, Nav, NavDropdown, FormGroup, FormControl, Button} from 'react-bootstrap'
 import {AppContext} from '../AppContext';
 import './navbar.css';
- 
+
 const MyNav = () => {
     const [searchContents, changeSC] = useState(null);
     const [name, changeName] = useState(null);
@@ -13,7 +13,7 @@ const MyNav = () => {
     const [minRate, changeMinRate] = useState(null);
     const [maxRate, changeMaxRate] = useState(null);
     const context = useContext(AppContext);
-    
+
     function getSearchConts(val)
     {
       changeSC(val.target.value);
@@ -73,12 +73,12 @@ const MyNav = () => {
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
-            <Nav.Link href="/list">Movie List</Nav.Link>
-          </Nav> 
+            <Nav.Link href="/list">Media List</Nav.Link>
+          </Nav>
           <Nav>
-            {context.store.token && context.store.token !== "" && context.store.token !== undefined ? 
-              <> <Nav.Link onClick={() => context.actions.logout()}>Signout</Nav.Link> 
-              <Nav.Link href="/user/profile"> Profile </Nav.Link></>: 
+            {context.store.token && context.store.token !== "" && context.store.token !== undefined ?
+              <> <Nav.Link onClick={() => context.actions.logout()}>Signout</Nav.Link>
+              <Nav.Link href="/user/profile"> Profile </Nav.Link></>:
               <><Nav.Link href="/login">Login</Nav.Link>
               <Nav.Link href="/login"> Profile </Nav.Link> </>
             }
@@ -100,13 +100,13 @@ const MyNav = () => {
                   </div>
                 </div>
                 <div>Year (From, To):
-                  <div className = "searchTab"> 
+                  <div className = "searchTab">
                     <input className = "halfSizeInput" onChange = {getMinYear}/>
                     <input className = "halfSizeInput" onChange = {getMaxYear}/>
                   </div>
                 </div>
                 <div>Rating (From, To):
-                  <div className = "searchTab"> 
+                  <div className = "searchTab">
                     <input className = "halfSizeInput" onChange = {getMinRate}/>
                     <input className = "halfSizeInput" onChange = {getMaxRate}/>
                   </div>
@@ -118,10 +118,10 @@ const MyNav = () => {
           </Nav>
           <Nav>
             <div className = "searchBar">
-              <FormControl 
+              <FormControl
               type="text"
-              placeholder="Search by title" 
-              className="mr-sm-2"  
+              placeholder="Search by title"
+              className="mr-sm-2"
               onKeyPress={event => {
                 if (event.key === "Enter") {
                   normalSearch();
