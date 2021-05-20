@@ -8,8 +8,9 @@ import random
 import csv
 import json
 import pandas as pd
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
 from imageScraper import *
-
 # 6c0e5c9bfc8061e02d8fb8edb60aa8a9
 # To install library: pip install tmdb3
 import tmdbsimple as tmdb
@@ -141,52 +142,17 @@ def populate_database():
 
 # populate_database()
 # populate_user()
-exec(open("backend/database.py").read())
-connection = open_DBConnection()
-print(get_all_users(connection))
-close_DBConnection(connection)
+# exec(open("backend/database.py").read())
+# connection = open_DBConnection()
+# print(get_all_users(connection))
+# close_DBConnection(connection)
 # user_recs = get_user_recommendations('username', 'password_hash')
 # for id in user_recs:
 #     get_movie_info(id)
 
+sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id="12ba660d977341309ab9343a38e9456a",
+                                                           client_secret="0c9d62373fb84dc2adae9c7c9855b1f5"))
 
-
-
-
-
-
-
-# getting top 250 movies and bottom 100 movies
-# https://www.youtube.com/watch?v=vzOdCPV7zvs
-
-# moves goes from 1 to seven digit number 
-# for i in range(1,99):
-#     randNum = random.randint(1,99999)
-#     ia = IMDb()
-#     movie = ia.get_movie(randNum)
-#     try:
-#         if "Episode" in movie["title"]:
-#             continue
-#         print(i, movie["title"])
-#     except::
-#         print(e)
-#         pass
-# movie = ia.get_movie('9999999')
-# print(movie["title"])
-# top = ia.get_top250_movies()
-# for movie in top:
-#     id = movie.getID()
-#     m = ia.get_movie(id)
-#     print(id)
-#     print(m.keys())
-#     print(m['title'])
-#     print(m['year'])
-#     print(m['rating'])
-#     directors = m['directors']
-#     direcStr = ' '.join(map(str, directors))
-#     print(f'directors: {direcStr}')
-#     for genre in m['genres']:
-#         print(genre)
-
-# bottom = ia.get_bottom100_movies()
-
+results = sp.search(q='lil nax', limit=20)
+for idx, track in enumerate(results['tracks']['items']):
+    print(idx, track['name'])
