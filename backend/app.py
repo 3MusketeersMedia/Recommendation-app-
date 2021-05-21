@@ -15,8 +15,10 @@ import bcrypt
 # JWT token: user id, access token
 # maybe token dates i.e. timestamp
 
-# To-do list:
-# 1) password hashes are not unique for some reason
+# Connection pools are backlog
+# Require us to rewrite the database api
+
+# try: execute db function (exclude open_connection)
 
 # instance of flask web app
 app = Flask(__name__)
@@ -96,17 +98,23 @@ def index():
 @app.route("/movies", methods=['GET'])
 def movies():
     db = database.open_DBConnection()
-    all_media = database.get_all(db, "media")
-    database.close_DBConnection(db)
-    dict1 = format_media(all_media)
+    try:
+        all_media = database.get_all(db, "media")
+        dict1 = format_media(all_media)
+    finally:
+        database.close_DBConnection(db)
+
     return dict1
 
 # standard search by name function
 @app.route("/search", methods=["POST"])
 def search():
     db = database.open_DBConnection()
-    to_return = format_media(database.search_media_table(db, request.json.get("searchContents", None)))
-    database.close_DBConnection(db)
+    try:
+        to_return = format_media(database.search_media_table(db, request.json.get("searchContents", None)))
+    finally:
+        database.close_DBConnection(db)
+
     return to_return
 
 # advanced search
@@ -120,9 +128,12 @@ def advSearch():
     minRate = request.json.get("minRate", None)
     maxRate = request.json.get("maxRate", None)
     db = database.open_DBConnection()
-    media = database.advanced_search_media_table(db, name, mediaType, genre, minYear, minRate, maxYear, maxRate)
-    database.close_DBConnection(db)
-    to_return = format_media(media)
+    try:
+        media = database.advanced_search_media_table(db, name, genre, minYear, minRate, maxYear, maxRate)
+        to_return = format_media(media)
+    finally:
+        database.close_DBConnection(db)
+
     return to_return
 
 
@@ -131,17 +142,23 @@ def pages():
     limit = request.args.get('limit', 100)
     offset = request.args.get('offset', 0)
     pair = database.open_DBConnection(True)
-    pair[1].execute('SELECT * FROM media LIMIT %s OFFSET %s', [limit, offset])
-    media = pair[1].fetchall()
-    database.close_DBConnection(pair)
+    try:
+        pair[1].execute('SELECT * FROM media LIMIT %s OFFSET %s', [limit, offset])
+        media = pair[1].fetchall()
+    finally:
+        database.close_DBConnection(pair)
+
     return jsonify(json.loads(simplejson.dumps(media)))
 
 
 @app.route('/movieCount')
 def movieCount():
     db = database.open_DBConnection()
-    num = database.num_items(db, 'media')
-    database.close_DBConnection(db)
+    try:
+        num = database.num_items(db, 'media')
+    finally:
+        database.close_DBConnection(db)
+
     return jsonify(num)
 
 
@@ -154,8 +171,10 @@ def review():
     media_id = request.json.get("media_id")
     review = request.json.get("review")
     db = database.open_DBConnection()
-    database.set_data_review(db, user_id, media_id, review)
-    database.close_DBConnection(db)
+    try:
+        database.set_data_review(db, user_id, media_id, review)
+    finally:
+        database.close_DBConnection(db)
 
     return "Review posted", 200
 
@@ -169,8 +188,10 @@ def profile():
     user_id = identity[0]
 
     db = database.open_DBConnection()
-    attributes = database.get_by_id(db, user_id, "users")
-    database.close_DBConnection(db)
+    try:
+        attributes = database.get_by_id(db, user_id, "users")
+    finally:
+        database.close_DBConnection(db)
 
     return jsonify({"username": attributes[0]}), 200
 
@@ -186,22 +207,34 @@ def favorite():
         media_id = request.json.get("id")
 
         # if id does not exist, add to database with set_preference
-        if(database.check_preference(db, user_id, media_id)): 
-            database.set_data_liked(db, user_id, media_id, True)
-        else: 
-            database.set_preference(db, False , True, user_id, media_id)
+        try:
+            if(database.check_preference(db, user_id, media_id)): 
+                database.set_data_liked(db, user_id, media_id, True)
+            else: 
+                database.set_preference(db, False , True, user_id, media_id)
+        finally:
+            database.close_DBConnection(db)
+
         return "Movie favorited", 200
     elif request.method == "DELETE": 
         media_id = request.json.get("id")
 
         # if id does not exist, add to database with set_preference
-        if(database.check_preference(db, user_id, media_id)): 
-            database.set_data_liked(db, user_id, media_id, False)
-        else: 
-            database.set_preference(db, False , False, user_id, media_id)
+        try:
+            if(database.check_preference(db, user_id, media_id)): 
+                database.set_data_liked(db, user_id, media_id, False)
+            else: 
+                database.set_preference(db, False , False, user_id, media_id)
+        finally:
+            database.close_DBConnection(db)
+
         return "Movie unfavorited", 200
     elif request.method == "GET":
-        fav_movies = database.get_user_liked(db, user_id, True)
+        try:
+            fav_movies = database.get_user_liked(db, user_id, True)
+        finally:
+            database.close_DBConnection(db)
+
         fav_movies = format_media(fav_movies)
         return fav_movies, 200
 
@@ -226,27 +259,34 @@ def watchlist():
         media_id = request.json.get("id")
 
         # if id does not exist, add to database with set_preference
-        if(database.check_preference(db, user_id, media_id)): 
-            database.set_data_watched(db, user_id, media_id, True)
-        else: 
-            database.set_preference(db, True , False, user_id, media_id)
-        
-        database.close_DBConnection(db)
+        try:
+            if(database.check_preference(db, user_id, media_id)): 
+                database.set_data_watched(db, user_id, media_id, True)
+            else: 
+                database.set_preference(db, True , False, user_id, media_id)
+        finally:
+            database.close_DBConnection(db)
+
         return "Movie watched", 200
     elif request.method == "DELETE": 
         media_id = request.json.get("id")
 
         # if id does not exist, add to database with set_preference
-        if(database.check_preference(db, user_id, media_id)): 
-            database.set_data_watched(db, user_id, media_id, False)
-        else: 
-            database.set_preference(db, False , False, user_id, media_id)
-            
-        database.close_DBConnection(db)
+        try:
+            if(database.check_preference(db, user_id, media_id)): 
+                database.set_data_watched(db, user_id, media_id, False)
+            else: 
+                database.set_preference(db, False , False, user_id, media_id)
+        finally:    
+            database.close_DBConnection(db)
+
         return "Movie unwatched", 200
     elif request.method == "GET":
-        watched = database.get_user_watched(db, user_id, True)
-        database.close_DBConnection(db)
+        try:
+            watched = database.get_user_watched(db, user_id, True)
+        finally:
+            database.close_DBConnection(db)
+            
         watched = format_media(watched)
         return watched, 200
 
@@ -283,57 +323,65 @@ def login():
 
     db = database.open_DBConnection()
 
-    # query database
-    # need to pull hash and salt from db, then hash the password passed in
-    # encode utf-8?
-    # get entire row or just attribute?
-    user = database.check_user_exists(db, username)
+    try:
+        user = database.check_user_exists(db, username)
+    finally:
+        database.close_DBConnection(db)
+
     if not user:
+        database.close_DBConnection(db)
         return jsonify({"msg": "Invalid username or password"})
 
     # validate password
-    hashed = database.get_user_hash(db, username)
+    try:
+        hashed = database.get_user_hash(db, username)
+    finally:
+        database.close_DBConnection(db)
+
     if not bcrypt.checkpw(password.encode("utf-8"), hashed[0].encode("utf-8")):
+        database.close_DBConnection(db)
         return jsonify({"msg": "Invalid username or password"})
 
     # if bcrypt.hashpw(password, stored_hash) == stored hash
-    user_id = database.get_user_id(db, username)
+    try:
+        user_id = database.get_user_id(db, username)
+    finally:
+        database.close_DBConnection(db)
 
     # return token    
     access_token = create_access_token(identity=user_id)
-    database.close_DBConnection(db)
     return jsonify({"token": access_token, "id": user_id, "username": username})
 
 
 # if user, user already exists
-@app.route("/signup", methods=['GET', 'POST'])
+@app.route("/signup", methods=['POST'])
 def signup():
-    if request.method == "POST":
-        username = request.json.get("username")
-        password = request.json.get("password")
-        db = database.open_DBConnection()
+    username = request.json.get("username")
+    password = request.json.get("password")
+    db = database.open_DBConnection()
 
-        # existing user check
-        # check if password length long?
-        if database.check_user_exists(db, username):
-            return jsonify({"msg": "Invalid username or password"})
+    # existing user check
+    # check if password length long?
+    if database.check_user_exists(db, username):
+        database.close_DBConnection(db)
+        return jsonify({"msg": "Invalid username or password"})
 
-        # salt stored as part of hash, do not need to store in database
-        salt = bcrypt.gensalt()
-        hashed = bcrypt.hashpw(password.encode("utf-8"), salt)
+    # salt stored as part of hash, do not need to store in database
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password.encode("utf-8"), salt)
 
-        #print("hash value is: ")
-        #print(hashed.decode("utf-8"))
+    #print("hash value is: ")
+    #print(hashed.decode("utf-8"))
 
+    try:
         database.add_user(db, username, hashed.decode("utf-8"))
         user_id = database.get_user_id(db, username)
-
-        # send token
-        access_token = create_access_token(identity=user_id)
+    finally:
         database.close_DBConnection(db)
-        return jsonify({"token": access_token, "id": user_id, "username": username})
 
-    return "signup"
+    # send token
+    access_token = create_access_token(identity=user_id)
+    return jsonify({"token": access_token, "id": user_id, "username": username})
 
 
 if __name__ == "__main__":
