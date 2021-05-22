@@ -3,8 +3,9 @@ import {Container, Row, Col, ListGroup, Image} from 'react-bootstrap';
 import {AppContext} from '../AppContext';
 import MyNav from '../components/navbar';
 import './MovieList.css';
+import { withRouter } from "react-router-dom"
 
-export default class MovieList extends React.Component {
+class MovieList extends React.Component {
   static contextType = AppContext;
   constructor() {
     super();
@@ -62,7 +63,7 @@ export default class MovieList extends React.Component {
     console.log(this.state.movies);
     const offset = this.state.limit * (this.state.page - 1);
     return <>
-      <MyNav/>
+      {window.location.pathname != "/" ? <MyNav /> : null}
       <Container fluid className='p-3'>
         <p>
           Showing {this.state.count > 0?offset+1:0}-{offset+this.state.limit < this.state.count? offset+this.state.limit: this.state.count} of {this.state.count}
@@ -100,3 +101,5 @@ export default class MovieList extends React.Component {
     </>;
   }
 }
+
+export default withRouter(MovieList);
