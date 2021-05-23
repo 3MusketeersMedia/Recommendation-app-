@@ -1,4 +1,5 @@
 # utility functions for users to use
+from process_dataset import tracks
 from imdb import IMDb, IMDbError
 from database import*
 from apiRequests import *
@@ -8,8 +9,9 @@ import random
 import csv
 import json
 import pandas as pd
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
 from imageScraper import *
-
 # 6c0e5c9bfc8061e02d8fb8edb60aa8a9
 # To install library: pip install tmdb3
 import tmdbsimple as tmdb
@@ -128,65 +130,39 @@ def populate_database():
         link = get_imgurl_tmdbsimple(name, year)
         genres = row[8].replace(',', '|')
         rating = 0
-        running_time = row[7]
+        running_time = (row[7]/1000) % 60
         id = row[0][2:]
         if "N" in running_time:
             running_time = 0
         if "N" in year:
             year = 0
-        # print(id)
         set_data(connection, name, mediaType, year, link, genres, rating, running_time, id)
-        # print(name, mediaType, year, link, genres, rating, running_time, id)
     close_DBConnection(connection)
 
-# populate_database()
+def populate_tracks():
+    exec(open("backend/database.py").read())
+    
+    sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id="12ba660d977341309ab9343a38e9456a",
+                                                           client_secret="0c9d62373fb84dc2adae9c7c9855b1f5"))
+    connection = open_DBConnection()
+    songs = []
+    data = tracks()
+    # id, name, artists, duration,  release date
+    for row in data :
+        id = row[0]
+        results = sp.track(id)
+        image = results['album']['images'][0]['url']
+        popularity = results['popularity']
+        name = row[1]
+        mediaType = 'music'
+        year = row[4][0:4]
+        link = image
+        genres = None
+        rating = popularity / 10
+        running_time = row[3]
+        # print(id)
+        set_data(connection, name, mediaType, year, link, genres, rating, running_time, id)
+    close_DBConnection(connection)
+
+populate_tracks()
 # populate_user()
-exec(open("backend/database.py").read())
-connection = open_DBConnection()
-print(get_all_users(connection))
-close_DBConnection(connection)
-# user_recs = get_user_recommendations('username', 'password_hash')
-# for id in user_recs:
-#     get_movie_info(id)
-
-
-
-
-
-
-
-
-# getting top 250 movies and bottom 100 movies
-# https://www.youtube.com/watch?v=vzOdCPV7zvs
-
-# moves goes from 1 to seven digit number 
-# for i in range(1,99):
-#     randNum = random.randint(1,99999)
-#     ia = IMDb()
-#     movie = ia.get_movie(randNum)
-#     try:
-#         if "Episode" in movie["title"]:
-#             continue
-#         print(i, movie["title"])
-#     except::
-#         print(e)
-#         pass
-# movie = ia.get_movie('9999999')
-# print(movie["title"])
-# top = ia.get_top250_movies()
-# for movie in top:
-#     id = movie.getID()
-#     m = ia.get_movie(id)
-#     print(id)
-#     print(m.keys())
-#     print(m['title'])
-#     print(m['year'])
-#     print(m['rating'])
-#     directors = m['directors']
-#     direcStr = ' '.join(map(str, directors))
-#     print(f'directors: {direcStr}')
-#     for genre in m['genres']:
-#         print(genre)
-
-# bottom = ia.get_bottom100_movies()
-
