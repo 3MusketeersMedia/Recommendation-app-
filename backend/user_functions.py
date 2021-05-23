@@ -1,4 +1,5 @@
 # utility functions for users to use
+from process_dataset import tracks
 from imdb import IMDb, IMDbError
 from database import*
 from apiRequests import *
@@ -129,30 +130,39 @@ def populate_database():
         link = get_imgurl_tmdbsimple(name, year)
         genres = row[8].replace(',', '|')
         rating = 0
-        running_time = row[7]
+        running_time = (row[7]/1000) % 60
         id = row[0][2:]
         if "N" in running_time:
             running_time = 0
         if "N" in year:
             year = 0
-        # print(id)
         set_data(connection, name, mediaType, year, link, genres, rating, running_time, id)
-        # print(name, mediaType, year, link, genres, rating, running_time, id)
     close_DBConnection(connection)
 
-# populate_database()
-# populate_user()
-# exec(open("backend/database.py").read())
-# connection = open_DBConnection()
-# print(get_all_users(connection))
-# close_DBConnection(connection)
-# user_recs = get_user_recommendations('username', 'password_hash')
-# for id in user_recs:
-#     get_movie_info(id)
-
-sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id="12ba660d977341309ab9343a38e9456a",
+def populate_tracks():
+    exec(open("backend/database.py").read())
+    
+    sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id="12ba660d977341309ab9343a38e9456a",
                                                            client_secret="0c9d62373fb84dc2adae9c7c9855b1f5"))
+    connection = open_DBConnection()
+    songs = []
+    data = tracks()
+    # id, name, artists, duration,  release date
+    for row in data :
+        id = row[0]
+        results = sp.track(id)
+        image = results['album']['images'][0]['url']
+        popularity = results['popularity']
+        name = row[1]
+        mediaType = 'music'
+        year = row[4][0:4]
+        link = image
+        genres = None
+        rating = popularity / 10
+        running_time = row[3]
+        # print(id)
+        set_data(connection, name, mediaType, year, link, genres, rating, running_time, id)
+    close_DBConnection(connection)
 
-results = sp.search(q='lil nax', limit=20)
-for idx, track in enumerate(results['tracks']['items']):
-    print(idx, track['name'])
+populate_tracks()
+# populate_user()
