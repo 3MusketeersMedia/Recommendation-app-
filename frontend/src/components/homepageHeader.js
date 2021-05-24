@@ -1,6 +1,6 @@
 import React from 'react';
 import {Jumbotron, Container} from 'react-bootstrap'
-import bridgeImage from '../pics/ucscBridge.jpeg';
+import bridgeImage from '../pics/rock.JPG';
 import styled from 'styled-components';
 
 const Styles = styled.div`
