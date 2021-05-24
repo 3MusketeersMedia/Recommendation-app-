@@ -12,10 +12,12 @@ import pandas as pd
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from imageScraper import *
+import imdb_cred
+import spotipy_cred
 # 6c0e5c9bfc8061e02d8fb8edb60aa8a9
 # To install library: pip install tmdb3
 import tmdbsimple as tmdb
-tmdb.API_KEY = '6c0e5c9bfc8061e02d8fb8edb60aa8a9'
+tmdb.API_KEY = imdb_cred.login['key']
 
 def get_imgurl_tmdbsimple(title, year):
     search = tmdb.Search()
@@ -86,12 +88,12 @@ def get_movie_rating(id):
     movie = ia.get_movie(id)
     return movie['rating']
 
-def get_movie_info(id):
+def get_movie_plot(id):
     ia = IMDb()
     m = ia.get_movie(id)
-    # print(m.keys())
-    print(m['title'])
-    print(m.keys())
+    if m.get('plot') is not None:
+        return m.get('plot')
+    return None
 
 # return movie ids searched by keyword
 def filter_by_keyword(keyword):
@@ -130,20 +132,23 @@ def populate_database():
         link = get_imgurl_tmdbsimple(name, year)
         genres = row[8].replace(',', '|')
         rating = 0
-        running_time = (row[7]/1000) % 60
+        running_time = row[7]
         id = row[0][2:]
+        summary = get_movie_plot(id)
+        if link is None:
+            link = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/No_image_3x4.svg/1200px-No_image_3x4.svg.png'
         if "N" in running_time:
             running_time = 0
         if "N" in year:
             year = 0
-        set_data(connection, name, mediaType, year, link, genres, rating, running_time, id)
+        set_data(connection, name, mediaType, year, link, genres, rating, running_time, id, summary)
     close_DBConnection(connection)
 
 def populate_tracks():
     exec(open("backend/database.py").read())
     
-    sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id="12ba660d977341309ab9343a38e9456a",
-                                                           client_secret="0c9d62373fb84dc2adae9c7c9855b1f5"))
+    sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=spotipy_cred.login['c_id'],
+                                                           client_secret=spotipy_cred.login['c_secret']))
     connection = open_DBConnection()
     songs = []
     data = tracks()
@@ -151,18 +156,25 @@ def populate_tracks():
     for row in data :
         id = row[0]
         results = sp.track(id)
-        image = results['album']['images'][0]['url']
+        try:
+            image = results['album']['images'][0]['url']
+        except IndexError:
+            image = None
         popularity = results['popularity']
         name = row[1]
-        mediaType = 'music'
+        id = 'm' + id
+        mediaType = 'Music'
         year = row[4][0:4]
         link = image
         genres = None
         rating = popularity / 10
-        running_time = row[3]
+        if image is None:
+            image = 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/No_image_3x4.svg/1200px-No_image_3x4.svg.png'
+        running_time = str((int(row[3])/1000) % 60)
         # print(id)
         set_data(connection, name, mediaType, year, link, genres, rating, running_time, id)
     close_DBConnection(connection)
 
-populate_tracks()
+# populate_tracks()
 # populate_user()
+# populate_database()
