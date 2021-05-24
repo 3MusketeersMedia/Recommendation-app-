@@ -8,7 +8,14 @@ from model import *
 #----------Setup----------------------
 #verify connection
 #setup database
-conn = psycopg2.connect(host="mediadb.c3txk3dmci6e.us-west-1.rds.amazonaws.com", port="5432", user='postgres', password='postgres', dbname='db')
+
+DB_HOST = os.environ.get('DB_HOST')
+DB_PORT = os.environ.get('DB_PORT')
+DB_USER = os.environ.get('DB_USER')
+DB_PASSWORD = os.environ.get('DB_PASSWORD')
+DB_NAME = os.environ.get('DB_NAME')
+
+conn = psycopg2.connect(host=DB_HOST, port=DB_PORT, user=DB_USER, password=DB_PASSWORD, dbname=DB_NAME)
 conn.autocommit = True #autocommit or commit after transactions
 database = conn.cursor()
 
@@ -30,7 +37,7 @@ conn.close()
 
 #-----------Function Definitions------------
 def open_DBConnection(dict_cursor=False):
-    connection = psycopg2.connect(host="mediadb.c3txk3dmci6e.us-west-1.rds.amazonaws.com", port="5432", user='postgres', password='postgres', dbname='db')
+    connection = psycopg2.connect(host=DB_HOST, port=DB_PORT, user=DB_USER, password=DB_PASSWORD, dbname=DB_NAME)
     connection.autocommit = True
     if dict_cursor == True:
         db = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
