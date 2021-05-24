@@ -131,7 +131,7 @@ def advSearch():
     maxRate = request.json.get("maxRate", None)
     db = database.open_DBConnection()
     try:
-        media = database.advanced_search_media_table(db, name, genre, minYear, minRate, maxYear, maxRate)
+        media = database.advanced_search_media_table(db, name, mediaType, genre, minYear, minRate, maxYear, maxRate)
         to_return = format_media(media)
     finally:
         database.close_DBConnection(db)
