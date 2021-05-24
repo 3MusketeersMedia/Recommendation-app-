@@ -10,6 +10,8 @@ from flask_cors import CORS
 import database
 import bcrypt
 
+# check through and run through all functions thoroughly
+
 # TA email: yogolan@ucsc.edu
 # .\venv\Scripts\activate
 # JWT token: user id, access token
@@ -172,7 +174,10 @@ def review():
     review = request.json.get("review")
     db = database.open_DBConnection()
     try:
-        database.set_data_review(db, user_id, media_id, review)
+        if(database.check_preference(db, user_id, media_id)): 
+            database.set_data_review(db, user_id, media_id, review)
+        else: 
+            database.set_preference(db, False , False, user_id, media_id, 0, review)
     finally:
         database.close_DBConnection(db)
 
@@ -194,6 +199,27 @@ def profile():
         database.close_DBConnection(db)
 
     return jsonify({"username": attributes[0]}), 200
+
+
+@app.route("/rating", methods=["POST"])
+@jwt_required()
+def rating():
+    identity = get_jwt_identity()
+    user_id = identity[0]
+
+    media_id = request.json.get("media_id")
+    rating = request.json.get("rating")
+    print(rating)
+    db = database.open_DBConnection()
+    try:
+        if(database.check_preference(db, user_id, media_id)): 
+            database.set_data_rating(db, user_id, media_id, rating)
+        else: 
+            database.set_preference(db, False , False, user_id, media_id, rating, "")
+    finally:
+        database.close_DBConnection(db)
+
+    return "Rating posted", 200
 
 
 @app.route("/favorite", methods=["POST", "GET", "DELETE"])
@@ -322,7 +348,6 @@ def login():
     password = request.json.get("password", None)
 
     db = database.open_DBConnection()
-
     try:
         user = database.check_user_exists(db, username)
     finally:
@@ -333,6 +358,7 @@ def login():
         return jsonify({"msg": "Invalid username or password"})
 
     # validate password
+    db = database.open_DBConnection()
     try:
         hashed = database.get_user_hash(db, username)
     finally:
@@ -343,6 +369,7 @@ def login():
         return jsonify({"msg": "Invalid username or password"})
 
     # if bcrypt.hashpw(password, stored_hash) == stored hash
+    db = database.open_DBConnection()
     try:
         user_id = database.get_user_id(db, username)
     finally:
@@ -354,6 +381,7 @@ def login():
 
 
 # if user, user already exists
+# do I need to check if user already signed in?
 @app.route("/signup", methods=['POST'])
 def signup():
     username = request.json.get("username")
