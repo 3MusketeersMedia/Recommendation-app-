@@ -80,6 +80,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
 		store: {
 			movie: null,
 			token: null,
+            loginModalShown: false,
             movieFavorites: [],
             movieWatched: [],
             searchContents: null,
@@ -137,6 +138,14 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 console.log(data);
                 return data;
               }
+            },
+
+            openLoginModal: () => {
+              setStore({loginModalShown: true});
+            },
+
+            closeLoginModal: () => {
+              setStore({loginModalShown: false});
             },
 
             /** Calls normal search, gets the data, and then loads up movie list*/
