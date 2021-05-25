@@ -1,11 +1,11 @@
 import React from 'react';
 import {Jumbotron, Container} from 'react-bootstrap'
-import bridgeImage from '../pics/rock.JPG';
+import Image from 'wp1841194-santa-cruz-california-wallpapers.jpg';
 import styled from 'styled-components';
 
 const Styles = styled.div`
     .jumbo{
-        background: url(${bridgeImage}) no-repeat fixed bottom;
+        background: url(${Image}) no-repeat fixed bottom;
         background-size: cover;
         background-color: transparent;
         color: transparent;
