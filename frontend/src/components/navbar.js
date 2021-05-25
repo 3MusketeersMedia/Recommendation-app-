@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react'
 import {Navbar, Nav, NavDropdown, FormGroup, FormControl, Button} from 'react-bootstrap'
 import {AppContext} from '../AppContext';
+import LoginPage from '../pages/LoginPage'
 import './navbar.css';
 
 const MyNav = () => {
@@ -12,6 +13,7 @@ const MyNav = () => {
     const [maxYear, changeMaxYear] = useState(null);
     const [minRate, changeMinRate] = useState(null);
     const [maxRate, changeMaxRate] = useState(null);
+    const [modalShown, setModalShown] = useState(false);
     const context = useContext(AppContext);
 
     function getSearchConts(val)
@@ -66,6 +68,7 @@ const MyNav = () => {
     {
       context.actions.advancedSearch(name, mediaType, genre, minYear, minRate, maxYear, maxRate);
     }
+
     return <AppContext.Consumer>
       {context => <div>
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
@@ -79,8 +82,8 @@ const MyNav = () => {
             {context.store.token && context.store.token !== "" && context.store.token !== undefined ?
               <> <Nav.Link onClick={() => context.actions.logout()}>Signout</Nav.Link>
               <Nav.Link href="/user/profile"> Profile </Nav.Link></>:
-              <><Nav.Link href="/login">Login</Nav.Link>
-              <Nav.Link href="/login"> Profile </Nav.Link> </>
+              <><Nav.Link href="#" onClick={()=>setModalShown(true)}>Login</Nav.Link>
+              <Nav.Link href="#" onClick={()=>setModalShown(true)}> Profile </Nav.Link> </>
             }
             <NavDropdown title="Advanced Search" id="collasible-nav-dropdown">
               <div>
@@ -133,6 +136,7 @@ const MyNav = () => {
           </Nav>
           </Navbar.Collapse>
         </Navbar>
+        <LoginPage show={modalShown} close={()=>setModalShown(false)}/>
       </div>}
     </AppContext.Consumer>;
 }

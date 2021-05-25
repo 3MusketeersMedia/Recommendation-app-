@@ -18,7 +18,6 @@ export default class App extends React.Component {
           <Route exact path='/list' component={MovieList}/>
           <Route exact path='/movie' component={ZoomedPage}/>
           <Route exact path='/user/profile' component={ProfilePage}/>
-          <Route exact path='/login' component={LoginPage}/>
         </ContextWrapper>
       </BrowserRouter>
     );
