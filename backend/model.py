@@ -44,7 +44,7 @@ def filter(text):
     return [token for token in tokens if token]
 
 
-def search_media_table(pair, query):
+def search_media_table(pair, query, limit, offset):
     #filter
     filtered_query = filter(query)
     query_check = "%" + query + "%"
@@ -61,17 +61,21 @@ def search_media_table(pair, query):
         else:
             pair[1].execute("SELECT * FROM media WHERE LOWER(name) LIKE %s;", (tmp,))
         results += pair[1].fetchall()
-    
+
     #sort list by frequency of tuple
     end = [key for key, value in collections.Counter(results).most_common()]
-    
+
     #add exact match as first result if it exists
     if len(exact) > 0:
         end = exact + end
-    return [key for key,value in collections.Counter(end).most_common()]
+    to_return = [key for key,value in collections.Counter(end).most_common()]
+    return {
+        'movies': to_return[offset:offset+limit],
+        'count': len(to_return)
+    }
 
-def advanced_search_media_table(pair, query, mediaType, genre, yearStart, ratingMin, yearEnd, ratingMax):
-    # Checks invalid input, returns empty list if they give some stupid 
+def advanced_search_media_table(pair, query, mediaType, genre, yearStart, ratingMin, yearEnd, ratingMax, limit, offset):
+    # Checks invalid input, returns empty list if they give some stupid
     yearStartInvalid = (yearStart != None and not yearStart.isnumeric() and yearStart.strip() != "")
     yearEndInvalid = (yearEnd != None and not yearEnd.isnumeric() and yearEnd.strip() != "")
     ratingMinInvalid = (ratingMin != None and not ratingMin.isnumeric() and ratingMin.strip() != "")
@@ -112,7 +116,7 @@ def advanced_search_media_table(pair, query, mediaType, genre, yearStart, rating
         else:
                 pair[1].execute("SELECT * FROM media WHERE year >= %s AND year <= %s AND rating >= %s AND rating <= %s;", (yearStart, yearEnd, ratingMin, ratingMax))
                 results += pair[1].fetchall()
-    
+
     # The below code removes all results that aren't of the type mediaType (if mediaType specified).
     if mediaType != "" and mediaType != None:
         tmp3 = "%" + mediaType.lower().strip() + "%"
@@ -120,7 +124,11 @@ def advanced_search_media_table(pair, query, mediaType, genre, yearStart, rating
         mediaTypeResults = pair[1].fetchall()
         results = list(set(results).intersection(set(mediaTypeResults))) # Removes what's different between results and mediaTypeResults
     #sort list by frequency of tuple
-    return [key for key, value in collections.Counter(results).most_common()]
+    to_return = [key for key, value in collections.Counter(results).most_common()]
+    return {
+        'movies': to_return[offset:offset+limit],
+        'count': len(to_return)
+    }
 
 
 def get_user_recommendations(pair, user_id):
@@ -128,20 +136,20 @@ def get_user_recommendations(pair, user_id):
     pair[1].execute("SELECT user_id, media_id, rating, watched, liked FROM preferences;")
     table = pair[1].fetchall()
 
-    table = [(a, b, int(c), int(d)*2, int(e)*3) for a,b,c,d,e in table] 
+    table = [(a, b, int(c), int(d)*2, int(e)*3) for a,b,c,d,e in table]
 
     # list of all ratings
     df = pd.DataFrame(table, columns=["user_id", "media_id", "rating", "watched", "liked"])
     allRatings = df.pivot_table(index=['user_id'], columns=['media_id'], values=['rating', 'watched', 'liked'])
-    
+
     # evaluate all correlation combos -> as more users increase min_periods
     corrMatrix = allRatings.corr(method='pearson', min_periods = 2)
-    
+
     # get correlation for user
     myRatings = allRatings.loc[user_id].dropna()
-    
+
     simCandidates = pd.Series(dtype='object')
-    
+
     for i in range(0, len(myRatings.index)):
         #print ("Adding sims for " + myRatings.index[i] + "...")
         # Retrieve similar movies to this one that I rated
@@ -183,7 +191,7 @@ add_user(conn, "username", "password_hash", "password_salt", "4")
 #set a bunch of user preferences
 ids = ["0", "1", "2", "3", "4"]
 
-z = 5 
+z = 5
 for i in ids:
     for x in range(z):
         set_preference(conn, True, True, i, list_movies[x][8], rating=random.randint(0, 10))

@@ -2,6 +2,7 @@ import React from 'react';
 import {Container, Row, Col, ListGroup, Image} from 'react-bootstrap';
 import {AppContext} from '../AppContext';
 import MyNav from '../components/navbar';
+import PageBar from '../components/PageBar';
 import './MovieList.css';
 import { withRouter } from "react-router-dom"
 
@@ -11,41 +12,19 @@ class MovieList extends React.Component {
     super();
     this.state = {
       movies: [],
-      limit: 200,
+      limit: 100,
       page: 1,
       count: 0
     };
   }
   componentDidMount() {
-    if (this.context.store.searchList != null)
-    {
-      this.loadMovieCountSearch();
-      this.loadMoviesSearch();
-    }
-    else{
-      this.loadMovieCount();
-      this.loadMovies();
-    }
-  }
-  loadMovieCount = async () => {
-    const response = await fetch('https://recommedia-api.herokuapp.com/movieCount');
-    const count = await response.json();
-    await this.setState({count})
+    this.loadMovies()
   }
   loadMovies = async () => {
-    const offset = this.state.limit * (this.state.page - 1);
-    const query = `limit=${this.state.limit}&offset=${offset}`
-    const response = await fetch(`https://recommedia-api.herokuapp.com/pages?${query}`);
-    const movies = await response.json();
-    await this.setState({movies});
-  }
-  loadMovieCountSearch = async() => {
-    const count = this.context.store.searchList.length;
-    await this.setState({count});
-  }
-  loadMoviesSearch = async () => {
-    const movies = this.context.store.searchList;
-    await this.setState({movies});
+    const limit = this.state.limit;
+    const offset = limit * (this.state.page - 1);
+    const {movies, count} = await this.context.actions.loadMovies(limit, offset);
+    await this.setState({movies, count})
   }
   pageBack = async () => {
     await this.setState({page: this.state.page - 1});
@@ -61,42 +40,30 @@ class MovieList extends React.Component {
   }
   render() {
     console.log(this.state.movies);
-    const offset = this.state.limit * (this.state.page - 1);
     return <>
       {window.location.pathname != "/" ? <MyNav /> : null}
       <Container fluid className='p-3'>
-        <p>
-          Showing {this.state.count > 0?offset+1:0}-{offset+this.state.limit < this.state.count? offset+this.state.limit: this.state.count} of {this.state.count}
-        </p>
-        {this.state.page > 1 ? <>
-          <span onClick={this.pageBack}>Previous</span>
-        </> : ''}
-        <span className='mx-3'>{this.state.page}</span>
-        {this.state.page * this.state.limit < this.state.count ? <>
-          <span onClick={this.pageForward}>Next</span>
-        </> : ''}
-        <ListGroup>
+        <PageBar forward={this.pageForward} back={this.pageBack} page={this.state.page}
+          limit={this.state.limit} count={this.state.count}/>
+        {this.state.movies.length === 0 ? (
+          <p>No results</p>
+        ) : ''}
+        <Row>
           {this.state.movies.map(movie => (
-            <ListGroup.Item key={movie.id} onClick={() => this.selectMovie(movie)}>
+            <Col xs={12} sm={6} md={4} lg={3} className='p-3 border' onClick={() => this.selectMovie(movie)}>
               <Row>
-                <Col>
-                  <Image src={movie.link} className='movieImage'/>
-                </Col>
-                <Col className='flex-grow-1'>
-                  <h3>
-                    {movie.name} ({movie.year})
-                  </h3>
-                  <p>
-                    {movie.rating}/10
-                  </p>
-                  <p>
-                    {movie.genres}
-                  </p>
-                </Col>
+                <Image src={movie.link} className='movieImage mx-auto' style={{width: 'auto'}}/>
               </Row>
-            </ListGroup.Item>
+              <Row className='text-center'>
+                <h5 className='w-100 mt-3 mb-0'>{movie.name}</h5>
+              </Row>
+            </Col>
           ))}
-        </ListGroup>
+        </Row>
+        {this.state.movies.length > 0 ? (
+          <PageBar forward={this.pageForward} back={this.pageBack} page={this.state.page}
+            limit={this.state.limit} count={this.state.count}/>
+        ) : ''}
       </Container>
     </>;
   }
