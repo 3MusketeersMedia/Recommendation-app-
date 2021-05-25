@@ -112,16 +112,25 @@ def movies():
 @app.route("/search", methods=["POST"])
 def search():
     db = database.open_DBConnection()
+    result = []
     try:
-        to_return = format_media(database.search_media_table(db, request.json.get("searchContents", None)))
+        searchContents = request.json.get("searchContents", None)
+        limit = request.json.get("limit", 50)
+        offset = request.json.get("offset", 0)
+        result = database.search_media_table(db, searchContents, limit, offset)
     finally:
         database.close_DBConnection(db)
 
-    return to_return
+    media = format_media(result['movies'])
+    return {
+        'movies': media.json,
+        'count': result['count']
+    }
 
 # advanced search
 @app.route("/advSearch", methods=["POST"])
 def advSearch():
+    result = []
     name = request.json.get("name", None)
     mediaType = request.json.get("mediaType", None)
     genre = request.json.get("genre", None)
@@ -129,14 +138,19 @@ def advSearch():
     maxYear = request.json.get("maxYear", None)
     minRate = request.json.get("minRate", None)
     maxRate = request.json.get("maxRate", None)
+    limit = request.json.get("limit", 50)
+    offset = request.json.get("offset", 0)
     db = database.open_DBConnection()
     try:
-        media = database.advanced_search_media_table(db, name, mediaType, genre, minYear, minRate, maxYear, maxRate)
-        to_return = format_media(media)
+        media = database.advanced_search_media_table(db, name, mediaType, genre, minYear, minRate, maxYear, maxRate, limit, offset)
+        result = format_media(media['movies']).json
     finally:
         database.close_DBConnection(db)
 
-    return to_return
+    return jsonify({
+        'movies': result,
+        'count': media['count']
+    })
 
 
 @app.route("/pages", methods=['GET'])
@@ -147,21 +161,14 @@ def pages():
     try:
         pair[1].execute('SELECT * FROM media LIMIT %s OFFSET %s', [limit, offset])
         media = pair[1].fetchall()
+        num = database.num_items(pair, 'media')
     finally:
         database.close_DBConnection(pair)
 
-    return jsonify(json.loads(simplejson.dumps(media)))
-
-
-@app.route('/movieCount')
-def movieCount():
-    db = database.open_DBConnection()
-    try:
-        num = database.num_items(db, 'media')
-    finally:
-        database.close_DBConnection(db)
-
-    return jsonify(num)
+    return jsonify({
+        'movies': json.loads(simplejson.dumps(media)),
+        'count': num
+    })
 
 
 @app.route("/review", methods=["POST"])
@@ -174,9 +181,9 @@ def review():
     review = request.json.get("review")
     db = database.open_DBConnection()
     try:
-        if(database.check_preference(db, user_id, media_id)): 
+        if(database.check_preference(db, user_id, media_id)):
             database.set_data_review(db, user_id, media_id, review)
-        else: 
+        else:
             database.set_preference(db, False , False, user_id, media_id, 0, review)
     finally:
         database.close_DBConnection(db)
@@ -212,9 +219,9 @@ def rating():
     print(rating)
     db = database.open_DBConnection()
     try:
-        if(database.check_preference(db, user_id, media_id)): 
+        if(database.check_preference(db, user_id, media_id)):
             database.set_data_rating(db, user_id, media_id, rating)
-        else: 
+        else:
             database.set_preference(db, False , False, user_id, media_id, rating, "")
     finally:
         database.close_DBConnection(db)
@@ -234,22 +241,22 @@ def favorite():
 
         # if id does not exist, add to database with set_preference
         try:
-            if(database.check_preference(db, user_id, media_id)): 
+            if(database.check_preference(db, user_id, media_id)):
                 database.set_data_liked(db, user_id, media_id, True)
-            else: 
+            else:
                 database.set_preference(db, False , True, user_id, media_id)
         finally:
             database.close_DBConnection(db)
 
         return "Movie favorited", 200
-    elif request.method == "DELETE": 
+    elif request.method == "DELETE":
         media_id = request.json.get("id")
 
         # if id does not exist, add to database with set_preference
         try:
-            if(database.check_preference(db, user_id, media_id)): 
+            if(database.check_preference(db, user_id, media_id)):
                 database.set_data_liked(db, user_id, media_id, False)
-            else: 
+            else:
                 database.set_preference(db, False , False, user_id, media_id)
         finally:
             database.close_DBConnection(db)
@@ -286,24 +293,24 @@ def watchlist():
 
         # if id does not exist, add to database with set_preference
         try:
-            if(database.check_preference(db, user_id, media_id)): 
+            if(database.check_preference(db, user_id, media_id)):
                 database.set_data_watched(db, user_id, media_id, True)
-            else: 
+            else:
                 database.set_preference(db, True , False, user_id, media_id)
         finally:
             database.close_DBConnection(db)
 
         return "Movie watched", 200
-    elif request.method == "DELETE": 
+    elif request.method == "DELETE":
         media_id = request.json.get("id")
 
         # if id does not exist, add to database with set_preference
         try:
-            if(database.check_preference(db, user_id, media_id)): 
+            if(database.check_preference(db, user_id, media_id)):
                 database.set_data_watched(db, user_id, media_id, False)
-            else: 
+            else:
                 database.set_preference(db, False , False, user_id, media_id)
-        finally:    
+        finally:
             database.close_DBConnection(db)
 
         return "Movie unwatched", 200
@@ -312,7 +319,7 @@ def watchlist():
             watched = database.get_user_watched(db, user_id, True)
         finally:
             database.close_DBConnection(db)
-            
+
         watched = format_media(watched)
         return watched, 200
 
@@ -375,7 +382,7 @@ def login():
     finally:
         database.close_DBConnection(db)
 
-    # return token    
+    # return token
     access_token = create_access_token(identity=user_id)
     return jsonify({"token": access_token, "id": user_id, "username": username})
 

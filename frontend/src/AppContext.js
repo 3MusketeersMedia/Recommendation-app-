@@ -80,10 +80,11 @@ const GetState = ({ getStore, getActions, setStore }) => {
 		store: {
 			movie: null,
 			token: null,
-            movieFavorites: [], 
-            movieWatched: [], 
-            searchList: null,
-            address: "https://recommedia-api.herokuapp.com/" //"https://localhost:5000/" 
+            movieFavorites: [],
+            movieWatched: [],
+            searchContents: null,
+            advSearchContents: null,
+            address: "http://localhost:5000/" //"https://localhost:5000/"
 		},
 		actions: {
             /** */
@@ -102,49 +103,65 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 return false;
             },
 
+            loadMovies: async (limit, offset) => {
+              console.log('load movies');
+              if (getStore().searchContents !== null) {
+                console.log('normal search');
+                const response = await fetch(getStore().address + 'search', {
+                  method: 'POST',
+                  headers: {
+                    'content-type': 'application/json',
+                  },
+                  body: JSON.stringify({searchContents: getStore().searchContents, limit, offset}),
+                });
+                const data = await response.json();
+                console.log(data);
+                return data;
+              } else if (getStore().advSearchContents !== null) {
+                console.log('advanced search');
+                const {name, mediaType,genre, minYear, minRate, maxYear, maxRate} = getStore().advSearchContents;
+                const response = await fetch(getStore().address + 'advSearch', {
+                  method: 'POST',
+                  headers: {
+                    'content-type': 'application/json',
+                  },
+                  body: JSON.stringify({name, mediaType,genre, minYear, minRate, maxYear, maxRate, limit, offset}),
+                });
+                const data = await response.json();
+                console.log(data);
+                return data;
+              } else {
+                console.log('list')
+                const response = await fetch(getStore().address + `pages?limit=${limit}&offset=${offset}`);
+                const data = await response.json();
+                console.log(data);
+                return data;
+              }
+            },
+
             /** Calls normal search, gets the data, and then loads up movie list*/
             search: async (searchContents) => {
-                const response = await fetch(getStore().address + 'search', {
-                    method: 'POST',
-                    headers: {
-                      'content-type': 'application/json',
-                    },
-                    body: JSON.stringify({searchContents}),
-                  });
-                  console.log(response);
-                  const data = await response.json();
-                  setStore({searchList: data});
-                  console.log(getStore());
-                  // Now that the search is conducted, should load up list page,
-                  // which will check that the searchList is not NULL and load up
-                  // the results of the search rather than the default movie list
-                  history.push("/"); // does this so the page reloads if already on list
-                  history.push("/list");
+                console.log('search');
+                await setStore({searchContents: searchContents, advSearchContents: null});
+                history.push("/");
+                history.push("/list");
             },
 
             /** Calls normal search, gets the data, and then loads up movie list*/
             advancedSearch: async (name, mediaType, genre, minYear, minRate, maxYear, maxRate) => {
-                const response = await fetch(getStore().address + 'advSearch', {
-                    method: 'POST',
-                    headers: {
-                        'content-type': 'application/json',
-                        },
-                        body: JSON.stringify({name, mediaType,genre, minYear, minRate, maxYear, maxRate}),
-                    });
-                    console.log(response);
-                    const data = await response.json();
-                    setStore({searchList: data});
-                    console.log(getStore());
-                    // Now that the search is conducted, should load up list page,
-                    // which will check that the searchList is not NULL and load up
-                    // the results of the search rather than the default movie list
-                    history.push("/");
-                    history.push("/list");
+                const advSearchContents = {name, mediaType, genre, minYear, minRate, maxYear, maxRate};
+                console.log('advanced search');
+                await setStore({advSearchContents, searchContents: null});
+                // Now that the search is conducted, should load up list page,
+                // which will check that the searchList is not NULL and load up
+                // the results of the search rather than the default movie list
+                history.push("/");
+                history.push("/list");
             },
 
             /** Resets the list of the search results so that the default movies are loaded into list next time */
             resetSearchList: async() => {
-                setStore({searchList: null});
+                setStore({searchContents: null, advSearchContents: null});
             },
 
             /**Login checks new  and returns token
@@ -227,25 +244,25 @@ const GetState = ({ getStore, getActions, setStore }) => {
             },
 
             getUserName: async() => {
-                const store = getStore(); 
-                await getActions().syncToken();     
-                          
+                const store = getStore();
+                await getActions().syncToken();
+
                 const opts = {
                     method: "GET",
                     headers: {
                         Authorization: "Bearer " + store.token
                     },
-                }; 
+                };
                 try{
                     const response = await fetch(getStore().address + 'profile', opts);
-                    const data = await response.json(); 
+                    const data = await response.json();
                     console.log(data);
-                    
+
                     if(response.status !== 200){
-                        console.log("Status Code: " + response.status); 
+                        console.log("Status Code: " + response.status);
                         return false;
-                    } 
-                    
+                    }
+
                     console.log(data.username);
                     sessionStorage.setItem("username", data.username);
                     return true;
@@ -253,10 +270,10 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 catch(error){
                     console.log("Signup connection dropped");
                 }
-            }, 
+            },
 
-            /** Changes the current movie in route /movies by modifying 
-             * "movie" in the store state and localstorage. 
+            /** Changes the current movie in route /movies by modifying
+             * "movie" in the store state and localstorage.
             */
             setMovie: async(movie) => {
                 localStorage.setItem('movie', JSON.stringify(movie));
@@ -338,25 +355,25 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 const favorites = getStore().movieFavorites.filter(item => item !== movie)
                 localStorage.setItem('movie-favorites', JSON.stringify(favorites));
                 setStore({movieFavorites: favorites})
-            }, 
-            
+            },
+
             /** Gets Watchedd movie and stores in localstorage */
-            getmovieWatched: async() =>{ 
-                const store = getStore(); 
+            getmovieWatched: async() =>{
+                const store = getStore();
                 const opts = {
                     method: "GET",
                     headers: {
                         Authorization: "Bearer " + store.token
                     },
-                }; 
+                };
                 const response = await fetch(getStore().address + "watchlist", opts);
-                const data = await response.json(); 
+                const data = await response.json();
 
                 if(response.status !== 200){
-                    console.log("Status Code: " + response.status); 
-                    return false 
+                    console.log("Status Code: " + response.status);
+                    return false
                 }
-                
+
                 const watched = JSON.stringify(data);
                 console.log(watched);
                 localStorage.setItem('movie-watched', watched);
@@ -364,7 +381,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
             },
 
             setMovieWatched: async(movie) =>{
-                const store = getStore(); 
+                const store = getStore();
                 const opts = {
                     method: "POST",
                     headers: {
@@ -372,22 +389,22 @@ const GetState = ({ getStore, getActions, setStore }) => {
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify(movie),
-                }; 
+                };
                 const response = await fetch(getStore().address + "watchlist", opts);
-                
+
                 if(response.status !== 200){
-                    console.log("Status Code: " + response.status); 
-                    return false 
+                    console.log("Status Code: " + response.status);
+                    return false
                 }
-                
+
                 const watched = [...getStore().movieWatched, movie];
                 console.log(watched);
                 localStorage.setItem('movie-watched', JSON.stringify(watched));
                 setStore({movieWatched: watched})
             },
 
-            removeMovieWatched: async(movie) => {  
-                const store = getStore(); 
+            removeMovieWatched: async(movie) => {
+                const store = getStore();
                 const opts = {
                     method: "DELETE",
                     headers: {
@@ -395,18 +412,18 @@ const GetState = ({ getStore, getActions, setStore }) => {
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify(movie),
-                }; 
+                };
                 const response = await fetch(getStore().address + "watchlist", opts);
-                
+
                 if(response.status !== 200){
-                    console.log("Status Code: " + response.status); 
-                    return false 
+                    console.log("Status Code: " + response.status);
+                    return false
                 }
-                
+
                 const watched = getStore().movieWatched.filter(item => item !== movie)
                 localStorage.setItem('movie-watched', JSON.stringify(watched));
                 setStore({movieWatched: watched})
-            }, 
+            },
 		}
 	};
 };

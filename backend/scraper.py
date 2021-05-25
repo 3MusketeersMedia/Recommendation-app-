@@ -58,7 +58,7 @@ def loadMovies(url):
             try:
                 mediaItem = {
                     'name': extractName(item),
-                    'mediaType': 'movie',
+                    'mediaType': 'Movie',
                     'year': extractYear(item),
                     'genres': extractGenres(item),
                     'rating': extractRating(item),
@@ -75,11 +75,12 @@ def loadMovies(url):
                 pair[1].execute(sql, values)
             except Exception as e:
                 print(e)
+    database.close_DBConnection(pair)
 
 
 def loadImages():
     pair = database.open_DBConnection(True)
-    pair[1].execute("SELECT id FROM media WHERE mediaType = 'movie' AND link IS NULL")
+    pair[1].execute("SELECT id FROM media WHERE mediaType = 'Movie' AND link IS NULL")
     for row in pair[1].fetchall():
         id = row['id']
         print(f'get image {id}')
@@ -92,3 +93,4 @@ def loadImages():
             pair[1].execute('UPDATE media SET link = %s WHERE id = %s', [link, id])
         except Exception as e:
             print(e)
+    database.close_DBConnection(pair)
