@@ -1,6 +1,6 @@
 import React from 'react';
 import {Jumbotron, Container} from 'react-bootstrap'
-import Image from 'wp1841194-santa-cruz-california-wallpapers.jpg';
+import Image from '../pics/wp1841194-santa-cruz-california-wallpapers.jpg';
 import styled from 'styled-components';
 
 const Styles = styled.div`
@@ -29,7 +29,7 @@ const Styles = styled.div`
         font-size: xxx-large;
         background-color: rgba(0, 0, 0, 0.0) !important;
         color: white !important;
-        
+
     }
 
     .contain {
