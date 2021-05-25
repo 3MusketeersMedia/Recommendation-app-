@@ -131,12 +131,15 @@ def advSearch():
     maxRate = request.json.get("maxRate", None)
     db = database.open_DBConnection()
     try:
-        media = database.advanced_search_media_table(db, name, genre, minYear, minRate, maxYear, maxRate)
-        to_return = format_media(media)
+        media = database.advanced_search_media_table(db, name, mediaType, genre, minYear, minRate, maxYear, maxRate, limit, offset)
+        result = format_media(media['movies']).json
     finally:
         database.close_DBConnection(db)
 
-    return to_return
+    return jsonify({
+        'movies': result,
+        'count': media['count']
+    })
 
 
 @app.route("/pages", methods=['GET'])
@@ -147,10 +150,14 @@ def pages():
     try:
         pair[1].execute('SELECT * FROM media LIMIT %s OFFSET %s', [limit, offset])
         media = pair[1].fetchall()
+        num = database.num_items(pair, 'media')
     finally:
         database.close_DBConnection(pair)
 
-    return jsonify(json.loads(simplejson.dumps(media)))
+    return jsonify({
+        'movies': json.loads(simplejson.dumps(media)),
+        'count': num
+    })
 
 
 @app.route('/movieCount')
@@ -209,7 +216,7 @@ def rating():
 
     media_id = request.json.get("media_id")
     rating = request.json.get("rating")
-    print(rating)
+    #print(rating)
     db = database.open_DBConnection()
     try:
         if(database.check_preference(db, user_id, media_id)): 
@@ -268,10 +275,40 @@ def favorite():
     return "Method not supported", 403
 
 
-@app.route("/recommend_movies", methods=['GET'])
+# get_user_recommendations returns a list
+# this is for overall recommendations in profile
+@app.route("/user_recommendation", methods=['GET'])
 @jwt_required()
-def recommend_movies():
-    pass
+def user_recommendation():
+    identity = get_jwt_identity()
+    user_id = identity[0]
+    db = database.open_DBConnection()
+
+    try:
+        movies = model.get_user_recommendations(db, user_id)
+    finally:
+        database.close_DBConnection(db)
+
+    return jsonify(movies), 200
+
+
+# targetted recommendations
+# first item in list is most recommended
+@app.route("/movie_recommendation", methods=['GET'])
+@jwt_required()
+def movie_recommendation():
+    identity = get_jwt_identity()
+    user_id = identity[0]
+    media_id = request.json.get("media_id")
+    #num = request.json.get("num")
+
+    db = database.open_DBConnection()
+    try:
+        movies = recommend.get_user_ratings(db, user_id, media_id)
+    finally:
+        database.close_DBConnection(db)
+
+    return jsonify(movies), 200
 
 
 @app.route("/watchlist", methods=["POST", "GET", "DELETE"])

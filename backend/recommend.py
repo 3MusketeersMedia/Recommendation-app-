@@ -6,66 +6,53 @@ import sklearn
 import time
 from sklearn.decomposition import TruncatedSVD
 
-# Strategy: get a couple of watched genres for user
-# Recommend movies that are similar  to what you look at
-# randomness element
+# add randomness element?
 # Based on items you have liked, watched, rated, viewed?, series?, new?
 # Recent history feasible?
-
 # Movielens dataset
-# Calculate SVD and then use cosine or pearson
-
-def filter_seen_movies(pair, user_id):
-    # pass in table or matrix
-    # if filter recomm list, list could be small
-    # if entire table, need to loop through entire table
-    pass
+# Calculate SVD and then use pearson
 
 
-def get_user_rating(pair, user_id, media_id):
-    #start = time.time()
-    columns = ['user_id', 'item_id', 'rating', 'timestamp']
-    df = pd.read_csv("u.data", sep='\t', names=columns)
-    #print(df)
+# ratings cannot be 0 or function has divide by zero warning
+# user_id: user id; media_id: media id to compare; num: number of recommendations to return
+def get_user_rating(pair, user_id, media_id, num=15):
+    pair[1].execute("SELECT user_id, media_id, rating FROM preferences WHERE media_id IN (SELECT ID FROM media WHERE mediaType = 'Movie');")
 
-    columns = ['item_id', 'movie title', 'release date', 'video release date', 'IMDb URL', 'unknown', 'Action', 'Adventure',
-          'Animation', 'Childrens', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Fantasy', 'Film-Noir', 'Horror',
-          'Musical', 'Mystery', 'Romance', 'Sci-Fi', 'Thriller', 'War', 'Western']
-          
-    movies = pd.read_csv("u.item", sep='|', names=columns, encoding='latin-1')
-    #print(movies.loc[df["item_id"] == "1398"])
-    movie_names = movies[['item_id', 'movie title']]
-    combined_movies_data = pd.merge(df, movie_names, on='item_id')
+    table = pair[1].fetchall()
+    table = [(a, b, int(c)) for a, b, c in table]
 
-    # pivot the table together
-    rating_crosstab = combined_movies_data.pivot_table(values='rating', index='user_id', columns='movie title', fill_value=0)
-    #print(rating_crosstab)
+    #list of all ratings
+    df = pd.DataFrame(table, columns=["user_id", "media_id", "rating"])
+
+    # pivot the table togethers
+    rating_table = df.pivot_table(values='rating', index='user_id', columns='media_id', fill_value=0)
 
     # transpose the pivot table of combined movies
-    tranpose = rating_crosstab.T
+    tranpose = rating_table.T
 
-    # calculate singular value decomposition and scale the resulting matrix from the SVD and transpose
-    SVD = TruncatedSVD(n_components=12, random_state=5)
+    # calculate singular value decomposition (SVD) and 
+    # scale the resulting matrix from the SVD and transpose
+    SVD = TruncatedSVD(n_components=2, random_state=5)
     resultant_matrix = SVD.fit_transform(tranpose)
 
     # returns the pearson product-moment correlation coefficients
-    corr_mat = np.corrcoef(resultant_matrix)
+    corr_matrix = np.corrcoef(resultant_matrix)
 
-    # item id of star wars = 50; need to return media_id
-    col_idx = rating_crosstab.columns.get_loc("Star Wars (1977)")
-    corr_specific = corr_mat[col_idx]
-    #print(corr_specific)
-    rt = pd.DataFrame({'corr_specific':corr_specific, 'Movies': rating_crosstab.columns}).sort_values('corr_specific', ascending=False).head(20)
-    #end = time.time()
-    #print(end - start)
-    #print(rt)
+    # "Star Wars (1977)"
+    col_idx = rating_table.columns.get_loc("4154756")
+    corr_specific = corr_matrix[col_idx]
+
+    rt = pd.DataFrame({'corr_specific':corr_specific, 'Movies': rating_table.columns}).sort_values('corr_specific', ascending=False).head(num)
+    recommended_movies = rt['Movies'].tolist()
+    #print(recommended_movies)
+
+    return recommended_movies
 
 
 def get_user_likes(pair, user_id, media_id):
     pair[1].execute("SELECT user_id, media_id, liked FROM preferences;")
     # check if table has values or not
     table = pair[1].fetchall()
-
     table = [(a, b, int(c)) for a,b,c in table]
 
     #list of all ratings
@@ -87,12 +74,22 @@ def get_user_likes(pair, user_id, media_id):
     #print(df3)
 
 
-"""
 # main execution for testing
 db = database.open_DBConnection()
-#list_movies = database.get_all(db)
-#db = 3
-
 get_user_rating(db, "3", "0068646")
-#get_user_likes(db, "3", "0068646")
+get_user_rating(db, "3", "3")
+
+
+# get_user_rating: access movielens 100k dataset
+"""
+columns = ['user_id', 'item_id', 'rating', 'timestamp']
+df = pd.read_csv("u.data", sep='\t', names=columns)
+
+columns = ['item_id', 'movie title', 'release date', 'video release date', 'IMDb URL', 'unknown', 'Action', 'Adventure',
+        'Animation', 'Childrens', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Fantasy', 'Film-Noir', 'Horror',
+        'Musical', 'Mystery', 'Romance', 'Sci-Fi', 'Thriller', 'War', 'Western']
+        
+movies = pd.read_csv("u.item", sep='|', names=columns, encoding='latin-1')
+movie_names = movies[['item_id', 'movie title']]
+combined_movies_data = pd.merge(df, movie_names, on='item_id')
 """
