@@ -39,6 +39,7 @@ class LoginPage extends React.Component {
           // Redirects to homepage after token is set.
           if (token) {
             this.props.history.push("/");
+            this.context.actions.closeLoginModal();
           } else {
             await this.setError('username', 'username taken');
           }
@@ -51,6 +52,7 @@ class LoginPage extends React.Component {
           // Redirects to homepage after token is set.
           if (token) {
             this.props.history.push("/");
+            this.context.actions.closeLoginModal();
           } else {
             await this.setError('username', 'invalid username');
             await this.setError('password', 'invalid password');

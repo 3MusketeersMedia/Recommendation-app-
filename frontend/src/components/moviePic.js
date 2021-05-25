@@ -1,9 +1,11 @@
 import React from 'react';
 import AddFavorite from './AddFavorite'
+import {AppContext} from '../AppContext';
 
 //Compoment takes in the image of the movie, the title and the link to where
-// the image is stored. 
-const moviePic = ({movie}) => {
+// the image is stored.
+const MoviePic = ({movie}) => {
+    const {store, actions} = React.useContext(AppContext);
     let list1 = localStorage.getItem('movie-favorites');
     let favorites = [];
     if(list1)
@@ -15,10 +17,11 @@ const moviePic = ({movie}) => {
         watched = JSON.parse(list2);
 
     return (
-        <div className='MovieFrame justify-content-start centerThis'>            
+        <div className='MovieFrame justify-content-start centerThis'
+          onClick={()=>actions.setMovie(movie)}>
             <img src={movie.link} alt={movie.name + " picture"}></img>
             <div className="overlay align-items-center justify-content-center">
-                <AddFavorite movie={movie} 
+                <AddFavorite movie={movie}
                 isFavorited={favorites.find((ele) => movie.name === ele.name) ? true : false}
                 isWatched={watched.find((ele) => movie.name === ele.name) ? true : false}/>
             </div>
@@ -26,8 +29,8 @@ const moviePic = ({movie}) => {
     )
 }
 
-moviePic.defaultProps = {
+MoviePic.defaultProps = {
     text: "A movie picture"
 }
 
-export default moviePic
+export default MoviePic

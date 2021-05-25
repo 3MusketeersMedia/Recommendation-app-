@@ -85,7 +85,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
             movieWatched: [],
             searchContents: null,
             advSearchContents: null,
-            address: "https://recommedia-api.herokuapp.com/" //"https://localhost:5000/"
+            address: "https://recommedia-api.herokuapp.com/" //"http://localhost:5000/"
 		},
 		actions: {
             /** */
@@ -287,6 +287,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
             setMovie: async(movie) => {
                 localStorage.setItem('movie', JSON.stringify(movie));
                 await setStore({movie: movie});
+                history.push("/movie");
             },
 
             /** Ensures that the local storage value of "movie" is

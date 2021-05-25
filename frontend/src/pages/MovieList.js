@@ -36,9 +36,8 @@ class MovieList extends React.Component {
     await this.setState({page: this.state.page + 1});
     await this.loadMovies();
   }
-  selectMovie(movie) {
+  selectMovie = (movie) => {
     this.context.actions.setMovie(movie);
-    this.props.history.push('/movie');
   }
   render() {
     console.log(this.state.movies);

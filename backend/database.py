@@ -153,10 +153,10 @@ def set_data(pair, name, mediaType, year, link, genres, rating, running_time, ID
             pair[1].execute("INSERT INTO media VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (name, mediaType, year, link, genres, rating, running_time, summary, certificate, ID))
             #insert if false
 
-def check_preference(pair, user_id, media_id): 
+def check_preference(pair, user_id, media_id):
     pair[1].execute("SELECT user_id, media_id FROM preferences WHERE user_id = %s AND media_id = %s;", (user_id, media_id))
     list_id = pair[1].fetchall()
-    return (len(list_id) > 0) if True else False 
+    return (len(list_id) > 0) if True else False
 
 def set_preference(pair, watched, liked, user_id, media_id, rating=0, review=" "):
     pair[1].execute("SELECT user_id, media_id FROM preferences WHERE user_id = %s AND media_id = %s;", (user_id, media_id))
@@ -209,24 +209,28 @@ def get_user_preference(pair, user_id, media_id):
 
 
 def get_user_liked(pair, user_id, liked=True):
-    pair[1].execute("SELECT * FROM preferences WHERE user_id = %s AND liked = %s;", (user_id, liked))
+    pair[1].execute("SELECT media_id FROM preferences WHERE user_id = %s AND liked = %s;", (user_id, liked))
 
     movie_list = []
-    movid_id_list = pair[1].fetchall(); 
-    for (media_id) in movid_id_list: 
-        movie_list.append(get_by_id(pair, media_id[0]))
-    
+    movid_id_list = pair[1].fetchall();
+    for (media_id) in movid_id_list:
+        media = get_by_id(pair, media_id[0])
+        if media:
+            movie_list.append(media)
+
     return movie_list
 
 
 def get_user_watched(pair, user_id, watched=True):
     pair[1].execute("SELECT media_id FROM preferences WHERE user_id = %s AND watched = %s;", (user_id, watched))
-    
+
     movie_list = []
-    movid_id_list = pair[1].fetchall(); 
-    for (media_id) in movid_id_list: 
-        movie_list.append(get_by_id(pair, media_id[0]))
-    
+    movid_id_list = pair[1].fetchall();
+    for (media_id) in movid_id_list:
+        media = get_by_id(pair, media_id[0])
+        if media:
+            movie_list.append(media)
+
     return movie_list
 
 
