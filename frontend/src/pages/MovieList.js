@@ -11,6 +11,7 @@ class MovieList extends React.Component {
   constructor() {
     super();
     this.state = {
+      loading: false,
       movies: [],
       limit: 100,
       page: 1,
@@ -21,10 +22,11 @@ class MovieList extends React.Component {
     this.loadMovies()
   }
   loadMovies = async () => {
+    await this.setState({loading: true});
     const limit = this.state.limit;
     const offset = limit * (this.state.page - 1);
     const {movies, count} = await this.context.actions.loadMovies(limit, offset);
-    await this.setState({movies, count})
+    await this.setState({movies, count, loading: false})
   }
   pageBack = async () => {
     await this.setState({page: this.state.page - 1});
@@ -45,8 +47,11 @@ class MovieList extends React.Component {
       <Container fluid className='p-3'>
         <PageBar forward={this.pageForward} back={this.pageBack} page={this.state.page}
           limit={this.state.limit} count={this.state.count}/>
-        {this.state.movies.length === 0 ? (
+        {this.state.movies.length === 0 && !this.state.loading ? (
           <p>No results</p>
+        ) : ''}
+        {this.state.loading ? (
+          <p>Loading...</p>
         ) : ''}
         <Row>
           {this.state.movies.map(movie => (
