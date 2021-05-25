@@ -84,7 +84,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
             movieWatched: [],
             searchContents: null,
             advSearchContents: null,
-            address: "http://localhost:5000/" //"https://localhost:5000/"
+            address: "https://recommedia-api.herokuapp.com/" //"https://localhost:5000/"
 		},
 		actions: {
             /** */
