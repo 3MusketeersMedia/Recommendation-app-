@@ -1,9 +1,10 @@
 import React from 'react';
-import {Container, Jumbotron, Form, Button} from 'react-bootstrap';
+import {withRouter} from 'react-router-dom';
+import {Form, Button, Modal} from 'react-bootstrap';
 import {AppContext} from '../AppContext';
 import './LoginPage.css';
 
-export default class LoginPage extends React.Component {
+class LoginPage extends React.Component {
   static contextType = AppContext;
   constructor() {
     super();
@@ -21,7 +22,7 @@ export default class LoginPage extends React.Component {
   }
 
   toggleNewUser = () => {
-    console.log('toggle new user');
+    this.resetErrors();
     this.setState({newUser: !this.state.newUser});
   }
   submitForm = async (e) => {
@@ -101,10 +102,15 @@ export default class LoginPage extends React.Component {
       )
     }
   }
+  close = () => {
+    this.props.close();
+    this.resetErrors();
+  }
   render() {
     return (
-      <Container>
-        <Jumbotron className='loginFormHolder'>
+      <Modal show={this.props.show} onHide={this.close}>
+        <Modal.Header closeButton/>
+        <Modal.Body>
           <Form onSubmit={(e) => this.submitForm(e)}>
             <Form.Group>
               <Form.Label>username</Form.Label>
@@ -126,15 +132,19 @@ export default class LoginPage extends React.Component {
                 {this.getError('confirm')}
               </Form.Group>
             ) : ''}
-            <div className='loginButtons'>
-              <Button type='submit'>Submit</Button>
-              <Button onClick={this.toggleNewUser} type='button'>
-                {this.state.newUser ? 'Existing user? Log in' : 'New user? Sign up'}
-              </Button>
-            </div>
           </Form>
-        </Jumbotron>
-      </Container>
+        </Modal.Body>
+        <Modal.Footer>
+          <div className='loginButtons'>
+            <Button onClick={this.submitForm} className='mx-3'>Submit</Button>
+            <Button onClick={this.toggleNewUser} type='button'>
+              {this.state.newUser ? 'Existing user? Log in' : 'New user? Sign up'}
+            </Button>
+          </div>
+        </Modal.Footer>
+      </Modal>
     );
   }
 }
+
+export default withRouter(LoginPage);
