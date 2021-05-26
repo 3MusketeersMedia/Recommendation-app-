@@ -7,6 +7,8 @@ from flask import request, jsonify, redirect, url_for, Response
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
+from recommend import get_user_ratings
+from model import get_user_recommendations
 import database
 import bcrypt
 
@@ -296,7 +298,7 @@ def user_recommendation():
     db = database.open_DBConnection()
 
     try:
-        movies = model.get_user_recommendations(db, user_id)
+        movies = get_user_recommendations(db, user_id)
     finally:
         database.close_DBConnection(db)
 
@@ -305,17 +307,19 @@ def user_recommendation():
 
 # targetted recommendations
 # first item in list is most recommended
+# returns json array of objects
 @app.route("/movie_recommendation", methods=['GET'])
 @jwt_required()
 def movie_recommendation():
     identity = get_jwt_identity()
     user_id = identity[0]
     media_id = request.json.get("media_id")
+    mediaType = request.json.get("mediaType")
     #num = request.json.get("num")
 
     db = database.open_DBConnection()
     try:
-        movies = recommend.get_user_ratings(db, user_id, media_id)
+        movies = get_user_ratings(db, user_id, media_id, mediaType)
     finally:
         database.close_DBConnection(db)
 
@@ -364,8 +368,6 @@ def watchlist():
         watched = format_media(watched)
         return watched, 200
 
-
-# 0065392, 0104988
 
 # 2 functions below for testing JWT
 # protects a route with jwt_required
@@ -416,7 +418,6 @@ def login():
         database.close_DBConnection(db)
         return jsonify({"msg": "Invalid username or password"})
 
-    # if bcrypt.hashpw(password, stored_hash) == stored hash
     db = database.open_DBConnection()
     try:
         user_id = database.get_user_id(db, username)
