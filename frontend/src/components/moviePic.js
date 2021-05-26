@@ -19,7 +19,7 @@ const MoviePic = ({movie}) => {
     return (
         <div className='MovieFrame justify-content-start centerThis'
           onClick={()=>actions.setMovie(movie)}>
-            <img src={movie.link} alt={movie.name + " picture"}></img>
+            <img className="movie-img" src={movie.link} alt={movie.name + " picture"}></img>
             <div className="overlay align-items-center justify-content-center">
                 <AddFavorite movie={movie}
                 isFavorited={favorites.find((ele) => movie.name === ele.name) ? true : false}

@@ -44,6 +44,11 @@
     opacity: 1;
   }
 
+  .Recommendation-box{
+    box-sizing: content-box;
+    padding: .2rem;
+  }
+
   .overlay {
     position: absolute;
     background: rgba(0, 0, 0, 0.5);
@@ -58,6 +63,7 @@
   }
 
   .MovieFrame img:first-child  {
+    position: relative;
     display: block;
     align-content: flex-start;
     min-width: 100%;
@@ -81,7 +87,10 @@
 
   .MovieBanner{
     position: relative;
+    margin: auto;
     width: 100%;
+    max-width: 500px;
+    align-content: center
   }
   
   
@@ -102,3 +111,8 @@
     margin: auto;
   }
   
+  .movie-img{
+    max-width: 200px;
+    max-width: 200px;
+    object-fit: contain;
+  }

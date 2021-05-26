@@ -178,7 +178,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 await setStore({recsContents: "user",searchContents: null, advSearchContents: null});
                 history.push("/");
                 history.push("/list");
-            },    
+            },
             /** Calls normal search, gets the data, and then loads up movie list*/
             advancedSearch: async (name, mediaType, genre, minYear, minRate, maxYear, maxRate) => {
                 const advSearchContents = {name, mediaType, genre, minYear, minRate, maxYear, maxRate};
@@ -310,7 +310,6 @@ const GetState = ({ getStore, getActions, setStore }) => {
             setMovie: async(movie) => {
                 localStorage.setItem('movie', JSON.stringify(movie));
                 await setStore({movie: movie});
-                history.push("/movie");
             },
 
             /** Ensures that the local storage value of "movie" is
@@ -362,7 +361,8 @@ const GetState = ({ getStore, getActions, setStore }) => {
                     return false
                 }
 
-                const favorites = [...getStore().movieFavorites, movie];
+                const currentArray = getStore().movieFavorites;
+                const favorites = [...currentArray, movie];
                 console.log(favorites);
                 localStorage.setItem('movie-favorites', JSON.stringify(favorites));
                 setStore({movieFavorites: favorites})

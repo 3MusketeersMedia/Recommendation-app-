@@ -1,4 +1,5 @@
 # utility functions for users to use
+from logging import error
 from process_dataset import tracks
 from imdb import IMDb, IMDbError
 from database import*
@@ -14,7 +15,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 from imageScraper import *
 import imdb_cred
 import spotipy_cred
-# 6c0e5c9bfc8061e02d8fb8edb60aa8a9
+
 # To install library: pip install tmdb3
 import tmdbsimple as tmdb
 tmdb.API_KEY = imdb_cred.login['key']
@@ -34,6 +35,7 @@ def get_imgurl_tmdbsimple(title, year):
         return None
     return None
 # get_imgurl_tmdbsimple('Harry Potter and the Deathly Hallows: Part 1', '2010')
+
 """
 This one uses RAPID API IMDb. Basic recommendation 
 """
@@ -55,17 +57,17 @@ def detailed_info(title, id):
     data = get_metadata(id, "US")
     print("Title: ", title)
     # print(id)
-    print("Type: ", data[id]["title"]["titleType"])
-    print("Running time (minutes): ", data[id]["title"]["runningTimeInMinutes"])
-    print("Year: ", data[id]["title"]["year"])
-    print("Rated: ", data[id]["certificate"])
-    print("Rating: ", data[id]["ratings"]["rating"])
-    print("Genres: ", end='')
+    # print("Type: ", data[id]["title"]["titleType"])
+    # print("Running time (minutes): ", data[id]["title"]["runningTimeInMinutes"])
+    # print("Year: ", data[id]["title"]["year"])
+    # print("Rated: ", data[id]["certificate"])
+    # print("Rating: ", data[id]["ratings"]["rating"])
+    # print("Genres: ", end='')
     s = ""
     summary = " "
     for i in data[id]["genres"]:
         s+= i + " "
-    print("\nImage URL: ", data[id]["title"]["image"]["url"])
+    # print("\nImage URL: ", data[id]["title"]["image"]["url"])
     result = [title, data[id]["title"]["year"], s, data[id]["title"]["image"]["url"], data[id]["certificate"], data[id]["title"]["runningTimeInMinutes"], summary, data[id]["title"]["titleType"], id] 
     return result
 
@@ -91,8 +93,11 @@ def get_movie_rating(id):
 def get_movie_plot(id):
     ia = IMDb()
     m = ia.get_movie(id)
-    if m.get('plot') is not None:
-        return m.get('plot')
+    try:
+        if m.get('plot') is not None:
+            return m.get('plot')
+    except error:
+        return None
     return None
 
 # return movie ids searched by keyword
@@ -117,6 +122,7 @@ def filter_by_genre(genre):
                 movies.append(title_row)
     return movies
 
+# populate database with movies
 def populate_database():
     exec(open("backend/database.py").read())
     connection = open_DBConnection()
@@ -144,9 +150,9 @@ def populate_database():
         set_data(connection, name, mediaType, year, link, genres, rating, running_time, id, summary)
     close_DBConnection(connection)
 
+# populate database with music
 def populate_tracks():
-    exec(open("backend/database.py").read())
-    
+    exec(open("backend/database.py").read()) 
     sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=spotipy_cred.login['c_id'],
                                                            client_secret=spotipy_cred.login['c_secret']))
     connection = open_DBConnection()
@@ -177,4 +183,4 @@ def populate_tracks():
 
 # populate_tracks()
 # populate_user()
-# populate_database()
+populate_database()

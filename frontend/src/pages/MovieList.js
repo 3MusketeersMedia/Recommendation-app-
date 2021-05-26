@@ -4,7 +4,7 @@ import {AppContext} from '../AppContext';
 import MyNav from '../components/navbar';
 import PageBar from '../components/PageBar';
 import './MovieList.css';
-import { withRouter } from "react-router-dom"
+import { withRouter, useHistory  } from "react-router-dom"
 
 class MovieList extends React.Component {
   static contextType = AppContext;
@@ -38,6 +38,7 @@ class MovieList extends React.Component {
   }
   selectMovie = (movie) => {
     this.context.actions.setMovie(movie);
+    this.props.history.push("/movie")
   }
   render() {
     console.log(this.state.movies);
