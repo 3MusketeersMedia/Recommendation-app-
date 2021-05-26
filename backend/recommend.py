@@ -15,8 +15,8 @@ from sklearn.decomposition import TruncatedSVD
 
 # ratings cannot be 0 or function has divide by zero warning
 # user_id: user id; media_id: media id to compare; num: number of recommendations to return
-def get_user_rating(pair, user_id, media_id, num=15):
-    pair[1].execute("SELECT user_id, media_id, rating FROM preferences WHERE media_id IN (SELECT ID FROM media WHERE mediaType = 'Movie');")
+def get_user_ratings(pair, user_id, media_id, mediaType='Movie', num=15):
+    pair[1].execute("SELECT user_id, media_id, rating FROM preferences WHERE media_id IN (SELECT ID FROM media WHERE mediaType = %s);", (mediaType,))
 
     table = pair[1].fetchall()
     table = [(a, b, int(c)) for a, b, c in table]
@@ -38,13 +38,12 @@ def get_user_rating(pair, user_id, media_id, num=15):
     # returns the pearson product-moment correlation coefficients
     corr_matrix = np.corrcoef(resultant_matrix)
 
-    # "Star Wars (1977)"
-    col_idx = rating_table.columns.get_loc("4154756")
+    # "Star Wars (1977)"; "4154756"
+    col_idx = rating_table.columns.get_loc(media_id)
     corr_specific = corr_matrix[col_idx]
 
     rt = pd.DataFrame({'corr_specific':corr_specific, 'Movies': rating_table.columns}).sort_values('corr_specific', ascending=False).head(num)
     recommended_movies = rt['Movies'].tolist()
-    #print(recommended_movies)
 
     return recommended_movies
 
@@ -64,20 +63,18 @@ def get_user_likes(pair, user_id, media_id):
     SVD = TruncatedSVD(n_components=3, n_iter=3, random_state=8)
 
     resultant_matrix = SVD.fit_transform(X)
-    #print(resultant_matrix)
     corr_mat = np.corrcoef(resultant_matrix)
 
     col_idx = df2.columns.get_loc("0068646")
     corr_specific = corr_mat[col_idx]
 
     df3 = pd.DataFrame({'corr_specific':corr_specific, 'media_id': df2.columns}).sort_values('corr_specific', ascending=False).head(10)
-    #print(df3)
 
 
 # main execution for testing
-db = database.open_DBConnection()
-get_user_rating(db, "3", "0068646")
-get_user_rating(db, "3", "3")
+#db = database.open_DBConnection()
+#get_user_rating(db, "3", "0068646", "Movie")
+#get_user_rating(db, "3", "3")
 
 
 # get_user_rating: access movielens 100k dataset
