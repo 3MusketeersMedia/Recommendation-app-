@@ -9,13 +9,14 @@ from model import *
 #verify connection
 #setup database
 
-DB_HOST = os.environ.get('DB_HOST')
-DB_PORT = os.environ.get('DB_PORT')
-DB_USER = os.environ.get('DB_USER')
-DB_PASSWORD = os.environ.get('DB_PASSWORD')
-DB_NAME = os.environ.get('DB_NAME')
+DB_HOST = "mediadb.c3txk3dmci6e.us-west-1.rds.amazonaws.com"#os.environ.get('DB_HOST')
+DB_PORT = 5432#os.environ.get('DB_PORT')
+DB_USER = "postgres"#os.environ.get('DB_USER')
+DB_PASSWORD = "postgres"#os.environ.get('DB_PASSWORD')
+DB_NAME = "db"#os.environ.get('DB_NAME')
 
 conn = psycopg2.connect(host=DB_HOST, port=DB_PORT, user=DB_USER, password=DB_PASSWORD, dbname=DB_NAME)
+
 conn.autocommit = True #autocommit or commit after transactions
 database = conn.cursor()
 

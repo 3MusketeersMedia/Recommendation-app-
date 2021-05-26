@@ -85,7 +85,8 @@ const GetState = ({ getStore, getActions, setStore }) => {
             movieWatched: [],
             searchContents: null,
             advSearchContents: null,
-            address: "https://recommedia-api.herokuapp.com/" //"http://localhost:5000/"
+            recsContents: null,
+            address: "http://localhost:5000/" //https://recommedia-api.herokuapp.com/" // "http://localhost:5000/"
 		},
 		actions: {
             /** */
@@ -131,7 +132,23 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 const data = await response.json();
                 console.log(data);
                 return data;
-              } else {
+              } else if (getStore().recsContents !== null)
+                {
+                console.log('recs')
+                const store = getStore();
+                await getActions().syncToken();
+                const opts = {
+                    method: "GET",
+                    headers: {
+                        Authorization: "Bearer " + store.token
+                    },
+                };
+                const response = await fetch(getStore().address + `user_recommendation?limit=${limit}&offset=${offset}`, opts);
+                const data = await response.json();
+                console.log(data);
+                return data;
+                }
+                else {
                 console.log('list')
                 const response = await fetch(getStore().address + `pages?limit=${limit}&offset=${offset}`);
                 const data = await response.json();
@@ -155,7 +172,13 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 history.push("/");
                 history.push("/list");
             },
-
+            /** Calls user rec alg., loads up movie list*/
+            getUserRecs: async () => {
+                console.log('recs');
+                await setStore({recsContents: "user",searchContents: null, advSearchContents: null});
+                history.push("/");
+                history.push("/list");
+            },    
             /** Calls normal search, gets the data, and then loads up movie list*/
             advancedSearch: async (name, mediaType, genre, minYear, minRate, maxYear, maxRate) => {
                 const advSearchContents = {name, mediaType, genre, minYear, minRate, maxYear, maxRate};

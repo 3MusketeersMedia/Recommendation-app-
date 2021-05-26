@@ -5,6 +5,7 @@ import LoginPage from '../pages/LoginPage'
 import './navbar.css';
 
 const MyNav = () => {
+    // The following hooks are used to edit variables involved with searching
     const [searchContents, changeSC] = useState(null);
     const [name, changeName] = useState(null);
     const [mediaType, changeMediaType] = useState(null);
@@ -15,6 +16,7 @@ const MyNav = () => {
     const [maxRate, changeMaxRate] = useState(null);
     const context = useContext(AppContext);
 
+    // These functions edit the react hooks
     function getSearchConts(val)
     {
       changeSC(val.target.value);
