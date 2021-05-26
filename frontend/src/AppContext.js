@@ -85,12 +85,8 @@ const GetState = ({ getStore, getActions, setStore }) => {
             movieWatched: [],
             searchContents: null,
             advSearchContents: null,
-<<<<<<< HEAD
-            address: "https://recommedia-api.herokuapp.com/" //"https://localhost:5000/"
-=======
             recsContents: null,
             address: "https://recommedia-api.herokuapp.com/" // "http://localhost:5000/"
->>>>>>> a6733b08ef1e62c8ff0af008fd285346f507ae77
 		},
 		actions: {
             /** */
@@ -182,7 +178,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 await setStore({recsContents: "user",searchContents: null, advSearchContents: null});
                 history.push("/");
                 history.push("/list");
-            },    
+            },
             /** Calls normal search, gets the data, and then loads up movie list*/
             advancedSearch: async (name, mediaType, genre, minYear, minRate, maxYear, maxRate) => {
                 const advSearchContents = {name, mediaType, genre, minYear, minRate, maxYear, maxRate};
@@ -365,7 +361,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
                     return false
                 }
 
-                const currentArray = getStore().movieFavorites; 
+                const currentArray = getStore().movieFavorites;
                 const favorites = [...currentArray, movie];
                 console.log(favorites);
                 localStorage.setItem('movie-favorites', JSON.stringify(favorites));
