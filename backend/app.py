@@ -37,9 +37,7 @@ jwt = JWTManager(app)
 # connection to database constantly not maintained
 #db = database.open_DBConnection()
 
-# number of attributes: 9
-# user based collaborative filtering or item based collaborative filtering
-# get what they watched and rated and get probability of what they watched and returned, highest one
+# database returns item (row) as tuple
 def convert_media(tuple1):
     item_js = {
         "name": tuple1[0],
@@ -50,13 +48,15 @@ def convert_media(tuple1):
         "rating": str(tuple1[5]),
         "running_time": str(tuple1[6]),
         "summary": tuple1[7],
-        "id": tuple1[8]
+        "certificate": tuple1[8],
+        "id": tuple1[9]
     }
 
     return item_js
 
 
 # Should move these functions to a utility file
+# database returns item (row) as tuple
 def convert_pref(tuple1):
     item_js = {
         "watched": tuple1[0],
@@ -71,7 +71,6 @@ def convert_pref(tuple1):
 
 
 # items in list are tuples
-# json.dumps() converts tuples to arrays
 # all the values in the array are converted to strings
 def format_media(db_list):
     json1 = []
@@ -131,6 +130,8 @@ def advSearch():
     maxYear = request.json.get("maxYear", None)
     minRate = request.json.get("minRate", None)
     maxRate = request.json.get("maxRate", None)
+    limit = request.json.get("limit", 50)
+    offset = request.json.get("offset", 0)
     db = database.open_DBConnection()
     try:
         media = database.advanced_search_media_table(db, name, mediaType, genre, minYear, minRate, maxYear, maxRate, limit, offset)
@@ -306,13 +307,20 @@ def movie_recommendation():
     mediaType = request.json.get("mediaType")
     #num = request.json.get("num")
 
+    json_movies = []
+
     db = database.open_DBConnection()
     try:
         movies = get_user_ratings(db, user_id, media_id, mediaType)
+        # get movie item and convert to list of json object
+        for item in movies:
+            item_tuple = database.get_by_id(db, item)
+            item_convert = convert_media(item_tuple)
+            json_movies.append(item_convert)
     finally:
         database.close_DBConnection(db)
 
-    return jsonify(movies), 200
+    return jsonify(json_movies), 200
 
 
 @app.route("/watchlist", methods=["POST", "GET", "DELETE"])
