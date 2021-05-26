@@ -292,16 +292,31 @@ def favorite():
 @app.route("/user_recommendation", methods=['GET'])
 @jwt_required()
 def user_recommendation():
+    limit = request.args.get('limit', 100)
+    offset = request.args.get('offset', 0)
     identity = get_jwt_identity()
     user_id = identity[0]
     db = database.open_DBConnection()
 
+    json_movies = []
+
     try:
         movies = get_user_recommendations(db, user_id)
+        for item in movies:
+            item_tuple = database.get_by_id(db, item)
+            item_convert = convert_media(item_tuple)
+            json_movies.append(item_convert)
     finally:
         database.close_DBConnection(db)
 
-    return jsonify(movies), 200
+    movieCount =  len(json_movies)
+    returnList = json_movies[int(offset):int(offset)+int(limit)]
+    return jsonify({
+        'movies': returnList,
+        'count': movieCount
+    })
+
+    #return {'movies': jsonify(movies), 'count': 10}
 
 
 # targetted recommendations

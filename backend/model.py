@@ -132,7 +132,6 @@ def advanced_search_media_table(pair, query, mediaType, genre, yearStart, rating
 
 
 def get_user_recommendations(pair, user_id):
-
     pair[1].execute("SELECT user_id, media_id, rating, watched, liked FROM preferences;")
     table = pair[1].fetchall()
 
@@ -169,7 +168,8 @@ def get_user_recommendations(pair, user_id):
 
     #return list of ids
     end = [value for value in [value for key,value in filteredSims.index.array] if value not in [value for key,value in myRatings.index]]
-    return([key for key,value in collections.Counter(end).most_common()])
+    return([key for key,value in collections.Counter(end).most_common()])   
+    #return to_return[offset:offset+limit]
     #return([value for key,value in [key for key,value in collections.Counter(filteredSims.index.array).most_common()]])
 
 """

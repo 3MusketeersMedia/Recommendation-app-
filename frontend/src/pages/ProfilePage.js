@@ -8,6 +8,7 @@ import ProfilePicChanger from '../components/ProfilePicChanger';
 import ExamplePic from '../pics/niko_icon.png';
 import MoviePic from '../components/moviePic';
 import MediaModal from '../components/MediaModal';
+import RecomClicker from '../components/RecomClicker';
 import Header from '../components/header'
 
 export default class ProfilePage extends React.Component { 
@@ -69,9 +70,8 @@ export default class ProfilePage extends React.Component {
                     </Col>
                     {/* News Feeds */}
                     <Col>                    
-                    <MediaModal image="https://www.vshsolutions.com/wp-content/uploads/2020/02/recommender-system-for-movie-recommendation.jpg" 
-                        title="Recommendations"
-                        list="some content"/></Col>
+                    <RecomClicker image="https://www.vshsolutions.com/wp-content/uploads/2020/02/recommender-system-for-movie-recommendation.jpg" 
+                        title="Recommendations"/></Col> 
                 </Row>
                 </Container>
                 </div>
