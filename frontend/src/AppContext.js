@@ -176,7 +176,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
             getUserRecs: async () => {
                 console.log('recs');
                 await setStore({recsContents: "user",searchContents: null, advSearchContents: null});
-                history.push("/");
+                // history.push("/");
                 history.push("/list");
             },
             /** Calls normal search, gets the data, and then loads up movie list*/
@@ -308,6 +308,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
              * "movie" in the store state and localstorage.
             */
             setMovie: async(movie) => {
+                if (getStore().movie === movie) return;
                 localStorage.setItem('movie', JSON.stringify(movie));
                 await setStore({movie: movie});
                 history.push('/movie');
