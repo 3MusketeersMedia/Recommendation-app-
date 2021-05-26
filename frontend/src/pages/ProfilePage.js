@@ -87,9 +87,9 @@ export default class ProfilePage extends React.Component {
         {context => <>
             <MyNav/>
             <div className='text-center align-items-center justify-content-center p-2 m-5'>
-                <ProfilePic picture={ExamplePic}/>
+                <ProfilePic /> {/*picture={ExamplePic}*/}
                 <ProfilePicChanger/>
-                <h3>Hello {`${user}`}</h3>
+                <h3 className='p-2 m-3'>Hello {`${user}`}</h3>
             </div>
             {page}
             <Footer/>
