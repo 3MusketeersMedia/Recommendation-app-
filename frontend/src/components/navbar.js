@@ -3,6 +3,7 @@ import {Navbar, Nav, NavDropdown, FormGroup, FormControl, Button} from 'react-bo
 import {AppContext} from '../AppContext';
 import LoginPage from '../pages/LoginPage'
 import './navbar.css';
+import logo from '../pics/logo.png';
 
 const MyNav = () => {
     // The following hooks are used to edit variables involved with searching
@@ -72,8 +73,11 @@ const MyNav = () => {
 
     return <AppContext.Consumer>
       {context => <div>
-        <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
-        <Navbar.Brand href="/">RecomMedia</Navbar.Brand>
+        <Navbar className = "bar" collapseOnSelect expand="lg" bg="dark" variant="dark">
+        <Navbar.Brand href="/">
+        <img className = "logo" src={logo}/>
+        RecomMedia
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
