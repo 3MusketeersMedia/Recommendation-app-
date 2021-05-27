@@ -16,10 +16,10 @@ from sklearn.decomposition import TruncatedSVD
 # ratings cannot be 0 or function has divide by zero warning
 # user_id: user id; media_id: media id to compare; num: number of recommendations to return
 def get_user_ratings(pair, user_id, media_id, mediaType='Movie', num=15):
-    pair[1].execute("SELECT user_id, media_id, rating FROM preferences WHERE media_id IN (SELECT ID FROM media WHERE mediaType = %s);", (mediaType,))
+    pair[1].execute("SELECT user_id, media_id, rating, watched, liked FROM preferences WHERE media_id IN (SELECT ID FROM media WHERE mediaType = %s);", (mediaType,))
 
     table = pair[1].fetchall()
-    table = [(a, b, int(c)) for a, b, c in table]
+    table = [(a, b, int(c)+2*int(d)+3*int(e)) for a, b, c, d, e in table]
 
     #list of all ratings
     df = pd.DataFrame(table, columns=["user_id", "media_id", "rating"])
