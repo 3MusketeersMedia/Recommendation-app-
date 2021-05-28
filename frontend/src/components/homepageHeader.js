@@ -25,9 +25,9 @@ const Styles = styled.div`
     }
 
     .title{
-        padding-top: 75px;
+        margin-top: 75px;
         font-size: xxx-large;
-        background-color: rgba(0, 0, 0, 0.0) !important;
+        background-color: rgba(0, 0, 0, .35) !important;
         color: white !important;
         text-align: center;
     }
@@ -37,10 +37,10 @@ const Styles = styled.div`
     }
 
     .desc {
-        padding-top: 75px;
+        margin-top: 75px;
         color: white !important;
-        text-align: center;
-        background-color: rgba(0, 0, 0, 0.0) !important;
+        background-color: rgba(0, 0, 0, .35) !important;
+
     }
 `
 
@@ -53,12 +53,11 @@ function HpHeader(){
                     <h1 className = "title">
                         Tired of garbage media recommendations?
                     </h1>
-                
-                    <h3 className = "desc">
+                    <p className = "desc">
                         Get started with RecomMedia today, and gain access to personalized
                         recommendation lists based the things you love.
-                    </h3>
-                </Container>                    
+                    </p>
+                </Container>
             </Jumbotron>
         </Styles>
     )

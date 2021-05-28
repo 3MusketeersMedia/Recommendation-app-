@@ -459,6 +459,45 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 localStorage.setItem('movie-watched', JSON.stringify(watched));
                 setStore({movieWatched: watched})
             },
+
+            getRating: async(movie, rating) => {
+                const store = getStore();
+                const opts = {
+                    method: "GET",
+                    headers: {
+                        Authorization: "Bearer " + store.token,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({"media_id": movie.id, "rating": rating}),
+                };
+                const response = await fetch(getStore().address + "rating", opts);
+
+                if(response.status !== 200){
+                    console.log("Status Code: " + response.status);
+                    return undefined
+                }
+                const data = await response.json();
+                return data.rating
+            },
+
+            setRating: async(movie) => {
+                const store = getStore();
+                const opts = {
+                    method: "POST",
+                    headers: {
+                        Authorization: "Bearer " + store.token,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({"media_id": movie.id, "rating": 0}),
+                };
+                const response = await fetch(getStore().address + "rating", opts);
+
+                if(response.status !== 200){
+                    console.log("Status Code: " + response.status);
+                    return false
+                }
+                return true
+            },
 		}
 	};
 };
