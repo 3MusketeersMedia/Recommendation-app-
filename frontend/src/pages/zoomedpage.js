@@ -61,12 +61,14 @@ export default class zoomedpage extends React.Component {
               "summary": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
         },
     ], 
-    rating: 0
+    rating: 0,
+    recMovies: []
     };
   }
 
   componentDidMount() {
     let movie = this.context.store.movie; 
+    this.loadMovies(movie.id, movie.mediatype);
     if(this.context.actions.checkedLogin()){
       this.context.actions.getRating(movie)
         .then(data => { 
@@ -78,6 +80,14 @@ export default class zoomedpage extends React.Component {
         })
         .catch(err => {console.log(err);});
     }
+  }
+
+  loadMovies = async(media_id, mediaType) =>
+  {
+    const response = await fetch(this.context.store.address + `movie_recommendation?media_id=${media_id}&mediaType=${mediaType}`);
+    const recMovies = await response.json();
+    console.log(recMovies);
+    await this.setState({recMovies});
   }
 
   ratingChanged = (newRating) => {
@@ -154,7 +164,7 @@ export default class zoomedpage extends React.Component {
                 <h3 className='p-3' > Recommendations </h3>
               </Row>
             <Row className="SimilarMovies">
-                <SimilarMovies movies={this.state.simShowMovies}/>
+                <SimilarMovies movies={this.state.recMovies}/>
             </Row>
           </Container>
           </div>
@@ -167,5 +177,3 @@ export default class zoomedpage extends React.Component {
     )
   }
 }
-
-

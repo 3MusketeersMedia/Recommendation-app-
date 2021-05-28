@@ -40,7 +40,7 @@ const Styles = styled.div`
         margin-top: 75px;
         color: white !important;
         background-color: rgba(0, 0, 0, .35) !important;
-
+        text-align: center;
     }
 `
 

@@ -14,7 +14,7 @@ from random import randint
 
 # ratings cannot be 0 or function has divide by zero warning
 # user_id: user id; media_id: media id to compare; num: number of recommendations to return
-def get_user_ratings(pair, user_id, media_id, mediaType='Movie', num=15):
+def get_user_ratings(pair, media_id, mediaType='Movie', num=15):
     pair[1].execute("SELECT user_id, media_id, rating, watched, liked FROM preferences WHERE media_id IN (SELECT ID FROM media WHERE mediaType = %s);", (mediaType,))
 
     table = pair[1].fetchall()
@@ -36,7 +36,6 @@ def get_user_ratings(pair, user_id, media_id, mediaType='Movie', num=15):
 
     # returns the pearson product-moment correlation coefficients
     corr_matrix = np.corrcoef(resultant_matrix)
-
     # "Star Wars (1977)"; "4154756"
     # if no recommendations, default recommendations based on genre
     try:
@@ -58,7 +57,7 @@ def get_user_ratings(pair, user_id, media_id, mediaType='Movie', num=15):
             genre = genre_items[randint(0, len(genre_items) - 1)]
 
             pair[1].execute(f"SELECT ID FROM media WHERE mediaType = '{mediaType}' AND genres LIKE '%{genre}%' LIMIT '{num}';")
-            
+                
         db_tuples = pair[1].fetchall()
         default_list = []
         for item in db_tuples:
@@ -93,8 +92,8 @@ def get_user_likes(pair, user_id, media_id):
 
 
 # test cases to test
-db = database.open_DBConnection()
+#db = database.open_DBConnection()
 #get_user_ratings(db, "3", "0068646", "Movie")
-get_user_ratings(db, "3", "9999", "Movie")
-get_user_ratings(db, "3", "018DZPUwfDKVrm0IXAP9YM", "Music")
+#get_user_ratings(db, "3", "9999", "Movie")
+#get_user_ratings(db, "3", "018DZPUwfDKVrm0IXAP9YM", "Music")
 #get_user_ratings(db, "3", "3")
