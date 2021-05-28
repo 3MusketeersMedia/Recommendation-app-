@@ -39,9 +39,9 @@ const Footer = () => {
             </ul>
             <div className="row">
             <div className="col-md-5 mx-auto">
-                <h6 className="font-weight-bold text-uppercase mt-3 mb-4">Footer Content</h6>
-                <p>Here you can use rows and columns to organize your footer content. Lorem ipsum dolor sit amet,
-                consectetur
+                <h6 className="font-weight-bold  mt-3 mb-4">RecoSummary</h6>
+                <p>Get started with RecomMedia today, and gain access to personalized
+                recommendation lists based the things you love.
                 adipisicing elit.</p>
             </div>
             <hr className="clearfix w-100 d-md-none" />

@@ -85,12 +85,8 @@ const GetState = ({ getStore, getActions, setStore }) => {
             movieWatched: [],
             searchContents: null,
             advSearchContents: null,
-<<<<<<< HEAD
-            address: "https://recommedia-api.herokuapp.com/" //"https://localhost:5000/"
-=======
             recsContents: null,
             address: "https://recommedia-api.herokuapp.com/" // "http://localhost:5000/"
->>>>>>> a6733b08ef1e62c8ff0af008fd285346f507ae77
 		},
 		actions: {
             /** */
@@ -460,6 +456,45 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 const watched = getStore().movieWatched.filter(item => item !== movie)
                 localStorage.setItem('movie-watched', JSON.stringify(watched));
                 setStore({movieWatched: watched})
+            },
+
+            getRating: async(movie, rating) => {
+                const store = getStore();
+                const opts = {
+                    method: "GET",
+                    headers: {
+                        Authorization: "Bearer " + store.token,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({"media_id": movie.id, "rating": rating}),
+                };
+                const response = await fetch(getStore().address + "rating", opts);
+
+                if(response.status !== 200){
+                    console.log("Status Code: " + response.status);
+                    return undefined
+                }
+                const data = await response.json();
+                return data.rating
+            },
+
+            setRating: async(movie) => {
+                const store = getStore();
+                const opts = {
+                    method: "POST",
+                    headers: {
+                        Authorization: "Bearer " + store.token,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({"media_id": movie.id, "rating": 0}),
+                };
+                const response = await fetch(getStore().address + "rating", opts);
+
+                if(response.status !== 200){
+                    console.log("Status Code: " + response.status);
+                    return false
+                }
+                return true
             },
 		}
 	};

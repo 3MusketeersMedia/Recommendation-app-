@@ -220,7 +220,7 @@ def profile():
     return jsonify({"username": attributes[0]}), 200
 
 
-@app.route("/rating", methods=["POST"])
+@app.route("/rating", methods=["GET, POST"])
 @jwt_required()
 def rating():
     identity = get_jwt_identity()
@@ -230,6 +230,12 @@ def rating():
     rating = request.json.get("rating")
     #print(rating)
     db = database.open_DBConnection()
+
+    if request.method == "GET": 
+        user_pref = database.get_user_preference(db, user_id, media_id)
+        user_pref = format_preferences(user_pref)
+        return user_pref, 200
+        
     try:
         if(database.check_preference(db, user_id, media_id)):
             database.set_data_rating(db, user_id, media_id, rating)

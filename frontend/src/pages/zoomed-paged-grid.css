@@ -79,8 +79,9 @@
   }
 
   .Media-app > .row {
-    margin-right: 50px;
+    margin-right: 100px;
     overflow-x: auto;
+    overflow-y: hidden;
     flex-wrap: nowrap
   }
 
