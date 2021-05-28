@@ -2,7 +2,6 @@ import time
 import random
 import decimal
 from mal import *
-import recommend
 #python3 and up
 exec(open("database.py").read())
 
