@@ -60,18 +60,18 @@ export default class zoomedpage extends React.Component {
               "rating": "7.3",
               "summary": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
         },
-    ], 
+    ],
     rating: 0,
     recMovies: []
     };
   }
 
   componentDidMount() {
-    let movie = this.context.store.movie; 
-    this.loadMovies(movie.id, movie.mediatype);
+    let movie = this.context.store.movie;
+    this.loadMovies(movie.id, movie.mediatype || movie.mediaType);
     if(this.context.actions.checkedLogin()){
       this.context.actions.getRating(movie)
-        .then(data => { 
+        .then(data => {
           if(data != undefined){
               this.state.rating = data
           } else {
@@ -95,8 +95,8 @@ export default class zoomedpage extends React.Component {
   };
 
   ratingSubmit = () => {
-    let newRating = this.context.store.movie; 
-    newRating.rating = this.state.rating; 
+    let newRating = this.context.store.movie;
+    newRating.rating = this.state.rating;
     console.log("hello");
     this.context.actions.setRating(newRating)
       .then(flag => {
@@ -105,7 +105,7 @@ export default class zoomedpage extends React.Component {
         } else {
           if(!(this.context.actions.checkedLogin())){
             alert("Login to Rate")
-            this.context.actions.openLoginModal(); 
+            this.context.actions.openLoginModal();
           } else{
             alert("Connection Failed")
           }
@@ -124,7 +124,7 @@ export default class zoomedpage extends React.Component {
         {context => <>
           <div id="content-wrap">
           <div className="NavBar">
-          <MyNav /> 
+          <MyNav />
           </div>
           <Container fluid>
             <Row>
