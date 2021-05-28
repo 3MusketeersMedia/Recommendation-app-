@@ -93,8 +93,9 @@ def get_user_likes(pair, user_id, media_id):
 
 
 # test cases to test
-db = database.open_DBConnection()
+#db = database.open_DBConnection()
 #get_user_ratings(db, "3", "0068646", "Movie")
-get_user_ratings(db, "3", "9999", "Movie")
-get_user_ratings(db, "3", "018DZPUwfDKVrm0IXAP9YM", "Music")
+#get_user_ratings(db, "3", "12361974", "Movie")
+#get_user_ratings(db, "3", "9999", "Movie")
+#get_user_ratings(db, "3", "018DZPUwfDKVrm0IXAP9YM", "Music")
 #get_user_ratings(db, "3", "3")
