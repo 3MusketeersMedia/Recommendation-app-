@@ -2,6 +2,7 @@ import time
 import random
 import decimal
 from mal import *
+import recommend
 #python3 and up
 exec(open("database.py").read())
 
@@ -33,7 +34,9 @@ for a,b in bar_genres:
     tempo = separator.join(tempo)
     conn[1].execute("UPDATE media SET genres = %s WHERE ID = %s;", (tempo, a))
 
-#print(recommend.get_user_ratings(conn, "0", list_movies[0][9]))
+#print("Done. Testing user ratings...")
+#print(recommend.get_user_ratings(conn, list_movies[0][9]))
+
 #print("Done. Adding Users...")
 #for i in range(0, 25):
     #tmp = "user" + str(i)
@@ -62,7 +65,7 @@ print(get_all_mediaTypes(conn))
 
 
 
-for i in range(15891,100000000):
+for i in range(16504,100000000):
     x=Anime(1).title
     time.sleep(float(decimal.Decimal(random.randrange(99, 333))/100))
     try:
