@@ -86,7 +86,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
             searchContents: null,
             advSearchContents: null,
             recsContents: null,
-            address: "http://localhost:5000/" //https://recommedia-api.herokuapp.com/" // "http://localhost:5000/"
+            address: "https://recommedia-api.herokuapp.com/" //"http://localhost:5000/"
 		},
 		actions: {
             /** */
@@ -176,9 +176,9 @@ const GetState = ({ getStore, getActions, setStore }) => {
             getUserRecs: async () => {
                 console.log('recs');
                 await setStore({recsContents: "user",searchContents: null, advSearchContents: null});
-                history.push("/");
+                // history.push("/");
                 history.push("/list");
-            },    
+            },
             /** Calls normal search, gets the data, and then loads up movie list*/
             advancedSearch: async (name, mediaType, genre, minYear, minRate, maxYear, maxRate) => {
                 const advSearchContents = {name, mediaType, genre, minYear, minRate, maxYear, maxRate};
@@ -308,9 +308,10 @@ const GetState = ({ getStore, getActions, setStore }) => {
              * "movie" in the store state and localstorage.
             */
             setMovie: async(movie) => {
+                if (getStore().movie === movie) return;
                 localStorage.setItem('movie', JSON.stringify(movie));
                 await setStore({movie: movie});
-                history.push("/movie");
+                history.push('/movie');
             },
 
             /** Ensures that the local storage value of "movie" is
@@ -362,7 +363,8 @@ const GetState = ({ getStore, getActions, setStore }) => {
                     return false
                 }
 
-                const favorites = [...getStore().movieFavorites, movie];
+                const currentArray = getStore().movieFavorites;
+                const favorites = [...currentArray, movie];
                 console.log(favorites);
                 localStorage.setItem('movie-favorites', JSON.stringify(favorites));
                 setStore({movieFavorites: favorites})
@@ -456,6 +458,45 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 const watched = getStore().movieWatched.filter(item => item !== movie)
                 localStorage.setItem('movie-watched', JSON.stringify(watched));
                 setStore({movieWatched: watched})
+            },
+
+            getRating: async(movie, rating) => {
+                const store = getStore();
+                const opts = {
+                    method: "GET",
+                    headers: {
+                        Authorization: "Bearer " + store.token,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({"media_id": movie.id, "rating": rating}),
+                };
+                const response = await fetch(getStore().address + "rating", opts);
+
+                if(response.status !== 200){
+                    console.log("Status Code: " + response.status);
+                    return undefined
+                }
+                const data = await response.json();
+                return data.rating
+            },
+
+            setRating: async(movie) => {
+                const store = getStore();
+                const opts = {
+                    method: "POST",
+                    headers: {
+                        Authorization: "Bearer " + store.token,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({"media_id": movie.id, "rating": 0}),
+                };
+                const response = await fetch(getStore().address + "rating", opts);
+
+                if(response.status !== 200){
+                    console.log("Status Code: " + response.status);
+                    return false
+                }
+                return true
             },
 		}
 	};

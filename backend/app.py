@@ -331,19 +331,15 @@ def user_recommendation():
 # first item in list is most recommended
 # returns json array of objects
 @app.route("/movie_recommendation", methods=['GET'])
-@jwt_required()
 def movie_recommendation():
-    identity = get_jwt_identity()
-    user_id = identity[0]
-    media_id = request.json.get("media_id")
-    mediaType = request.json.get("mediaType")
-    #num = request.json.get("num")
+    media_id = str(request.args.get("media_id"))
+    mediaType = str(request.args.get("mediaType"))
 
     json_movies = []
 
     db = database.open_DBConnection()
     try:
-        movies = get_user_ratings(db, user_id, media_id, mediaType)
+        movies = get_user_ratings(db, media_id, mediaType) #"4154796", "Movie"
         # get movie item and convert to list of json object
         for item in movies:
             item_tuple = database.get_by_id(db, item)

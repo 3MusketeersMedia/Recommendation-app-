@@ -135,7 +135,7 @@ def get_user_recommendations(pair, user_id):
     pair[1].execute("SELECT user_id, media_id, rating, watched, liked FROM preferences;")
     table = pair[1].fetchall()
 
-    table = [(a, b, int(c), int(d)*2, int(e)*3) for a,b,c,d,e in table]
+    table = [(a, b, float(c), int(d)*2, int(e)*3) for a,b,c,d,e in table]
 
     # list of all ratings
     df = pd.DataFrame(table, columns=["user_id", "media_id", "rating", "watched", "liked"])

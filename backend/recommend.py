@@ -14,11 +14,11 @@ from random import randint
 
 # ratings cannot be 0 or function has divide by zero warning
 # user_id: user id; media_id: media id to compare; num: number of recommendations to return
-def get_user_ratings(pair, user_id, media_id, mediaType='Movie', num=15):
-    pair[1].execute("SELECT user_id, media_id, rating FROM preferences WHERE media_id IN (SELECT ID FROM media WHERE mediaType = %s);", (mediaType,))
+def get_user_ratings(pair, media_id, mediaType='Movie', num=15):
+    pair[1].execute("SELECT user_id, media_id, rating, watched, liked FROM preferences WHERE media_id IN (SELECT ID FROM media WHERE mediaType = %s);", (mediaType,))
 
     table = pair[1].fetchall()
-    table = [(a, b, int(c)) for a, b, c in table]
+    table = [(a, b, float(float(c)+2*int(d)+3*int(e))) for a, b, c, d, e in table]
 
     #list of all ratings
     df = pd.DataFrame(table, columns=["user_id", "media_id", "rating"])
@@ -36,7 +36,6 @@ def get_user_ratings(pair, user_id, media_id, mediaType='Movie', num=15):
 
     # returns the pearson product-moment correlation coefficients
     corr_matrix = np.corrcoef(resultant_matrix)
-
     # "Star Wars (1977)"; "4154756"
     # if no recommendations, default recommendations based on genre
     try:
@@ -58,7 +57,7 @@ def get_user_ratings(pair, user_id, media_id, mediaType='Movie', num=15):
             genre = genre_items[randint(0, len(genre_items) - 1)]
 
             pair[1].execute(f"SELECT ID FROM media WHERE mediaType = '{mediaType}' AND genres LIKE '%{genre}%' LIMIT '{num}';")
-            
+                
         db_tuples = pair[1].fetchall()
         default_list = []
         for item in db_tuples:
