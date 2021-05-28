@@ -9,3 +9,13 @@
 .halfSizeInput {
     width: 75px;
 }
+
+.logo {
+    padding-top: 5px;
+    width: 100px;
+    height: 100px;
+}
+
+.bar {
+    height: 75px;
+}

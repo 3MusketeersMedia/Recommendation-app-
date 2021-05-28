@@ -220,6 +220,7 @@ def profile():
     return jsonify({"username": attributes[0]}), 200
 
 
+
 @app.route("/rating", methods=["GET, POST"])
 @jwt_required()
 def rating():
@@ -227,24 +228,33 @@ def rating():
     user_id = identity[0]
 
     media_id = request.json.get("media_id")
-    rating = request.json.get("rating")
-    #print(rating)
     db = database.open_DBConnection()
 
     if request.method == "GET": 
         user_pref = database.get_user_preference(db, user_id, media_id)
         user_pref = format_preferences(user_pref)
         return user_pref, 200
-        
-    try:
-        if(database.check_preference(db, user_id, media_id)):
-            database.set_data_rating(db, user_id, media_id, rating)
-        else:
-            database.set_preference(db, False , False, user_id, media_id, rating, "")
-    finally:
-        database.close_DBConnection(db)
-
-    return "Rating posted", 200
+    '''
+    Currently getting the rating returns user_pref
+    
+    if request.method == "GET":
+        # can implement later
+        tuple2 = database.get_avg_rating(db, media_id)
+        return "rating", 200
+    '''
+    elif request.method == "POST":
+        try:
+            rating = request.json.get("rating")
+            if(database.check_preference(db, user_id, media_id)):
+                database.set_data_rating(db, user_id, media_id, rating)
+            else:
+                database.set_preference(db, False , False, user_id, media_id, rating, "")
+        finally:
+            database.close_DBConnection(db)
+        return "Rating posted", 200
+    
+    database.close_DBConnection(db)
+    return "Method not supported", 403
 
 
 @app.route("/favorite", methods=["POST", "GET", "DELETE"])

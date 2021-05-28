@@ -29,7 +29,7 @@ const Styles = styled.div`
         font-size: xxx-large;
         background-color: rgba(0, 0, 0, .35) !important;
         color: white !important;
-
+        text-align: center;
     }
 
     .contain {
@@ -40,6 +40,7 @@ const Styles = styled.div`
         margin-top: 75px;
         color: white !important;
         background-color: rgba(0, 0, 0, .35) !important;
+
     }
 `
 
@@ -49,10 +50,10 @@ function HpHeader(){
             <Jumbotron fluid className = "jumbo">
                 <div className = "overlay"></div>
                 <Container className = "contain">
-                    <h1 className = "title text-primary">
+                    <h1 className = "title">
                         Tired of garbage media recommendations?
                     </h1>
-                    <p className = "desc text-secondary">
+                    <p className = "desc">
                         Get started with RecomMedia today, and gain access to personalized
                         recommendation lists based the things you love.
                     </p>

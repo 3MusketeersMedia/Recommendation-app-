@@ -38,7 +38,6 @@ class MovieList extends React.Component {
   }
   selectMovie = (movie) => {
     this.context.actions.setMovie(movie);
-    this.props.history.push("/movie")
   }
   render() {
     console.log(this.state.movies);
