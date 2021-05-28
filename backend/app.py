@@ -220,8 +220,7 @@ def profile():
     return jsonify({"username": attributes[0]}), 200
 
 
-
-@app.route("/rating", methods=["GET, POST"])
+@app.route("/rating", methods=["POST", "GET"])
 @jwt_required()
 def rating():
     identity = get_jwt_identity()
@@ -230,19 +229,7 @@ def rating():
     media_id = request.json.get("media_id")
     db = database.open_DBConnection()
 
-    if request.method == "GET": 
-        user_pref = database.get_user_preference(db, user_id, media_id)
-        user_pref = format_preferences(user_pref)
-        return user_pref, 200
-    '''
-    Currently getting the rating returns user_pref
-    
-    if request.method == "GET":
-        # can implement later
-        tuple2 = database.get_avg_rating(db, media_id)
-        return "rating", 200
-    '''
-    elif request.method == "POST":
+    if request.method == "POST":
         try:
             rating = request.json.get("rating")
             if(database.check_preference(db, user_id, media_id)):
@@ -251,7 +238,12 @@ def rating():
                 database.set_preference(db, False , False, user_id, media_id, rating, "")
         finally:
             database.close_DBConnection(db)
+
         return "Rating posted", 200
+    elif request.method == "GET":
+        # can implement later
+        tuple2 = database.get_avg_rating(db, media_id)
+        return "rating", 200
     
     database.close_DBConnection(db)
     return "Method not supported", 403
@@ -339,19 +331,15 @@ def user_recommendation():
 # first item in list is most recommended
 # returns json array of objects
 @app.route("/movie_recommendation", methods=['GET'])
-@jwt_required()
 def movie_recommendation():
-    identity = get_jwt_identity()
-    user_id = identity[0]
-    media_id = request.json.get("media_id")
-    mediaType = request.json.get("mediaType")
-    #num = request.json.get("num")
+    media_id = str(request.args.get("media_id"))
+    mediaType = str(request.args.get("mediaType"))
 
     json_movies = []
 
     db = database.open_DBConnection()
     try:
-        movies = get_user_ratings(db, user_id, media_id, mediaType)
+        movies = get_user_ratings(db, media_id, mediaType) #"4154796", "Movie"
         # get movie item and convert to list of json object
         for item in movies:
             item_tuple = database.get_by_id(db, item)

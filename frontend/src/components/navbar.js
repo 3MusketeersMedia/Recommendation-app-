@@ -81,7 +81,8 @@ const MyNav = () => {
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto">
-            <Nav.Link href="/list">Media List</Nav.Link>
+            {context.store.token && context.store.token !== "" && context.store.token !== undefined ?
+            <> <Nav.Link onClick = {context.actions.getUserRecs}>Recommendations</Nav.Link></>:null}
           </Nav>
           <Nav>
             {context.store.token && context.store.token !== "" && context.store.token !== undefined ?
