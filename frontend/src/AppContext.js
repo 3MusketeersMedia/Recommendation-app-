@@ -86,7 +86,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
             searchContents: null,
             advSearchContents: null,
             recsContents: null,
-            address: "https://recommedia-api.herokuapp.com/" //"http://localhost:5000/"
+            address: "https://recommedia-api.herokuapp.com/"//"http://localhost:5000/" 
 		},
 		actions: {
             /** */

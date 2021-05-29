@@ -67,7 +67,7 @@ export default class zoomedpage extends React.Component {
   }
 
   componentDidMount() {
-    let movie = this.context.store.movie;
+    let movie = this.context.store.movie; 
     this.loadMovies(movie.id, movie.mediatype || movie.mediaType);
     if(this.context.actions.checkedLogin()){
       this.context.actions.getRating(movie)

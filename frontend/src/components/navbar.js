@@ -73,13 +73,13 @@ const MyNav = () => {
 
     return <AppContext.Consumer>
       {context => <div>
-        <Navbar className = "bar" collapseOnSelect expand="lg" bg="dark" variant="dark">
+        <Navbar className = "bar" navbar-expand expand="lg" class="py-0" bg="dark" variant="dark">
         <Navbar.Brand href="/">
         <img className = "logo" src={logo}/>
         RecomMedia
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-        <Navbar.Collapse id="responsive-navbar-nav">
+        <Navbar.Collapse className = "collapse" id="responsive-navbar-nav">
           <Nav className="mr-auto">
             {context.store.token && context.store.token !== "" && context.store.token !== undefined ?
             <> <Nav.Link onClick = {context.actions.getUserRecs}>Recommendations</Nav.Link></>:null}

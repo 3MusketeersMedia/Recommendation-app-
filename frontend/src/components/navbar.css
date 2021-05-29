@@ -17,5 +17,9 @@
 }
 
 .bar {
-    height: 75px;
+    height: 90px;
+}
+
+.collapse{
+    z-index: 1;
 }
