@@ -7,6 +7,7 @@ import re
 import string
 import sklearn
 from sklearn.decomposition import TruncatedSVD
+from spellchecker import SpellChecker
 
 #pip install PyStemmer
 
@@ -36,14 +37,20 @@ def stopword_filter(tokens):
     return [token for token in tokens if token not in STOPWORDS]
 
 
+def spelling_filter(tokens):
+    return [SpellChecker().correction(token) for token in tokens]
+
+
 def filter(text):
     tokens = tokenize(text)
     tokens = lowercase_filter(tokens)
     tokens = punctuation_filter(tokens)
+    tokens = spelling_filter(tokens)
     tokens = stopword_filter(tokens)
     tokens = stem_filter(tokens)
 
     return [token for token in tokens if token]
+
 
 def search_media_table(pair, query):
     #filter

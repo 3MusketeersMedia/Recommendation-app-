@@ -19,6 +19,9 @@ separator = ', '
 print("Deleting...")
 conn[1].execute("DELETE FROM media WHERE LOWER(genres) LIKE '%ecchi%' OR LOWER(genres) LIKE '%hentai%';")
 
+#print("Done. Searching Media Table...")
+#print(search_media_table(conn, "teh avengrs"))
+
 print("Done. Capitalizing music...")
 conn[1].execute("UPDATE media SET mediaType='Music' WHERE mediaType='music';")
 
@@ -64,7 +67,7 @@ print(get_all_mediaTypes(conn))
 
 
 
-for i in range(16504,100000000):
+for i in range(18138,100000000):
     x=Anime(1).title
     time.sleep(float(decimal.Decimal(random.randrange(99, 333))/100))
     try:
