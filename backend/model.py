@@ -32,7 +32,7 @@ def punctuation_filter(tokens):
 
 
 def stopword_filter(tokens):
-    return [token for token in tokens if token not in STOPWORDS]
+    return [token for token in tokens if token not in punctuation_filter(STOPWORDS)]
 
 
 def spelling_filter(tokens):
