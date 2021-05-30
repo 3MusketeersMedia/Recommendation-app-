@@ -8,8 +8,8 @@ const MediaModal = (props) => {
   return (
     <>
       <div className="d-inline-block border border-secondary rounded-top MediaModalImage" style={{height: "100%"}} onClick={() => setVisible(true)}>
-        <img src={props.image} alt="Media Card image"
-        className="img-responsive img-thumbnail rounded mx-auto" alt="Responsive image" onClick={() => setVisible(true)}/>
+        <img src={props.image} alt="Media Card"
+        className="img-responsive img-thumbnail rounded mx-auto" onClick={() => setVisible(true)}/>
         <p className="text-justify text-center font-weight-bold p-3 mb-2 bg-light text-dark">{props.title}</p>
       </div>
       

@@ -5,7 +5,6 @@ import MyNav from '../components/navbar';
 import Footer from '../components/Footer';
 import ProfilePic from '../components/ProfilePicture'
 import ProfilePicChanger from '../components/ProfilePicChanger';
-import ExamplePic from '../pics/niko_icon.png';
 import MoviePic from '../components/moviePic';
 import MediaModal from '../components/MediaModal';
 import RecomClicker from '../components/RecomClicker';

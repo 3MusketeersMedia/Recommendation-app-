@@ -7,7 +7,7 @@ import Rating from "../components/review"
 import MyNav from '../components/navbar'
 import Footer from '../components/Footer';
 import {AppContext} from '../AppContext';
-import {Container, Row, Col} from 'react-bootstrap'
+import {Container, Row} from 'react-bootstrap'
 import ReactStars from "react-rating-stars-component";
 import './zoomed-paged-grid.css';
 
@@ -72,8 +72,8 @@ export default class zoomedpage extends React.Component {
     if(this.context.actions.checkedLogin()){
       this.context.actions.getRating(movie)
         .then(data => {
-          if(data != undefined){
-              this.state.rating = data
+          if(data !== undefined){
+              this.setState({rating: data});
           } else {
             console.log("Connection Error")
           }
@@ -91,7 +91,7 @@ export default class zoomedpage extends React.Component {
   }
 
   ratingChanged = (newRating) => {
-    this.state.rating = newRating
+    this.setState({rating: newRating});
   };
 
   ratingSubmit = () => {
@@ -130,7 +130,7 @@ export default class zoomedpage extends React.Component {
             <Row>
               <div className="MovieBanner">
                 {console.log(context.store)}
-                <img src={context.store.movie.link}></img>
+                <img src={context.store.movie.link} alt="movie link"></img>
                   <Movies movie={context.store.movie}/>
               </div>
             </Row>

@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react'
-import {Navbar, Nav, NavDropdown, FormGroup, FormControl, Button} from 'react-bootstrap'
+import {Navbar, Nav, NavDropdown,  FormControl, Button} from 'react-bootstrap'
 import {AppContext} from '../AppContext';
 import LoginPage from '../pages/LoginPage'
 import './navbar.css';
@@ -73,9 +73,9 @@ const MyNav = () => {
 
     return <AppContext.Consumer>
       {context => <div>
-        <Navbar className = "bar" navbar-expand expand="lg" class="py-0" bg="dark" variant="dark">
+        <Navbar className = "bar py-0" expand="lg"  bg="dark" variant="dark">
         <Navbar.Brand href="/">
-        <img className = "logo" src={logo}/>
+        <img className="logo" src={logo} alt="Logo Img"/>
         RecomMedia
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />

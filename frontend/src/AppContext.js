@@ -233,7 +233,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
 
             /** Simply removes token from sessionStorage*/
             logout: async () => {
-                const token = sessionStorage.removeItem("token");
+                sessionStorage.removeItem("token");
                 setStore({token: null});
                 history.push("/");
             },
