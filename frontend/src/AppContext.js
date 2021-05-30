@@ -348,7 +348,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 const favorites = JSON.stringify(data);
                 console.log(favorites);
                 localStorage.setItem('movie-favorites', favorites);
-                setStore({movieFavorites: favorites})
+                setStore({movieFavorites: JSON.parse(favorites)})
             },
 
             setMovieFavorite: async(movie) =>{
@@ -417,7 +417,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 const watched = JSON.stringify(data);
                 console.log(watched);
                 localStorage.setItem('movie-watched', watched);
-                setStore({movieWatched: watched});
+                setStore({movieWatched: JSON.parse(watched)});
             },
 
             setMovieWatched: async(movie) =>{
