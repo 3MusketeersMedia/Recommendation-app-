@@ -49,7 +49,7 @@ export default class ProfilePage extends React.Component {
             page = (  
                 <>
                 <div className="m-5 p-3">
-                    <Header title="Movies"/>
+                    <Header title="Media"/>
                     <hr/>
                 <Container fluid="md" className='p-3 d-flex' > 
                 <Row> 
