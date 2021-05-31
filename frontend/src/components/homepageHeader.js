@@ -57,6 +57,9 @@ function HpHeader(){
                         Get started with RecomMedia today, and gain access to personalized
                         recommendation lists based the things you love.
                     </p>
+                    <p className = "desc">
+                        Scroll down to view a complete list of media.
+                    </p>
                 </Container>
             </Jumbotron>
         </Styles>
