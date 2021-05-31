@@ -23,7 +23,6 @@ export default class ProfilePage extends React.Component {
             favoritedMovies : favoritedMovieList,
             watchedMovies : watchedMovieList,
         };
-        console.log(this.state.userName);
     }   
 
 
