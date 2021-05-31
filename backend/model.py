@@ -59,11 +59,11 @@ def search_media_table(pair, query, limit, offset):
     #so make sure that it isnt the same movie as exact match
     results = []
     for i in filtered_query:
-        tmp = "%" + i + "%"
+        tkn = "%" + i + "%"
         if len(exact) > 0:
-            pair[1].execute("SELECT * FROM media WHERE LOWER(name) LIKE %s AND ID <> %s;", (tmp, exact[0][8]))
+            pair[1].execute("SELECT * FROM media WHERE LOWER(name) LIKE %s AND ID <> %s;", (tkn, exact[0][8]))
         else:
-            pair[1].execute("SELECT * FROM media WHERE LOWER(name) LIKE %s;", (tmp,))
+            pair[1].execute("SELECT * FROM media WHERE LOWER(name) LIKE %s;", (tkn,))
         results += pair[1].fetchall()
 
     #sort list by frequency of tuple
@@ -102,20 +102,20 @@ def advanced_search_media_table(pair, query, mediaType, genre, yearStart, rating
     if(query != "" and query != None):
         filtered_query = filter(query.strip())
         if(genre != "" and genre != None):
-            tmp2 = "%" + genre.lower().strip() + "%"
+            tkn2 = "%" + genre.lower().strip() + "%"
             for i in filtered_query:
-                tmp = "%" + i + "%"
-                pair[1].execute("SELECT * FROM media WHERE LOWER(name) LIKE %s AND year >= %s AND year <= %s AND rating >= %s AND rating <= %s AND LOWER(genres) LIKE %s;", (tmp, yearStart, yearEnd, ratingMin, ratingMax, tmp2))
+                tkn = "%" + i + "%"
+                pair[1].execute("SELECT * FROM media WHERE LOWER(name) LIKE %s AND year >= %s AND year <= %s AND rating >= %s AND rating <= %s AND LOWER(genres) LIKE %s;", (tkn, yearStart, yearEnd, ratingMin, ratingMax, tkn2))
                 results += pair[1].fetchall()
         else:
             for i in filtered_query:
-                tmp = "%" + i + "%"
-                pair[1].execute("SELECT * FROM media WHERE LOWER(name) LIKE %s AND year >= %s AND year <= %s AND rating >= %s AND rating <= %s;", (tmp, yearStart, yearEnd, ratingMin, ratingMax))
+                tkn = "%" + i + "%"
+                pair[1].execute("SELECT * FROM media WHERE LOWER(name) LIKE %s AND year >= %s AND year <= %s AND rating >= %s AND rating <= %s;", (tkn, yearStart, yearEnd, ratingMin, ratingMax))
                 results += pair[1].fetchall()
     else:
         if(genre != "" and genre != None):
-            tmp2 = "%" + genre.lower().strip() + "%"
-            pair[1].execute("SELECT * FROM media WHERE year >= %s AND year <= %s AND rating >= %s AND rating <= %s AND LOWER(genres) LIKE %s;", (yearStart, yearEnd, ratingMin, ratingMax, tmp2))
+            tkn2 = "%" + genre.lower().strip() + "%"
+            pair[1].execute("SELECT * FROM media WHERE year >= %s AND year <= %s AND rating >= %s AND rating <= %s AND LOWER(genres) LIKE %s;", (yearStart, yearEnd, ratingMin, ratingMax, tkn2))
             results += pair[1].fetchall()
         else:
                 pair[1].execute("SELECT * FROM media WHERE year >= %s AND year <= %s AND rating >= %s AND rating <= %s;", (yearStart, yearEnd, ratingMin, ratingMax))
@@ -123,15 +123,15 @@ def advanced_search_media_table(pair, query, mediaType, genre, yearStart, rating
 
     # The below code removes all results that aren't of the type mediaType (if mediaType specified).
     if mediaType != "" and mediaType != None:
-        tmp3 = "%" + mediaType.lower().strip() + "%"
-        pair[1].execute("SELECT * FROM media WHERE LOWER(mediaType) LIKE %s;", (tmp3,))
+        tkn3 = "%" + mediaType.lower().strip() + "%"
+        pair[1].execute("SELECT * FROM media WHERE LOWER(mediaType) LIKE %s;", (tkn3,))
         mediaTypeResults = pair[1].fetchall()
         results = list(set(results).intersection(set(mediaTypeResults))) # Removes what's different between results and mediaTypeResults
     #sort list by frequency of tuple
-    to_return = [key for key, value in collections.Counter(results).most_common()]
+    toReturn = [key for key, value in collections.Counter(results).most_common()]
     return {
-        'movies': to_return[offset:offset+limit],
-        'count': len(to_return)
+        'movies': toReturn[offset:offset+limit],
+        'count': len(toReturn)
     }
 
 
