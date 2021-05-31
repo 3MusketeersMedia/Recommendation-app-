@@ -85,7 +85,10 @@ def advanced_search_media_table(pair, query, mediaType, genre, yearStart, rating
     ratingMinInvalid = (ratingMin != None and not ratingMin.isnumeric() and ratingMin.strip() != "")
     ratingMaxInvalid = (ratingMax != None and not ratingMax.isnumeric() and ratingMax.strip() != "")
     if (yearStartInvalid or yearEndInvalid or ratingMinInvalid or ratingMaxInvalid):
-        return []
+        return {
+        'movies': [],
+        'count': 0
+    }
 
     # Checks for empty string being passed in (BTW, default args don't work since it's not NOTHING that's being passed in, it's an empty string--> doesn't default)
     if yearStart == "" or yearStart == None:

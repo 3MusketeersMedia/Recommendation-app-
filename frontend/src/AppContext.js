@@ -106,9 +106,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
             },
 
             loadMovies: async (limit, offset) => {
-              console.log('load movies');
               if (getStore().searchContents !== null) {
-                console.log('normal search');
                 const response = await fetch(getStore().address + 'search', {
                   method: 'POST',
                   headers: {
@@ -117,10 +115,8 @@ const GetState = ({ getStore, getActions, setStore }) => {
                   body: JSON.stringify({searchContents: getStore().searchContents, limit, offset}),
                 });
                 const data = await response.json();
-                console.log(data);
                 return data;
               } else if (getStore().advSearchContents !== null) {
-                console.log('advanced search');
                 const {name, mediaType,genre, minYear, minRate, maxYear, maxRate} = getStore().advSearchContents;
                 const response = await fetch(getStore().address + 'advSearch', {
                   method: 'POST',
@@ -130,11 +126,9 @@ const GetState = ({ getStore, getActions, setStore }) => {
                   body: JSON.stringify({name, mediaType,genre, minYear, minRate, maxYear, maxRate, limit, offset}),
                 });
                 const data = await response.json();
-                console.log(data);
                 return data;
               } else if (getStore().recsContents !== null)
                 {
-                console.log('recs')
                 const store = getStore();
                 await getActions().syncToken();
                 const opts = {
@@ -145,14 +139,11 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 };
                 const response = await fetch(getStore().address + `user_recommendation?limit=${limit}&offset=${offset}`, opts);
                 const data = await response.json();
-                console.log(data);
                 return data;
                 }
                 else {
-                console.log('list')
                 const response = await fetch(getStore().address + `pages?limit=${limit}&offset=${offset}`);
                 const data = await response.json();
-                console.log(data);
                 return data;
               }
             },
@@ -167,14 +158,12 @@ const GetState = ({ getStore, getActions, setStore }) => {
 
             /** Calls normal search, gets the data, and then loads up movie list*/
             search: async (searchContents) => {
-                console.log('search');
                 await setStore({searchContents: searchContents, advSearchContents: null});
                 history.push("/");
                 history.push("/list");
             },
             /** Calls user rec alg., loads up movie list*/
             getUserRecs: async () => {
-                console.log('recs');
                 await setStore({recsContents: "user",searchContents: null, advSearchContents: null});
                 // history.push("/");
                 history.push("/list");
@@ -182,7 +171,6 @@ const GetState = ({ getStore, getActions, setStore }) => {
             /** Calls normal search, gets the data, and then loads up movie list*/
             advancedSearch: async (name, mediaType, genre, minYear, minRate, maxYear, maxRate) => {
                 const advSearchContents = {name, mediaType, genre, minYear, minRate, maxYear, maxRate};
-                console.log('advanced search');
                 await setStore({advSearchContents, searchContents: null});
                 // Now that the search is conducted, should load up list page,
                 // which will check that the searchList is not NULL and load up
@@ -214,10 +202,8 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 try{
                     const response = await fetch(getStore().address + 'login',args);
                     const data = await response.json();
-                    console.log(data);
 
                     if(response.status !== 200){
-                        console.log("Status Code: " + response.status);
                         return false;
                     }
 
@@ -226,7 +212,6 @@ const GetState = ({ getStore, getActions, setStore }) => {
                     return true;
                 }
                 catch(error){
-                    console.log("Login connection dropped");
                 }
             },
 
@@ -259,10 +244,8 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 try{
                     const response = await fetch(getStore().address + 'signup', args)
                     const data = await response.json();
-                    console.log(data);
 
                     if(response.status !== 200){
-                        console.log("Status Code: " + response.status);
                         return false;
                     }
 
@@ -271,7 +254,6 @@ const GetState = ({ getStore, getActions, setStore }) => {
                     return true;
                 }
                 catch(error){
-                    console.log("Signup connection dropped");
                 }
             },
 
@@ -290,7 +272,6 @@ const GetState = ({ getStore, getActions, setStore }) => {
                     const data = await response.json();
 
                     if(response.status !== 200){
-                        console.log("Status Code: " + response.status);
                         return false;
                     }
 
@@ -298,7 +279,6 @@ const GetState = ({ getStore, getActions, setStore }) => {
                     return true;
                 }
                 catch(error){
-                    console.log("Signup connection dropped");
                 }
             },
 
@@ -339,7 +319,6 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 const data = await response.json();
 
                 if(response.status !== 200){
-                    console.log("Status Code: " + response.status);
                     return false
                 }
 
@@ -360,14 +339,11 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 };
                 const response = await fetch(getStore().address + "favorite", opts);
 
-                if(response.status !== 200){
-                    console.log("Status Code: " + response.status);
-                    return false
+                if(response.status !== 200){                    return false
                 }
 
                 const currentArray = getStore().movieFavorites;
                 const favorites = [...currentArray, movie];
-                console.log(favorites);
                 localStorage.setItem('movie-favorites', JSON.stringify(favorites));
                 setStore({movieFavorites: favorites})
             },
@@ -385,7 +361,6 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 const response = await fetch(getStore().address + "favorite", opts);
 
                 if(response.status !== 200){
-                    console.log("Status Code: " + response.status);
                     return false
                 }
 
@@ -409,7 +384,6 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 const data = await response.json();
 
                 if(response.status !== 200){
-                    console.log("Status Code: " + response.status);
                     return false
                 }
 
@@ -431,7 +405,6 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 const response = await fetch(getStore().address + "watchlist", opts);
 
                 if(response.status !== 200){
-                    console.log("Status Code: " + response.status);
                     return false
                 }
 
@@ -453,12 +426,10 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 const response = await fetch(getStore().address + "watchlist", opts);
 
                 if(response.status !== 200){
-                    console.log("Status Code: " + response.status);
                     return false
                 }
 
                 const watched = getStore().movieWatched.filter(item => item !== movie)
-                console.log(watched);
                 localStorage.setItem('movie-watched', JSON.stringify(watched));
                 setStore({movieWatched: watched})
             },
@@ -476,7 +447,6 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 const response = await fetch(getStore().address + "rating", opts);
 
                 if(response.status !== 200){
-                    console.log("Status Code: " + response.status);
                     return undefined
                 }
                 const data = await response.json();
@@ -496,7 +466,6 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 const response = await fetch(getStore().address + "rating", opts);
 
                 if(response.status !== 200){
-                    console.log("Status Code: " + response.status);
                     return false
                 }
                 return true
