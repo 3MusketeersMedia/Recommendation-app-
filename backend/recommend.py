@@ -12,6 +12,12 @@ from random import randint
 # Calculate SVD and then use pearson
 
 
+def remove_duplicate_media(media_list, media_id):
+    if media_id in media_list:
+        media_list.pop(media_id)
+    else:
+        media_list.pop()
+
 # ratings cannot be 0 or function has divide by zero warning
 # user_id: user id; media_id: media id to compare; num: number of recommendations to return
 def get_user_ratings(pair, media_id, mediaType='Movie', num=15):
@@ -38,14 +44,15 @@ def get_user_ratings(pair, media_id, mediaType='Movie', num=15):
 
     # returns the pearson product-moment correlation coefficients
     corr_matrix = np.corrcoef(resultant_matrix)
-    # "Star Wars (1977)"; "4154756"
+
     # if no recommendations, default recommendations based on genre
     try:
         col_idx = rating_table.columns.get_loc(media_id)
         corr_specific = corr_matrix[col_idx]
 
-        rt = pd.DataFrame({'corr_specific':corr_specific, 'Movies': rating_table.columns}).sort_values('corr_specific', ascending=False).head(num + 6)
+        rt = pd.DataFrame({'corr_specific':corr_specific, 'Movies': rating_table.columns}).sort_values('corr_specific', ascending=False).head(num + 1)
         recommended_movies = rt['Movies'].tolist()
+        remove_duplicate_media(recommended_movies, media_id)
 
         return recommended_movies
     except KeyError:
@@ -72,8 +79,10 @@ def get_user_ratings(pair, media_id, mediaType='Movie', num=15):
 
 # test cases to test
 #db = database.open_DBConnection()
+#l1 = database.get_by_id(db, "12361974")
+#print(l1)
 #get_user_ratings(db, "3", "0068646", "Movie")
-#get_user_ratings(db, "3", "12361974", "Movie")
-#get_user_ratings(db, "3", "9999", "Movie")
+#get_user_ratings(db, "12361974", "Movie")
+#get_user_ratings(db, "9999", "Movie")
 #get_user_ratings(db, "3", "018DZPUwfDKVrm0IXAP9YM", "Music")
 #get_user_ratings(db, "3", "3")
