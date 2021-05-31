@@ -1,5 +1,76 @@
-Frontend
--
+Unit tests: Needs to go in a file called Testing on github
 
-Backend
--
+Modules:
+  Front page
+    Log on to front page and navigate around
+      View media list below
+    Click <login>
+      Should pull up login screen
+    Click and media displayed
+      Directs you to media details page
+    Type in search bar
+    Click on recommendations on media details page
+      Should direct you to separate media page 
+
+  ZoomedPage 
+    Checked if components were rendering 
+      Rendered movie is persistent when refreshed. 
+    Clicked <Ratings> 
+      Saves to backend db 
+
+  Recommended List
+    Log on to front page, navigate to recommended list page
+      Should show recommedations
+
+  Profile
+    Sign up
+      Should be stored in db
+    Navigate to profile page
+    Add rate/like/watch things
+      Recommendations should be personalized
+      Appropriate list should be updated
+
+  Recommendation Algorithm (V)
+    Given a user
+      Looks through DB entries
+      Look at db entries to see if recommended movies follow the algorithm specifications (movies are correlated and ranked by users/average rating/watched/liked)
+
+  Recommendation Algorithm (R)
+    Given a media
+      Looks through DB entries
+      Look at db entries to see if recommended movies follow the algorithm specifications (movies are correlated and ranked by users/average rating/watched/liked)
+
+  Database 
+    Set up database
+    Make sure you can query it
+      Delete, insert, update, etc
+    Make sure storage is persistent
+      Insert, log out, log back in and see if tuple is still there
+
+  Liking/Watching
+    Like/watch media in media list and it should be added to the liked/watched list in your profile
+    Unlike or unwatch media in the profile or the media list page and it should be removed from your liked/watched list in your profile
+
+  Rating
+    Rate media and it should appear in the database 
+    Change rating and it should change in the database
+
+  Search:
+    Type in various search entries
+      <the avengers>
+        Should pop up with the various avengers movies first
+      <dragon ball>
+        Will popup with dragon ball content first
+      <teh avengrs>
+        Will pop up with avengers first as spell check is included
+      <hte avengrs>
+        Will still pop up with avengers but lower on list because hte cannot be spell checked properly
+      <matrx>
+        Will show up with matrix
+      <matx>
+        Will show results corresponding to math
+    Advanced Search:
+      Tested all combinations of criteria
+		    Example: <Name>, <mediaType> included, the rest blank.
+        OR  <Genre> and <ratingMin> specified, rest blank.
+        etc.
