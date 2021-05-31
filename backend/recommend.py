@@ -31,6 +31,8 @@ def get_user_ratings(pair, media_id, mediaType='Movie', num=15):
 
     # calculate singular value decomposition (SVD) and 
     # scale the resulting matrix from the SVD and transpose
+    
+    #SVD = TruncatedSVD(n_components=3, n_iter=3, random_state=8)
     SVD = TruncatedSVD(n_components=2, random_state=5)
     resultant_matrix = SVD.fit_transform(tranpose)
 
@@ -42,7 +44,7 @@ def get_user_ratings(pair, media_id, mediaType='Movie', num=15):
         col_idx = rating_table.columns.get_loc(media_id)
         corr_specific = corr_matrix[col_idx]
 
-        rt = pd.DataFrame({'corr_specific':corr_specific, 'Movies': rating_table.columns}).sort_values('corr_specific', ascending=False).head(num)
+        rt = pd.DataFrame({'corr_specific':corr_specific, 'Movies': rating_table.columns}).sort_values('corr_specific', ascending=False).head(num + 6)
         recommended_movies = rt['Movies'].tolist()
 
         return recommended_movies
@@ -68,32 +70,10 @@ def get_user_ratings(pair, media_id, mediaType='Movie', num=15):
     return "Unexpected error has occurred"       
 
 
-def get_user_likes(pair, user_id, media_id):
-    pair[1].execute("SELECT user_id, media_id, liked FROM preferences;")
-    # check if table has values or not
-    table = pair[1].fetchall()
-    table = [(a, b, int(c)) for a,b,c in table]
-
-    #list of all ratings
-    df = pd.DataFrame(table, columns=["user_id", "media_id", "liked"])
-    df2 = df.pivot_table(index=['user_id'], columns=['media_id'], values='liked', fill_value=0)
-
-    transpose = df2.T
-
-    SVD = TruncatedSVD(n_components=3, n_iter=3, random_state=8)
-
-    resultant_matrix = SVD.fit_transform(transpose)
-    corr_matrix = np.corrcoef(resultant_matrix)
-
-    col_idx = df2.columns.get_loc("0068646")
-    corr_specific = corr_matrix[col_idx]
-
-    df3 = pd.DataFrame({'corr_specific':corr_specific, 'media_id': df2.columns}).sort_values('corr_specific', ascending=False).head(10)
-
-
 # test cases to test
 #db = database.open_DBConnection()
 #get_user_ratings(db, "3", "0068646", "Movie")
+#get_user_ratings(db, "3", "12361974", "Movie")
 #get_user_ratings(db, "3", "9999", "Movie")
 #get_user_ratings(db, "3", "018DZPUwfDKVrm0IXAP9YM", "Music")
 #get_user_ratings(db, "3", "3")
