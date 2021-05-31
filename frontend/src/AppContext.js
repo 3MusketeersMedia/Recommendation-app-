@@ -44,13 +44,13 @@ const ContextWrapper = ({children}) => {
          * store, instead use actions, like this:
          **/
 
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         state.actions.syncToken();
         if(state.actions.checkedLogin()){
             state.actions.getMovieFavorites();
             state.actions.getmovieWatched();
             state.actions.getUserName();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[state.store.token]);
 
     // The initial value for the context is not null anymore, but the current state of this component,
@@ -86,7 +86,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
             searchContents: null,
             advSearchContents: null,
             recsContents: null,
-            address: "https://recommedia-api.herokuapp.com/" //"http://localhost:5000/"
+            address: "https://recommedia-api.herokuapp.com/"//"http://localhost:5000/"
 		},
 		actions: {
             /** */
@@ -233,7 +233,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
 
             /** Simply removes token from sessionStorage*/
             logout: async () => {
-                const token = sessionStorage.removeItem("token");
+                sessionStorage.removeItem("token");
                 setStore({token: null});
                 history.push("/");
             },
@@ -288,14 +288,12 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 try{
                     const response = await fetch(getStore().address + 'profile', opts);
                     const data = await response.json();
-                    console.log(data);
 
                     if(response.status !== 200){
                         console.log("Status Code: " + response.status);
                         return false;
                     }
 
-                    console.log(data.username);
                     sessionStorage.setItem("username", data.username);
                     return true;
                 }
@@ -311,7 +309,12 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 if (getStore().movie === movie) return;
                 localStorage.setItem('movie', JSON.stringify(movie));
                 await setStore({movie: movie});
-                history.push('/movie');
+                if (history.location.pathname === '/movie') {
+                  history.replace('/');
+                  history.push('/movie');
+                } else {
+                  history.push('/movie');
+                }
             },
 
             /** Ensures that the local storage value of "movie" is
@@ -341,9 +344,8 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 }
 
                 const favorites = JSON.stringify(data);
-                console.log(favorites);
                 localStorage.setItem('movie-favorites', favorites);
-                setStore({movieFavorites: favorites})
+                setStore({movieFavorites: JSON.parse(favorites)})
             },
 
             setMovieFavorite: async(movie) =>{
@@ -390,6 +392,8 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 const favorites = getStore().movieFavorites.filter(item => item !== movie)
                 localStorage.setItem('movie-favorites', JSON.stringify(favorites));
                 setStore({movieFavorites: favorites})
+                this.forceUpdate();
+
             },
 
             /** Gets Watchedd movie and stores in localstorage */
@@ -410,9 +414,8 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 }
 
                 const watched = JSON.stringify(data);
-                console.log(watched);
                 localStorage.setItem('movie-watched', watched);
-                setStore({movieWatched: watched});
+                setStore({movieWatched: JSON.parse(watched)});
             },
 
             setMovieWatched: async(movie) =>{
@@ -433,7 +436,6 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 }
 
                 const watched = [...getStore().movieWatched, movie];
-                console.log(watched);
                 localStorage.setItem('movie-watched', JSON.stringify(watched));
                 setStore({movieWatched: watched})
             },
@@ -456,6 +458,7 @@ const GetState = ({ getStore, getActions, setStore }) => {
                 }
 
                 const watched = getStore().movieWatched.filter(item => item !== movie)
+                console.log(watched);
                 localStorage.setItem('movie-watched', JSON.stringify(watched));
                 setStore({movieWatched: watched})
             },

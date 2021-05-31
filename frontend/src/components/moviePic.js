@@ -5,7 +5,7 @@ import {AppContext} from '../AppContext';
 //Compoment takes in the image of the movie, the title and the link to where
 // the image is stored.
 const MoviePic = ({movie}) => {
-    const {store, actions} = React.useContext(AppContext);
+    const {actions} = React.useContext(AppContext);
     let list1 = localStorage.getItem('movie-favorites');
     let favorites = [];
     if(list1)

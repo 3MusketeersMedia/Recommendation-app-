@@ -5,7 +5,6 @@ import MyNav from '../components/navbar';
 import Footer from '../components/Footer';
 import ProfilePic from '../components/ProfilePicture'
 import ProfilePicChanger from '../components/ProfilePicChanger';
-import ExamplePic from '../pics/niko_icon.png';
 import MoviePic from '../components/moviePic';
 import MediaModal from '../components/MediaModal';
 import RecomClicker from '../components/RecomClicker';
@@ -24,7 +23,6 @@ export default class ProfilePage extends React.Component {
             favoritedMovies : favoritedMovieList,
             watchedMovies : watchedMovieList,
         };
-        console.log(this.state.userName);
     }   
 
 
@@ -51,7 +49,7 @@ export default class ProfilePage extends React.Component {
             page = (  
                 <>
                 <div className="m-5 p-3">
-                    <Header title="Movies"/>
+                    <Header title="Media"/>
                     <hr/>
                 <Container fluid="md" className='p-3 d-flex' > 
                 <Row> 

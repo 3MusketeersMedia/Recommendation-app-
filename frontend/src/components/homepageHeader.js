@@ -11,7 +11,7 @@ const Styles = styled.div`
         color: transparent;
         height: 600px;
         position: relative;
-        z-index: 1;
+        z-index: 0;
     }
 
     .overlay{

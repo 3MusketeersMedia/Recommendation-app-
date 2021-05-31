@@ -1,10 +1,10 @@
 import React from 'react';
-import {Container, Row, Col, ListGroup, Image} from 'react-bootstrap';
+import {Container, Row, Col, Image} from 'react-bootstrap';
 import {AppContext} from '../AppContext';
 import MyNav from '../components/navbar';
 import PageBar from '../components/PageBar';
 import './MovieList.css';
-import { withRouter, useHistory  } from "react-router-dom"
+import { withRouter  } from "react-router-dom"
 
 class MovieList extends React.Component {
   static contextType = AppContext;
@@ -42,7 +42,7 @@ class MovieList extends React.Component {
   render() {
     console.log(this.state.movies);
     return <>
-      {window.location.pathname != "/" ? <MyNav /> : null}
+      {window.location.pathname !== "/" ? <MyNav /> : null}
       <Container fluid className='p-3'>
         <PageBar forward={this.pageForward} back={this.pageBack} page={this.state.page}
           limit={this.state.limit} count={this.state.count}/>
@@ -54,7 +54,7 @@ class MovieList extends React.Component {
         ) : ''}
         <Row>
           {this.state.movies.map(movie => (
-            <Col xs={12} sm={6} md={4} lg={3} className='p-3 border' onClick={() => this.selectMovie(movie)}>
+            <Col xs={12} sm={6} md={4} lg={3} className='p-3 border' onClick={() => this.selectMovie(movie)} key={movie.id}>
               <Row>
                 <Image src={movie.link} className='movieImage mx-auto' style={{width: 'auto'}}/>
               </Row>

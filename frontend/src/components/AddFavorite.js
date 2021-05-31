@@ -1,13 +1,11 @@
 import React, { useState, useContext } from 'react';
 import {ToggleButton, ToggleButtonGroup} from 'react-bootstrap/';
-import { useHistory } from 'react-router-dom';
 import {AppContext} from '../AppContext';
 
 const AddFavorite = ({isHover, movie, isFavorited, isWatched}) => {
-    const {store, actions} = useContext(AppContext);
+    const {actions} = useContext(AppContext);
     const [favorited, setFavorited] = useState(isFavorited);
     const [watched, setWatched] = useState(isWatched);
-    let history = useHistory();
 
     let goldStar = (
     <div onClick={() => {removeFavoriteMovie(movie)}}>
