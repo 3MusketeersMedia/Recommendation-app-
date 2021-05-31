@@ -14,7 +14,7 @@ from random import randint
 
 def remove_duplicate_media(media_list, media_id):
     if media_id in media_list:
-        media_list.pop(media_id)
+        media_list.remove(media_id)
     else:
         media_list.pop()
 
