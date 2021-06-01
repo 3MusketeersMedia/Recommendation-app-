@@ -6,20 +6,21 @@ from sklearn.decomposition import TruncatedSVD
 from random import randint
 
 # add randomness element?
-# Based on items you have liked, watched, rated, viewed?, series?, new?
-# Recent history feasible?
+# Based on items you have liked, watched, rated
 # Movielens dataset
 # Calculate SVD and then use pearson
 
 
+# removes media_id used for recommendations
 def remove_duplicate_media(media_list, media_id):
     if media_id in media_list:
         media_list.remove(media_id)
     else:
         media_list.pop()
 
+
 # ratings cannot be 0 or function has divide by zero warning
-# user_id: user id; media_id: media id to compare; num: number of recommendations to return
+# media_id: media id to compare; num: number of recommendations to return
 def get_user_ratings(pair, media_id, mediaType='Movie', num=15):
     pair[1].execute("SELECT user_id, media_id, rating, watched, liked FROM preferences WHERE media_id IN (SELECT ID FROM media WHERE mediaType = %s);", (mediaType,))
 
@@ -37,26 +38,25 @@ def get_user_ratings(pair, media_id, mediaType='Movie', num=15):
 
     # calculate singular value decomposition (SVD) and 
     # scale the resulting matrix from the SVD and transpose
-    
-    #SVD = TruncatedSVD(n_components=3, n_iter=3, random_state=8)
+    # n_iter=3 (optional code)
     SVD = TruncatedSVD(n_components=2, random_state=5)
     resultant_matrix = SVD.fit_transform(tranpose)
 
     # returns the pearson product-moment correlation coefficients
     corr_matrix = np.corrcoef(resultant_matrix)
 
-    # if no recommendations, default recommendations based on genre
+    # get correlations for recommendations
     try:
-        col_idx = rating_table.columns.get_loc(media_id)
-        corr_specific = corr_matrix[col_idx]
+        col_index = rating_table.columns.get_loc(media_id)
+        corr_specific = corr_matrix[col_index]
 
-        rt = pd.DataFrame({'corr_specific':corr_specific, 'Movies': rating_table.columns}).sort_values('corr_specific', ascending=False).head(num + 1)
+        rt = pd.DataFrame({'corr_specific':corr_specific, 'Media': rating_table.columns}).sort_values('corr_specific', ascending=False).head(num + 1)
         recommended_movies = rt['Movies'].tolist()
         remove_duplicate_media(recommended_movies, media_id)
 
         return recommended_movies
-    except KeyError:
-        # AND rating IS NOT NULL ORDER BY rating DESC ; name, mediatype, ID, genres, rating
+
+    except KeyError:    # if no recommendations, default recommendations based on genre
         pair[1].execute(f"SELECT genres FROM media WHERE ID = '{media_id}';") # AND genres is not null
         genre_list = pair[1].fetchall()
         if genre_list[0][0] is None:
@@ -78,11 +78,10 @@ def get_user_ratings(pair, media_id, mediaType='Movie', num=15):
 
 
 # test cases to test
-#db = database.open_DBConnection()
+db = database.open_DBConnection()
 #l1 = database.get_by_id(db, "12361974")
 #print(l1)
 #get_user_ratings(db, "3", "0068646", "Movie")
-#get_user_ratings(db, "12361974", "Movie")
+get_user_ratings(db, "12361974", "Movie")
 #get_user_ratings(db, "9999", "Movie")
 #get_user_ratings(db, "3", "018DZPUwfDKVrm0IXAP9YM", "Music")
-#get_user_ratings(db, "3", "3")

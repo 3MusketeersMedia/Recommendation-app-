@@ -12,17 +12,11 @@ from model import get_user_recommendations
 import database
 import bcrypt
 
-# check through and run through all functions thoroughly
 
 # TA email: yogolan@ucsc.edu
 # .\venv\Scripts\activate
 # JWT token: user id, access token
 # maybe token dates i.e. timestamp
-
-# Connection pools are backlog
-# Require us to rewrite the database api
-
-# try: execute db function (exclude open_connection)
 
 # instance of flask web app
 app = Flask(__name__)
@@ -37,7 +31,7 @@ jwt = JWTManager(app)
 # connection to database constantly not maintained
 #db = database.open_DBConnection()
 
-# database returns item (row) as tuple
+# convert tuple to dictionary
 def convert_media(tuple1):
     item_js = {
         "name": tuple1[0],
@@ -55,8 +49,7 @@ def convert_media(tuple1):
     return item_js
 
 
-# Should move these functions to a utility file
-# database returns item (row) as tuple
+# convert preferences tuple to dictionary
 def convert_pref(tuple1):
     item_js = {
         "watched": tuple1[0],
@@ -72,6 +65,7 @@ def convert_pref(tuple1):
 
 # items in list are tuples
 # all the values in the array are converted to strings
+# return list of json objects
 def format_media(db_list):
     json1 = []
     for item in db_list:
@@ -90,6 +84,7 @@ def format_preferences(db_list):
     return json1
 
 
+# index / home route
 @app.route("/", methods=['POST', 'GET'])
 def index():
     # could check the json to determine which function to implement if you want
@@ -97,7 +92,7 @@ def index():
     return "West virgina Country Roads"
 
 
-# too many movies, need to split it off
+# returns all the medias in the database
 @app.route("/movies", methods=['GET'])
 def movies():
     db = database.open_DBConnection()
@@ -108,6 +103,7 @@ def movies():
         database.close_DBConnection(db)
 
     return dict1
+
 
 # standard search by name function
 @app.route("/search", methods=["POST"])
@@ -183,6 +179,7 @@ def movieCount():
     return jsonify(num)
 
 
+# store reviews in database
 @app.route("/review", methods=["POST"])
 @jwt_required()
 def review():
@@ -203,8 +200,7 @@ def review():
     return "Review posted", 200
 
 
-# frontend sends jwt, I look up user
-# identity returned as list, so need to access it
+# get user information for user profile
 @app.route("/profile", methods=["GET"])
 @jwt_required()
 def profile():
@@ -220,6 +216,7 @@ def profile():
     return jsonify({"username": attributes[0]}), 200
 
 
+# post user rating for media and store in database
 @app.route("/rating", methods=["POST", "GET"])
 @jwt_required()
 def rating():
@@ -249,6 +246,7 @@ def rating():
     return "Method not supported", 403
 
 
+# allow users to favorite media and add it to favorited / liked list
 @app.route("/favorite", methods=["POST", "GET", "DELETE"])
 @jwt_required()
 def favorite():
@@ -295,8 +293,7 @@ def favorite():
     return "Method not supported", 403
 
 
-# get_user_recommendations returns a list
-# this is for overall recommendations in profile
+# returns list of recommendations based on user's preferences
 @app.route("/user_recommendation", methods=['GET'])
 @jwt_required()
 def user_recommendation():
@@ -327,9 +324,9 @@ def user_recommendation():
     #return {'movies': jsonify(movies), 'count': 10}
 
 
-# targetted recommendations
-# first item in list is most recommended
-# returns json array of objects
+# recommendations based on single media
+# first item in list is most recommended, last is least recommended
+# returns json array of json objects
 @app.route("/movie_recommendation", methods=['GET'])
 def movie_recommendation():
     media_id = str(request.args.get("media_id"))
@@ -351,6 +348,7 @@ def movie_recommendation():
     return jsonify(json_movies), 200
 
 
+# allow users to add media to watched list
 @app.route("/watchlist", methods=["POST", "GET", "DELETE"])
 @jwt_required()
 def watchlist():
@@ -414,14 +412,14 @@ def refresh():
     return jsonify(access_token=access_token)
 
 
-# if user, enter; if not, try again
-# ask for query method
-# if token, return token. If session, return message "login success"
+# login method for users
+# Uses JWT and hashing
 @app.route("/login", methods=['POST'])
 def login():
     username = request.json.get("username", None)
     password = request.json.get("password", None)
 
+    # check if user exists or not
     db = database.open_DBConnection()
     try:
         user = database.check_user_exists(db, username)
@@ -454,16 +452,16 @@ def login():
     return jsonify({"token": access_token, "id": user_id, "username": username})
 
 
-# if user, user already exists
-# do I need to check if user already signed in?
+# signup / create new users
+# if user already exists, signup does not work
+# returns JWT
 @app.route("/signup", methods=['POST'])
 def signup():
     username = request.json.get("username")
     password = request.json.get("password")
     db = database.open_DBConnection()
 
-    # existing user check
-    # check if password length long?
+    # check if user exists or not
     if database.check_user_exists(db, username):
         database.close_DBConnection(db)
         return jsonify({"msg": "Invalid username or password"})
@@ -472,16 +470,14 @@ def signup():
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(password.encode("utf-8"), salt)
 
-    #print("hash value is: ")
     #print(hashed.decode("utf-8"))
-
     try:
         database.add_user(db, username, hashed.decode("utf-8"))
         user_id = database.get_user_id(db, username)
     finally:
         database.close_DBConnection(db)
 
-    # send token
+    # send json web token
     access_token = create_access_token(identity=user_id)
     return jsonify({"token": access_token, "id": user_id, "username": username})
 
