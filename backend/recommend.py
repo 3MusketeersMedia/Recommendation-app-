@@ -78,10 +78,10 @@ def get_user_ratings(pair, media_id, mediaType='Movie', num=15):
 
 
 # test cases to test
-db = database.open_DBConnection()
+#db = database.open_DBConnection()
 #l1 = database.get_by_id(db, "12361974")
 #print(l1)
 #get_user_ratings(db, "3", "0068646", "Movie")
-get_user_ratings(db, "12361974", "Movie")
+#get_user_ratings(db, "12361974", "Movie")
 #get_user_ratings(db, "9999", "Movie")
 #get_user_ratings(db, "3", "018DZPUwfDKVrm0IXAP9YM", "Music")
