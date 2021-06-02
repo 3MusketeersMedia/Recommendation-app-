@@ -179,7 +179,7 @@ def get_user_recommendations(pair, user_id):
 
     #return list of ids
     end = [value for value in [value for key,value in filteredSims.index.array] if value not in [value for key,value in myRatings.index]]
-    end = [dict([('name', a), ('mediaType', b), ('year', c), ('link', d), ('genres', e), ('rating', f), ('running_time', g), ('summary', h), ('certificate', i), ('ID', j)]) for a,b,c,d,e,f,g,h,i,j in [database.get_by_id(pair, key) for key,value in collections.Counter(end).most_common()]]
+    end = [database.get_by_id(pair, key) for key,value in collections.Counter(end).most_common()]
     return end
 
 
