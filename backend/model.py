@@ -155,7 +155,7 @@ def get_user_recommendations(pair, user_id):
     try:
         myRatings = allRatings.loc[user_id].dropna()
     except:
-        return [None]
+        return []
         
     simCandidates = pd.Series(dtype='object')
 
