@@ -152,8 +152,11 @@ def get_user_recommendations(pair, user_id):
     corrMatrix = allRatings.corr(method='pearson', min_periods = 2)
 
     # get correlation for user
-    myRatings = allRatings.loc[user_id].dropna()
-
+    try:
+        myRatings = allRatings.loc[user_id].dropna()
+    except:
+        return [None]
+        
     simCandidates = pd.Series(dtype='object')
 
     for i in range(0, len(myRatings.index)):
